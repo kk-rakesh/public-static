@@ -21,16 +21,8 @@ const subpages = config.subpages;
 if (subpages.whoWeAre) footerLinks += '<a href="javascript:void(0)" id="who-we-are-link">Who We Are</a>';
 if (subpages.blogs) footerLinks += '<a href="javascript:void(0)">Blogs</a>';
 
-// Shared address block
-const addressBlock = `
-<div class="footer-address">
-    <div class="footer-address-city">Bengaluru India</div>
-    <div class="footer-address-details">
-        <strong>O4F LLP</strong>
-        3rd Cross, Sector 2, HSR Layout<br>
-        Bengaluru, Karnataka 560102
-    </div>
-</div>`;
+// Shared address block (Styled as a small line below trademark)
+const addressBlock = `<div style="margin-top: 5px;">O4F LLP, 205, 3rd Cross, Sector 2, HSR Layout, Bengaluru, Karnataka 560102</div>`;
 
 // Replace placeholders function
 function replacePlaceholders(tmpl, customFooterLinks, customAddressBlock) {
@@ -61,8 +53,8 @@ console.log('Successfully generated index.html');
 const loginTemplatePath = path.join(__dirname, 'src', 'login_template.html');
 if (fs.existsSync(loginTemplatePath)) {
     const loginTemplate = fs.readFileSync(loginTemplatePath, 'utf8');
-    // Login page should not have Who We Are or Blogs subpages in footer, and no address block
-    const loginOutput = replacePlaceholders(loginTemplate, '', '');
+    // For login page, we keep the address block as per the late request
+    const loginOutput = replacePlaceholders(loginTemplate, '', addressBlock);
     fs.writeFileSync(path.join(__dirname, 'login.html'), loginOutput);
     console.log('Successfully generated login.html');
 }

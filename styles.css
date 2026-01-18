@@ -169,32 +169,6 @@ footer {
     font-weight: 300;
 }
 
-.footer-address {
-    margin-top: 40px;
-}
-
-.footer-address-city {
-    color: #8a1b1b;
-    /* Deeper red matching the reference image */
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    letter-spacing: 0.01em;
-}
-
-.footer-address-details {
-    font-size: 14px;
-    color: var(--text-color);
-    line-height: 1.5;
-    font-weight: 300;
-}
-
-.footer-address-details strong {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 2px;
-}
-
 .footer-trademark {
     font-size: 11px;
     color: var(--secondary-text);
