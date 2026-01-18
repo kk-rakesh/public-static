@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (moreLink) {
         moreLink.addEventListener('click', () => {
+            expandedText.classList.remove('hidden');
             expandedText.classList.add('show');
             moreLink.style.display = 'none';
         });
@@ -15,10 +16,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            // For now, all links show Coming Soon
-            // but we only do it for internal sounding links
+            // Allow login link to bypass overlay
+            if (link.getAttribute('href') === 'login.html') {
+                return;
+            }
+
             const text = link.textContent;
             overlayTitle.textContent = text;
+
+            const overlayBody = overlay.querySelector('p');
+
+            if (link.id === 'who-we-are-link') {
+                const dataRaw = document.getElementById('who-we-are-data').textContent;
+                console.log('Loading Who We Are data:', dataRaw);
+                try {
+                    const data = JSON.parse(dataRaw);
+                    let html = '<div class="who-we-are-content" style="text-align: left; margin-top: 20px;">';
+                    data.forEach(line => {
+                        html += `<div style="margin-bottom: 25px;">
+                                    <p style="font-size: 14px; color: #5f6368; line-height: 1.6; font-weight: 300;">${line}</p>
+                                 </div>`;
+                    });
+                    html += '</div>';
+                    overlayBody.innerHTML = html;
+                } catch (err) {
+                    console.error('Error parsing who-we-are data:', err);
+                    overlayBody.textContent = "Error loading content.";
+                }
+            } else {
+                overlayBody.textContent = "We're polishing this section for you. Check back later!";
+            }
+
             overlay.classList.remove('hidden');
             e.preventDefault();
         });

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{companyName}}</title>
+    <link rel="icon" type="image/png" href="{{faviconPath}}">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,10 +52,18 @@
     </div>
 
     <footer>
-        <nav class="footer-nav">
-            {{footerLinks}}
-        </nav>
+        <div class="footer-left">
+            <nav class="footer-nav">
+                {{footerLinks}}
+            </nav>
+            {{addressBlock}}
+        </div>
+        <div class="footer-trademark">
+            @ 2026. o4f LLP. All rights reserved.
+        </div>
     </footer>
+
+    <div id="who-we-are-data" style="display: none;">{{whoWeAreData}}</div>
 
     <script src="script.js"></script>
 </body>
