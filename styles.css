@@ -76,11 +76,17 @@ header {
 
 .header-nav a {
     text-decoration: none;
-    color: var(--text-color);
-    font-size: 14px;
+    color: var(--secondary-text);
+    /* Matched to tagline color */
+    font-size: 13px;
+    /* Matched to tagline font-size */
     padding: 8px 12px;
     border-radius: 4px;
     transition: background 0.2s;
+    font-weight: 300;
+    /* Matched to tagline font-weight */
+    letter-spacing: 0.01em;
+    /* Matched to tagline letter-spacing */
 }
 
 .header-nav a:hover {
@@ -353,8 +359,10 @@ footer {
 
     .header-nav a {
         padding: 6px 10px;
-        font-size: 13px;
+        font-size: clamp(11px, 2vw, 13px);
+        /* Matched to tagline's clamp font-size */
         white-space: nowrap;
+        font-weight: 300;
     }
 
     .logo {
