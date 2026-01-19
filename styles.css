@@ -32,7 +32,8 @@ body {
 header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
+    /* Align with the tagline at the bottom of the logo container */
     max-width: var(--container-width);
     margin: 0 auto clamp(40px, 10vw, 100px) auto;
     width: 100%;
@@ -340,7 +341,8 @@ footer {
         margin-bottom: 40px;
         flex-direction: row;
         /* Keep elements side-by-side */
-        align-items: center;
+        align-items: flex-end;
+        /* Align with the tagline at the bottom */
         justify-content: space-between;
         gap: 10px;
     }
