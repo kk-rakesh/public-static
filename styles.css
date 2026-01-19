@@ -21,8 +21,8 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--font-family);
-    line-height: 1.5;
-    padding: 40px;
+    line-height: 1.6;
+    padding: clamp(20px, 5vw, 40px);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -34,7 +34,7 @@ header {
     justify-content: space-between;
     align-items: center;
     max-width: var(--container-width);
-    margin: 0 auto 100px auto;
+    margin: 0 auto clamp(40px, 10vw, 100px) auto;
     width: 100%;
 }
 
@@ -44,7 +44,7 @@ header {
 }
 
 .logo {
-    font-size: 28px;
+    font-size: clamp(24px, 4vw, 28px);
     font-weight: 800;
     line-height: 1;
 }
@@ -66,7 +66,7 @@ header {
 /* Pastel Green */
 
 .logo-tagline {
-    font-size: 13px;
+    font-size: clamp(11px, 2vw, 13px);
     color: var(--secondary-text);
     margin-top: 4px;
     font-weight: 300;
@@ -77,10 +77,13 @@ header {
     text-decoration: none;
     color: var(--text-color);
     font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background 0.2s;
 }
 
 .header-nav a:hover {
-    text-decoration: underline;
+    background: #f1f3f4;
 }
 
 main.home-content {
@@ -90,17 +93,18 @@ main.home-content {
     max-width: var(--container-width);
     margin: 0 auto;
     flex: 1;
-    align-items: start;
+    align-items: center;
+    /* Changed from start to center for better visual balance */
 }
 
 .tagline {
-    font-size: 32px;
+    font-size: clamp(24px, 5vw, 32px);
     font-weight: 400;
     margin-bottom: 20px;
 }
 
 .intro-paragraph {
-    font-size: 18px;
+    font-size: clamp(16px, 3vw, 18px);
     font-weight: 300;
     color: #3c4043;
 }
@@ -110,11 +114,13 @@ main.home-content {
     cursor: pointer;
     margin-left: 4px;
     user-select: none;
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 #expanded-text {
     margin-top: 20px;
-    font-size: 18px;
+    font-size: clamp(16px, 3vw, 18px);
     font-weight: 300;
     color: #3c4043;
     white-space: pre-wrap;
@@ -134,7 +140,8 @@ main.home-content {
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
-    width: 310px;
+    width: 100%;
+    max-width: 310px;
     overflow: hidden;
 }
 
@@ -293,11 +300,114 @@ footer {
 @media (max-width: 900px) {
     main.home-content {
         grid-template-columns: 1fr;
+        gap: 30px;
     }
 
     .image-column {
         justify-content: center;
         order: -1;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 100%;
     }
+
+    .hero-image {
+        max-width: 320px;
+    }
+
+    .tagline {
+        font-size: 32px;
+    }
+
+    footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 40px;
+        margin-top: 80px;
+    }
+
+    .footer-trademark {
+        text-align: left;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 30px 24px;
+    }
+
+    header {
+        margin-bottom: 40px;
+        flex-direction: row;
+        /* Keep elements side-by-side */
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .header-nav {
+        width: auto;
+    }
+
+    .header-nav a {
+        padding: 6px 10px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+
+    .tagline {
+        font-size: 28px;
+    }
+
+    .intro-paragraph,
+    #expanded-text {
+        font-size: 17px;
+    }
+
+    .footer-nav {
+        flex-wrap: wrap;
+        gap: 15px 25px;
+    }
+
+    .footer-nav a {
+        white-space: nowrap;
+    }
+
+    .iframe-header {
+        padding: 12px 20px;
+    }
+}
+
+/* Password Toggle Styles */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--secondary-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.password-toggle:hover {
+    color: var(--text-color);
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
 }

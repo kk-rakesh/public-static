@@ -45,8 +45,34 @@
                 style="display: flex; flex-direction: column; gap: 15px;">
                 <input type="text" id="username" placeholder="Username or Email"
                     style="padding: 12px; border: 1px solid #e0e0e0; border-radius: 4px; background: #fff; outline: none; transition: border-color 0.2s;">
-                <input type="password" id="password" placeholder="Password"
-                    style="padding: 12px; border: 1px solid #e0e0e0; border-radius: 4px; background: #fff; outline: none; transition: border-color 0.2s;">
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="Password"
+                        style="width: 100%; padding: 12px; padding-right: 45px; border: 1px solid #e0e0e0; border-radius: 4px; background: #fff; outline: none; transition: border-color 0.2s;">
+                    <div id="password-toggle" class="password-toggle">
+                        <!-- Lid Open Icon (Visible Password) -->
+                        <svg class="eye-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12c3-4.5 7-7 10-7s7 2.5 10 7"></path>
+                            <path d="M2 12c3 4.5 7 7 10 7s7-2.5 10-7"></path>
+                            <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                            <line x1="12" y1="5" x2="12" y2="1"></line>
+                            <line x1="7" y1="6.5" x2="5.5" y2="3"></line>
+                            <line x1="17" y1="6.5" x2="18.5" y2="3"></line>
+                            <line x1="4.5" y1="10" x2="2.5" y2="8"></line>
+                            <line x1="19.5" y1="10" x2="21.5" y2="8"></line>
+                        </svg>
+                        <!-- Lid Closed Icon (Hidden Password) -->
+                        <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 10c3 4.5 6 7 9 7s6-2.5 9-7"></path>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                            <line x1="8" y1="16.5" x2="7" y2="20"></line>
+                            <line x1="16" y1="16.5" x2="17" y2="20"></line>
+                            <line x1="5.5" y1="14" x2="4" y2="17"></line>
+                            <line x1="18.5" y1="14" x2="20" y2="17"></line>
+                        </svg>
+                    </div>
+                </div>
                 <button type="submit" id="login-btn" disabled
                     style="padding: 12px; background-color: #f1f3f4; color: #70757a; border: none; border-radius: 4px; font-weight: 500; cursor: not-allowed; transition: all 0.2s ease;">Login</button>
             </form>
@@ -85,12 +111,13 @@
     <footer>
         <div class="footer-left">
             <nav class="footer-nav">
-                
+
             </nav>
         </div>
         <div class="footer-trademark">
             @ 2026. O4F LLP. All rights reserved.
-            <div style="margin-top: 5px;">O4F LLP, 205, 3rd Cross, Sector 2, HSR Layout, Bengaluru, Karnataka 560102</div>
+            <div style="margin-top: 5px;">O4F LLP, 205, 3rd Cross, Sector 2, HSR Layout, Bengaluru, Karnataka 560102
+            </div>
         </div>
     </footer>
 
@@ -146,6 +173,29 @@
 
             usernameInput.addEventListener('input', validate);
             passwordInput.addEventListener('input', validate);
+
+            // Password Visibility Toggle Logic
+            const passwordToggle = document.getElementById('password-toggle');
+            const eyeIcon = passwordToggle.querySelector('.eye-icon');
+            const eyeOffIcon = passwordToggle.querySelector('.eye-off-icon');
+
+            passwordToggle.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+
+                if (isPassword) {
+                    // Password IS NOW VISIBLE (text)
+                    eyeIcon.classList.remove('hidden');
+                    eyeOffIcon.classList.add('hidden');
+                } else {
+                    // Password IS NOW HIDDEN (password)
+                    eyeIcon.classList.add('hidden');
+                    eyeOffIcon.classList.remove('hidden');
+                }
+
+                // Keep focus on input after toggle
+                passwordInput.focus();
+            });
 
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
