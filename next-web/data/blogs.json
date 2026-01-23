@@ -1,0 +1,113 @@
+[
+  {
+    "id": "1",
+    "slug": "from-chaos-to-control",
+    "title": "From Chaos To Control: Building systems that won't blink under pressure",
+    "thumbnail": "/blogs/systems-pressure.png",
+    "thumbnailTitle": "Designing Systems That Hold Under Pressure",
+    "thumbnailCategory": "ENGINEERING",
+    "tags": ["LLMs", "Systems"],
+    "date": "January 22, 2026",
+    "readTime": "10 min read time",
+    "author": "Prakhar Gupta",
+    "category": "Engineering",
+    "subcategory": "AI",
+    "introduction": "When your system handles millions of requests daily, even small inefficiencies compound into cascading failures, and a system that would fall over when we needed it most. This pushed us towards a complete re-architecture of our data orchestration layer at Ema, in line with the constant push to build systems that scale with our ambition. The goal became to design an intelligent ingestion platform that could handle anything, gracefully. We reimagined how data moves, how workloads are orchestrated, and how systems stay resilient under pressure.",
+    "sections": [
+      {
+        "id": "more-power-problem",
+        "title": "More power was the problem, not the solution",
+        "content": "Our first instinct was to throw more hardware at the problem, but we quickly learned a hard lesson: adding power just created bigger traffic jams. The core issue was a fundamental flaw in our thinking.\n\nAs our initial design proposal stated, \"Scaling infrastructure does not translate into proportional throughput. We often face either resource underutilization or overload, leading to failures.\" Any fixed concurrency limit was doomed to fail; it would either be set too low, underutilizing our hardware, or too high, guaranteeing overload from a few heavy jobs.\n\nThe system treated a heavy task (like converting a 100-slide PPTX) and a light task (a 2-page text file) as equals. Heavy jobs would grab all the available resources, overwhelming the worker processes and causing them to crash. This not only blocked lighter tasks but often brought the entire pipeline to a halt. The old architecture tied our two main services, the Go-based Data Ingestion Service (DIS) and the Python-based Transform Service together with direct gRPC calls. This tight coupling created a single point of failure, amplifying crashes during high-load scenarios."
+      },
+      {
+        "id": "separating-ask-act",
+        "title": "Separating the 'ask' from the 'act'",
+        "content": "The first major shift was decoupling \"asking for work\" from \"doing the work.\" We introduced RabbitMQ as a message broker between DIS and Transform Service. Instead of DIS directly calling Transform Service and waiting, it now drops a message into a queue and moves on.\n\nThis simple change was transformative. The Transform Service pulls work when it's ready, not when it's forced upon it. If Transform Service goes down, messages wait safely in the queue. DIS doesn't get blocked or crash because a downstream service is struggling."
+      },
+      {
+        "id": "smart-bouncer",
+        "title": "Every worker needed its own \"smart bouncer\"",
+        "content": "We realized we couldn't just limit by the number of tasks. A single huge file could still bring down a worker, while dozens of small files might run fine. We needed a smarter approach.\n\nWe built a dynamic resource-based admission control system. Each worker now has a \"bouncer\" that checks available CPU and memory before accepting a new task. If resources are running low, the worker simply doesn't pull new work from the queue, letting it wait for another worker or for resources to free up.\n\nThis meant workers could self-regulate. They'd never bite off more than they could chew, and the system as a whole stayed healthy even when individual tasks were unpredictable."
+      },
+      {
+        "id": "rosetta-stone",
+        "title": "A \"rosetta stone\" for our services",
+        "content": "Our old system had a confusing mix of job identifiers. DIS used one ID, Transform Service used another, and tracking a single file's journey through the system was nearly impossible.\n\nWe introduced a unified identifier called the Workload Identifier (WID). This single ID travels with every piece of work from the moment it enters the system until it's complete. Debugging went from a nightmare to straightforward. We could now trace any file's complete journey through logs, queues, and services with a single search.\n\nThe WID also enabled better monitoring and alerting. We could now set up dashboards that showed exactly where work was getting stuck or failing."
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "slug": "intelligent-agent-orchestration-mcp",
+    "title": "Intelligent Agent Orchestration Using MCP: Building autonomous systems with human oversight",
+    "thumbnail": "/blogs/mcp-autonomous.png",
+    "thumbnailTitle": "MCP for Autonomous Systems",
+    "thumbnailCategory": "ENGINEERING",
+    "tags": ["AI agents", "MCP", "LLMs"],
+    "date": "January 7, 2026",
+    "readTime": "15 min read time",
+    "author": "Darshan Joshi",
+    "category": "Engineering",
+    "subcategory": "AI",
+    "introduction": "As AI systems become more capable, the challenge shifts from \"can it do the task?\" to \"how do we maintain meaningful human control?\" The Model Context Protocol (MCP) offers a structured approach to building autonomous systems that remain accountable and transparent.",
+    "sections": [
+      {
+        "id": "why-orchestration-matters",
+        "title": "Why orchestration matters",
+        "content": "Modern AI agents can perform complex multi-step tasks, but without proper orchestration, they become black boxes. We need systems that can explain their reasoning, pause for human approval when needed, and gracefully handle failures.\n\nOrchestration isn't just about managing tasks—it's about maintaining trust. When an AI system can clearly communicate what it's doing and why, humans can make informed decisions about when to intervene."
+      },
+      {
+        "id": "mcp-architecture",
+        "title": "The MCP architecture",
+        "content": "MCP provides a standardized way for AI agents to interact with tools and data sources. At its core, it defines a protocol for context management, tool invocation, and result handling.\n\nThe architecture separates concerns cleanly: the agent focuses on reasoning and planning, while MCP handles the mechanics of execution. This separation makes systems easier to audit, test, and modify."
+      },
+      {
+        "id": "human-in-loop",
+        "title": "Human-in-the-loop patterns",
+        "content": "We've identified several patterns for human oversight that balance autonomy with control. The \"checkpoint\" pattern pauses execution at critical decision points. The \"audit trail\" pattern logs all actions for later review. The \"escalation\" pattern automatically involves humans when confidence is low.\n\nThe key insight is that human oversight shouldn't slow down routine operations—it should focus attention where it matters most."
+      },
+      {
+        "id": "practical-implementation",
+        "title": "Practical implementation",
+        "content": "Implementing MCP requires careful attention to error handling and state management. Agents must be able to resume from interruptions, handle partial failures, and maintain consistency across distributed operations.\n\nWe've found that explicit state machines work well for managing agent lifecycles. Each state transition is logged, making it easy to understand what happened and why."
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "slug": "science-of-evaluating-ai-work",
+    "title": "The Science of Evaluating AI Work: Measuring the performance of AI agents",
+    "thumbnail": "/blogs/ai-evaluation.png",
+    "thumbnailTitle": "AI Performance Evaluation",
+    "thumbnailCategory": "RESEARCH",
+    "tags": ["LLMs", "Evaluation", "Performance"],
+    "date": "July 15, 2025",
+    "readTime": "11 min read time",
+    "author": "Mandar Joshi",
+    "category": "Engineering",
+    "subcategory": "AI",
+    "introduction": "How do you measure success when AI systems perform open-ended tasks? Traditional metrics fall short when evaluating creative problem-solving, nuanced communication, or complex reasoning. We need new frameworks that capture what actually matters.",
+    "sections": [
+      {
+        "id": "beyond-accuracy",
+        "title": "Beyond accuracy metrics",
+        "content": "Accuracy tells you if the answer was right, but not if the process was sound. For AI agents, the journey matters as much as the destination. Did the agent explore reasonable alternatives? Did it recognize uncertainty? Did it ask for clarification when needed?\n\nWe've developed multi-dimensional evaluation frameworks that assess reasoning quality, resource efficiency, and interaction patterns alongside traditional correctness metrics."
+      },
+      {
+        "id": "human-evaluation",
+        "title": "Human evaluation at scale",
+        "content": "Some aspects of AI performance can only be judged by humans. But human evaluation is expensive and inconsistent. We've developed techniques for calibrating human evaluators, sampling efficiently, and combining human judgments with automated metrics.\n\nThe key is identifying which aspects truly require human judgment and automating everything else. This focuses expensive human attention where it creates the most value."
+      },
+      {
+        "id": "continuous-monitoring",
+        "title": "Continuous monitoring in production",
+        "content": "Evaluation doesn't stop at deployment. Production systems need continuous monitoring to detect drift, catch edge cases, and identify improvement opportunities.\n\nWe've built dashboards that track not just outcomes but behavioral patterns. When an agent starts behaving differently—even if results seem fine—that's often an early warning sign worth investigating."
+      },
+      {
+        "id": "benchmarks-limitations",
+        "title": "Benchmarks and their limitations",
+        "content": "Benchmarks provide standardized comparisons but can create perverse incentives. When you optimize for a benchmark, you often sacrifice real-world performance.\n\nWe advocate for benchmark diversity and regular refresh cycles. No single benchmark should dominate evaluation, and benchmarks should evolve to remain challenging and relevant."
+      }
+    ]
+  }
+]

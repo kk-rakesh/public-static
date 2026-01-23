@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Modal from "../ui/Modal";
 
 export default function Footer() {
-  const [showComingSoon, setShowComingSoon] = useState(false);
   const [showWhoWeAre, setShowWhoWeAre] = useState(false);
 
   return (
@@ -19,12 +19,12 @@ export default function Footer() {
             >
               Who We Are
             </button>
-            <button
-              onClick={() => setShowComingSoon(true)}
+            <Link
+              href="/blogs"
               className="hover:text-brand-green transition-colors"
             >
               Blogs
-            </button>
+            </Link>
           </nav>
 
           {/* Copyright and Address */}
@@ -36,20 +36,6 @@ export default function Footer() {
           </div>
         </div>
       </footer>
-
-      {/* Coming Soon Modal */}
-      <Modal
-        isOpen={showComingSoon}
-        onClose={() => setShowComingSoon(false)}
-        title="Coming Soon"
-        size="sm"
-      >
-        <div className="text-center py-8">
-          <p className="text-text-gray">
-            This feature is currently under development. Check back soon!
-          </p>
-        </div>
-      </Modal>
 
       {/* Who We Are Modal */}
       <Modal
