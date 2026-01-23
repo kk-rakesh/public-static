@@ -109,5 +109,167 @@
         "content": "Benchmarks provide standardized comparisons but can create perverse incentives. When you optimize for a benchmark, you often sacrifice real-world performance.\n\nWe advocate for benchmark diversity and regular refresh cycles. No single benchmark should dominate evaluation, and benchmarks should evolve to remain challenging and relevant."
       }
     ]
+  },
+  {
+    "id": "4",
+    "slug": "real-time-data-pipelines",
+    "title": "Real-Time Data Pipelines: Processing millions of events per second",
+    "thumbnail": "/blogs/data-pipelines.png",
+    "thumbnailTitle": "Real-Time Data Processing",
+    "thumbnailCategory": "ENGINEERING",
+    "tags": ["Data", "Streaming", "Kafka"],
+    "date": "December 18, 2025",
+    "readTime": "12 min read time",
+    "author": "Arun Kumar",
+    "category": "Engineering",
+    "subcategory": "Data",
+    "introduction": "When every millisecond counts, traditional batch processing falls short. We rebuilt our data infrastructure to handle real-time streams at scale, learning valuable lessons about backpressure, exactly-once semantics, and graceful degradation along the way.",
+    "sections": [
+      {
+        "id": "why-real-time",
+        "title": "Why real-time matters",
+        "content": "In modern applications, users expect instant feedback. Whether it's fraud detection, recommendation systems, or live dashboards, the value of data diminishes rapidly with time.\n\nWe found that moving from batch to streaming reduced our insight latency from hours to seconds, fundamentally changing what was possible for our product teams."
+      },
+      {
+        "id": "architecture-choices",
+        "title": "Architecture choices",
+        "content": "We evaluated several streaming platforms before settling on Apache Kafka as our backbone. Its durability guarantees, partitioning model, and ecosystem made it the right choice for our scale.\n\nThe key insight was treating Kafka as more than a message queue—it became our source of truth, with consumers replaying history when needed."
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "slug": "securing-api-endpoints",
+    "title": "Securing API Endpoints: A defense-in-depth approach",
+    "thumbnail": "/blogs/api-security.png",
+    "thumbnailTitle": "API Security Best Practices",
+    "thumbnailCategory": "SECURITY",
+    "tags": ["Security", "API", "Authentication"],
+    "date": "November 30, 2025",
+    "readTime": "9 min read time",
+    "author": "Priya Sharma",
+    "category": "Security",
+    "subcategory": "API",
+    "introduction": "APIs are the front door to your application. Every endpoint is a potential attack vector. We share our journey implementing multiple layers of security without sacrificing developer experience or performance.",
+    "sections": [
+      {
+        "id": "authentication-patterns",
+        "title": "Authentication patterns",
+        "content": "We moved from simple API keys to JWT-based authentication with short-lived tokens. The migration was complex but dramatically improved our security posture.\n\nKey decisions included token rotation strategies, refresh token handling, and graceful degradation when auth services are unavailable."
+      },
+      {
+        "id": "rate-limiting",
+        "title": "Intelligent rate limiting",
+        "content": "Naive rate limiting by IP address fails in the modern world of shared IPs and determined attackers. We implemented adaptive rate limiting that considers user behavior patterns.\n\nThe system learns normal usage patterns and flags anomalies, allowing legitimate traffic while blocking abuse."
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "slug": "building-design-systems",
+    "title": "Building Design Systems: Creating consistency at scale",
+    "thumbnail": "/blogs/design-systems.png",
+    "thumbnailTitle": "Design Systems Architecture",
+    "thumbnailCategory": "DESIGN",
+    "tags": ["Design", "UI", "Components"],
+    "date": "October 22, 2025",
+    "readTime": "8 min read time",
+    "author": "Kavya Nair",
+    "category": "Design",
+    "subcategory": "UI",
+    "introduction": "As our product grew, so did inconsistency. Different teams built similar components in different ways. We invested in a design system that became the foundation for all our interfaces.",
+    "sections": [
+      {
+        "id": "component-architecture",
+        "title": "Component architecture",
+        "content": "We structured our components in layers: primitives, composites, and patterns. Primitives are the atomic building blocks—buttons, inputs, typography. Composites combine primitives into reusable units.\n\nThis layering made it easy to maintain consistency while allowing flexibility where needed."
+      },
+      {
+        "id": "documentation-adoption",
+        "title": "Documentation and adoption",
+        "content": "A design system is only valuable if people use it. We invested heavily in documentation, including live examples, usage guidelines, and migration paths from legacy components.\n\nAdoption grew organically once teams saw the time savings and quality improvements."
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "slug": "kubernetes-production-lessons",
+    "title": "Kubernetes in Production: Hard lessons learned",
+    "thumbnail": "/blogs/kubernetes.png",
+    "thumbnailTitle": "Kubernetes Production Guide",
+    "thumbnailCategory": "DEVOPS",
+    "tags": ["Kubernetes", "DevOps", "Infrastructure"],
+    "date": "September 15, 2025",
+    "readTime": "14 min read time",
+    "author": "Rahul Menon",
+    "category": "Engineering",
+    "subcategory": "DevOps",
+    "introduction": "Kubernetes promised us container orchestration nirvana. The reality was more nuanced. Here are the hard lessons we learned running Kubernetes in production for three years.",
+    "sections": [
+      {
+        "id": "resource-management",
+        "title": "Resource management pitfalls",
+        "content": "Setting resource requests and limits correctly is deceptively difficult. Too low, and pods get evicted. Too high, and you waste expensive infrastructure.\n\nWe developed tooling to analyze actual usage patterns and recommend appropriate values, reducing our infrastructure costs by 30%."
+      },
+      {
+        "id": "networking-complexity",
+        "title": "Networking complexity",
+        "content": "Kubernetes networking is powerful but complex. Service meshes add another layer of abstraction that can be both helpful and confusing.\n\nWe standardized on a simplified networking model that met our needs without the full complexity of a service mesh."
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "slug": "testing-strategies-microservices",
+    "title": "Testing Strategies for Microservices: Beyond unit tests",
+    "thumbnail": "/blogs/testing.png",
+    "thumbnailTitle": "Microservices Testing",
+    "thumbnailCategory": "ENGINEERING",
+    "tags": ["Testing", "Microservices", "Quality"],
+    "date": "August 8, 2025",
+    "readTime": "10 min read time",
+    "author": "Sneha Patel",
+    "category": "Engineering",
+    "subcategory": "Testing",
+    "introduction": "Unit tests alone can't catch the bugs that matter most in distributed systems. We developed a comprehensive testing strategy that gives us confidence to deploy multiple times per day.",
+    "sections": [
+      {
+        "id": "contract-testing",
+        "title": "Contract testing",
+        "content": "When services communicate via APIs, both sides need to agree on the contract. We use Pact for consumer-driven contract testing, catching breaking changes before they reach production.\n\nThis approach shifted integration bugs left, finding them in CI rather than staging or production."
+      },
+      {
+        "id": "chaos-engineering",
+        "title": "Chaos engineering",
+        "content": "We regularly inject failures into our production systems to verify our resilience. Network partitions, service outages, and resource exhaustion are all part of our chaos experiments.\n\nThe practice has uncovered numerous hidden dependencies and failure modes that traditional testing missed."
+      }
+    ]
+  },
+  {
+    "id": "9",
+    "slug": "observability-distributed-systems",
+    "title": "Observability in Distributed Systems: Seeing the invisible",
+    "thumbnail": "/blogs/observability.png",
+    "thumbnailTitle": "Distributed Observability",
+    "thumbnailCategory": "ENGINEERING",
+    "tags": ["Observability", "Monitoring", "Tracing"],
+    "date": "July 1, 2025",
+    "readTime": "13 min read time",
+    "author": "Vikram Singh",
+    "category": "Engineering",
+    "subcategory": "Operations",
+    "introduction": "You can't fix what you can't see. In distributed systems, understanding behavior requires more than logs and metrics. We built an observability platform that makes the invisible visible.",
+    "sections": [
+      {
+        "id": "three-pillars",
+        "title": "The three pillars",
+        "content": "Logs tell you what happened. Metrics tell you how much. Traces tell you where. Together, they provide a complete picture of system behavior.\n\nWe invested in correlating all three, allowing engineers to seamlessly move between views when investigating issues."
+      },
+      {
+        "id": "cost-management",
+        "title": "Managing observability costs",
+        "content": "Observability data grows faster than your systems. Without careful management, costs can spiral out of control.\n\nWe implemented intelligent sampling, tiered storage, and automatic data lifecycle policies to keep costs manageable while maintaining visibility."
+      }
+    ]
   }
 ]

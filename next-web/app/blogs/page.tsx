@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -18,8 +21,18 @@ interface Blog {
   subcategory: string;
 }
 
+const BLOGS_PER_ROW = 3;
+
 export default function BlogsPage() {
   const blogs: Blog[] = blogsData;
+  const [visibleRows, setVisibleRows] = useState(1);
+
+  const visibleBlogs = blogs.slice(0, visibleRows * BLOGS_PER_ROW);
+  const hasMore = visibleBlogs.length < blogs.length;
+
+  const handleShowMore = () => {
+    setVisibleRows((prev) => prev + 1);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f5f0] text-black">
@@ -31,10 +44,21 @@ export default function BlogsPage() {
           <div className="border-b border-gray-300 mb-8"></div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogs.map((blog) => (
+            {visibleBlogs.map((blog) => (
               <BlogCard key={blog.id} blog={blog} />
             ))}
           </div>
+
+          {hasMore && (
+            <div className="flex justify-center mt-12">
+              <button
+                onClick={handleShowMore}
+                className="px-8 py-3 border-2 border-brand-green text-brand-green font-medium rounded-full hover:bg-brand-green hover:text-white transition-colors"
+              >
+                Show More
+              </button>
+            </div>
+          )}
         </main>
 
         <Footer />
