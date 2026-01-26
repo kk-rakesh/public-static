@@ -33,7 +33,9 @@ export default function Home() {
             </div>
           </div>
         </main>
+      </div>
 
+      <div className="mt-auto w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
         <Footer />
       </div>
     </div>

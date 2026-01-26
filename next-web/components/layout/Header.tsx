@@ -5,17 +5,19 @@ import Logo from "../ui/Logo";
 
 export default function Header() {
   return (
-    <header className="flex justify-between items-center py-3">
+    <header className="py-3">
       <Link href="/" className="block">
         <Logo />
-        <p className="text-text-gray text-sm mt-1">Engineering your next 10x</p>
       </Link>
-      <Link
-        href="/login"
-        className="text-sm font-medium hover:text-brand-green transition-colors"
-      >
-        Investors Login
-      </Link>
+      <div className="flex justify-between items-start mt-1">
+        <p className="text-text-gray text-sm">Engineering your next 10x</p>
+        <Link
+          href="/login"
+          className="text-sm text-text-gray hover:bg-gray-100 hover:shadow-sm px-4 py-2 rounded-lg transition-all -mt-1"
+        >
+          Investors Login
+        </Link>
+      </div>
     </header>
   );
 }

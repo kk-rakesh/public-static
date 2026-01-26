@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 
 export default function ExpandableText() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [height, setHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (contentRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- DOM measurement requires setState after render
       setHeight(isExpanded ? contentRef.current.scrollHeight : 0);
     }
   }, [isExpanded]);
