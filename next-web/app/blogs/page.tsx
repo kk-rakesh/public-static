@@ -53,7 +53,7 @@ export default function BlogsPage() {
             <div className="flex justify-center mt-12">
               <button
                 onClick={handleShowMore}
-                className="px-8 py-3 border-2 border-brand-green text-brand-green font-medium rounded-full hover:bg-brand-green hover:text-white transition-colors"
+                className="px-8 py-3 border-2 border-brand-green text-brand-green font-medium rounded-full hover:bg-brand-green hover:text-white transition-colors cursor-pointer"
               >
                 Show More
               </button>

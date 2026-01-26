@@ -78,7 +78,7 @@ export default function BlogContent({ blog }: { blog: Blog }) {
                   <button
                     key={section.id}
                     onClick={() => scrollToSection(section.id)}
-                    className={`text-left pl-4 py-2 text-sm transition-colors border-l-2 -ml-[2px] ${
+                    className={`text-left pl-4 py-2 text-sm transition-colors border-l-2 -ml-[2px] cursor-pointer ${
                       activeSection === section.id
                         ? "border-brand-green text-brand-green font-medium"
                         : "border-transparent text-gray-600 hover:text-gray-900"

@@ -65,7 +65,7 @@ export default function LoginForm({ onSignupClick }: LoginFormProps) {
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
           aria-label={showPassword ? "Hide password" : "Show password"}
         >
           {showPassword ? (
@@ -130,7 +130,7 @@ export default function LoginForm({ onSignupClick }: LoginFormProps) {
         <button
           type="button"
           onClick={onSignupClick}
-          className="text-[#5588ff] font-medium hover:underline"
+          className="text-[#5588ff] font-medium hover:underline cursor-pointer"
         >
           Submit Intent / Sign up
         </button>

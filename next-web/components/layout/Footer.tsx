@@ -9,13 +9,13 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="py-8 border-t border-gray-100">
+      <footer className="py-4 border-t border-gray-100">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 lg:gap-0">
           {/* Navigation Links */}
           <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <button
               onClick={() => setShowWhoWeAre(true)}
-              className="hover:text-brand-green transition-colors"
+              className="hover:text-brand-green transition-colors cursor-pointer"
             >
               Who We Are
             </button>

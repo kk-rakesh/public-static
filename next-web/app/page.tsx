@@ -9,12 +9,12 @@ export default function Home() {
       <div className="flex-1 w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
         <Header />
 
-        <main className="py-8 lg:py-16">
+        <main className="py-4 lg:py-8">
           {/* Two-column grid: text + image, collapses on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,545px)_310px] gap-8 lg:gap-11 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,545px)_310px] gap-4 lg:gap-8 items-start">
             {/* Text Column */}
             <div className="order-2 lg:order-1">
-              <h1 className="text-[clamp(28px,5vw,36px)] font-bold leading-tight mb-6">
+              <h1 className="text-[clamp(28px,5vw,36px)] font-bold leading-tight mb-4">
                 <span className="text-brand-green">F</span> is for Futures.
               </h1>
               <ExpandableText />
