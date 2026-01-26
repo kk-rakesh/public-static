@@ -4,28 +4,34 @@ import { useState } from "react";
 import Link from "next/link";
 import Modal from "../ui/Modal";
 
-export default function Footer() {
+interface FooterProps {
+  showNav?: boolean;
+}
+
+export default function Footer({ showNav = true }: FooterProps) {
   const [showWhoWeAre, setShowWhoWeAre] = useState(false);
 
   return (
     <>
       <footer className="py-4 border-t border-gray-100">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 lg:gap-0">
+        <div className={`flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-0 ${!showNav ? 'lg:justify-end' : ''}`}>
           {/* Navigation Links */}
-          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <button
-              onClick={() => setShowWhoWeAre(true)}
-              className="hover:text-brand-green transition-colors cursor-pointer"
-            >
-              Who We Are
-            </button>
-            <Link
-              href="/blogs"
-              className="hover:text-brand-green transition-colors"
-            >
-              Blogs
-            </Link>
-          </nav>
+          {showNav && (
+            <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <button
+                onClick={() => setShowWhoWeAre(true)}
+                className="hover:text-brand-green transition-colors cursor-pointer"
+              >
+                Who We Are
+              </button>
+              <Link
+                href="/blogs"
+                className="hover:text-brand-green transition-colors"
+              >
+                Blogs
+              </Link>
+            </nav>
+          )}
 
           {/* Copyright and Address */}
           <div className="text-sm text-text-gray text-left lg:text-right">

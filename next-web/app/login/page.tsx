@@ -51,7 +51,7 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-auto w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
-        <Footer />
+        <Footer showNav={false} />
       </div>
 
       {/* Signup Modal */}
