@@ -74,6 +74,5 @@ html {
 
 /* Modal backdrop */
 .modal-backdrop {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
+  background: #ffffff;
 }

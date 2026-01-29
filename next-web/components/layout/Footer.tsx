@@ -52,18 +52,17 @@ export default function Footer({ showNav = true }: FooterProps) {
       >
         <div className="space-y-4 text-text-gray">
           <p>
-            <strong className="text-foreground">O4F</strong> (Options For Futures) is dedicated to building generational wealth by making the future accessible to everyone.
+            <strong className="text-foreground">Deep Systems Expertise.</strong> Proven experience building and operating high-performance, low-latency, and distributed systems in demanding fintech environments.
           </p>
           <p>
-            We empower investors through clarity and simplification in navigating modern markets.
+            <strong className="text-foreground">Quantitative &amp; Scientific Rigor.</strong> Grounded in rigorous quantitative research, market microstructure, and systems-level optimization.
           </p>
-          <h3 className="font-semibold text-foreground pt-4">Our Expertise</h3>
-          <ul className="list-disc list-inside space-y-2">
-            <li>Deep systems expertise in fintech environments</li>
-            <li>Quantitative and scientific rigor in research</li>
-            <li>Experienced fintech leadership</li>
-            <li>Platform engineering for trillion-dollar scale operations</li>
-          </ul>
+          <p>
+            <strong className="text-foreground">Experienced Fintech Leadership.</strong> Led by seasoned fintech leaders with a track record of scaling complex platforms and trading infrastructure.
+          </p>
+          <p>
+            <strong className="text-foreground">Engineered for Massive Scale.</strong> Designing platforms to operate at trillion-dollar scale, driven by discipline, precision, and resilience.
+          </p>
         </div>
       </Modal>
     </>
