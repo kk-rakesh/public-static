@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface BlogSection {
   id: string;
@@ -78,11 +79,10 @@ export default function BlogContent({ blog }: { blog: Blog }) {
                   <button
                     key={section.id}
                     onClick={() => scrollToSection(section.id)}
-                    className={`text-left pl-4 py-2 text-sm transition-colors border-l-2 -ml-[2px] cursor-pointer ${
-                      activeSection === section.id
-                        ? "border-brand-green text-brand-green font-medium"
-                        : "border-transparent text-gray-600 hover:text-gray-900"
-                    }`}
+                    className={`text-left pl-4 py-2 text-sm transition-colors border-l-2 -ml-[2px] cursor-pointer ${activeSection === section.id
+                      ? "border-brand-green text-brand-green font-medium"
+                      : "border-transparent text-gray-600 hover:text-gray-900"
+                      }`}
                   >
                     {section.title}
                   </button>
@@ -119,21 +119,32 @@ export default function BlogContent({ blog }: { blog: Blog }) {
           <h1 className="text-3xl lg:text-4xl font-bold mb-6">{blog.title}</h1>
 
           {/* Thumbnail */}
-          <div className="relative aspect-[16/9] rounded-lg overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 mb-6">
-            <div className="absolute inset-0 flex flex-col justify-between p-8">
-              <h2 className="text-2xl lg:text-3xl font-semibold text-gray-800 leading-tight max-w-md">
-                {blog.thumbnailTitle}
-              </h2>
-              <span className="text-sm font-semibold tracking-wider text-gray-600 bg-white/50 px-3 py-1 rounded-full w-fit">
-                {blog.thumbnailCategory}
-              </span>
-            </div>
+          <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-6 shadow-sm border border-gray-100">
+            <Image
+              src={blog.thumbnail}
+              alt={blog.thumbnailTitle}
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
 
-          {/* Date and Read Time */}
-          <p className="text-sm text-text-gray mb-8">
-            {blog.date}, {blog.readTime}
-          </p>
+          {/* Date, Read Time and Tags */}
+          <div className="flex flex-col gap-4 mb-8">
+            <p className="text-sm text-text-gray font-medium">
+              {blog.date} • {blog.readTime}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {blog.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="text-[11px] font-bold tracking-wider text-brand-green bg-brand-green/5 border border-brand-green/10 px-3 py-1 rounded-full uppercase"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
 
           {/* Introduction */}
           <div className="prose prose-lg max-w-none mb-12">

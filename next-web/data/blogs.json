@@ -3,10 +3,14 @@
     "id": "1",
     "slug": "technical-indicators-guide-ma-macd",
     "title": "Mastering Technical Indicators: Understanding Moving Averages and MACD",
-    "thumbnail": "/blogs/technical-analysis.png",
+    "thumbnail": "/blogs/blog1.png",
     "thumbnailTitle": "Technical Analysis Fundamentals",
     "thumbnailCategory": "TRADING",
-    "tags": ["Trading", "Technical Analysis", "Indicators"],
+    "tags": [
+      "Trading",
+      "Technical Analysis",
+      "Indicators"
+    ],
     "date": "January 29, 2026",
     "readTime": "12 min read time",
     "author": "O4F Research Team",

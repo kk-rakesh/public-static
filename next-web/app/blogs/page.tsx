@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import blogsData from "@/data/blogs.json";
@@ -74,15 +75,25 @@ function BlogCard({ blog }: { blog: Blog }) {
     <Link href={`/blogs/${blog.slug}`} className="group">
       <article className="flex flex-col">
         {/* Thumbnail */}
-        <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 mb-4 group-hover:shadow-lg transition-shadow">
-          <div className="absolute inset-0 flex flex-col justify-between p-6">
-            <h3 className="text-xl font-semibold text-gray-800 leading-tight">
-              {blog.thumbnailTitle}
-            </h3>
-            <span className="text-xs font-semibold tracking-wider text-gray-600">
-              {blog.thumbnailCategory}
+        <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4 group-hover:shadow-lg transition-shadow">
+          <Image
+            src={blog.thumbnail}
+            alt={blog.thumbnailTitle}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {blog.tags.map((tag, index) => (
+            <span
+              key={index}
+              className="text-[10px] font-bold tracking-wider text-brand-green bg-brand-green/10 px-2 py-0.5 rounded uppercase"
+            >
+              {tag}
             </span>
-          </div>
+          ))}
         </div>
 
         {/* Title */}
