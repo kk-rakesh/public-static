@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
+import Logo from "@/components/ui/Logo";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -47,7 +48,7 @@ export default function SignupModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b shrink-0">
-          <h2 className="text-lg font-semibold">Sign Up</h2>
+          <Logo />
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"

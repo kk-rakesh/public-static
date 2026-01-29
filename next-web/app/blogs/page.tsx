@@ -39,7 +39,7 @@ export default function BlogsPage() {
       <div className="flex-1 w-full max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12">
         <Header />
 
-        <main className="py-8 lg:py-16">
+        <main className="py-4 lg:py-8">
           <h1 className="text-3xl lg:text-4xl font-bold mb-2">All Blogs</h1>
           <div className="border-b border-gray-300 mb-8"></div>
 
@@ -60,7 +60,9 @@ export default function BlogsPage() {
             </div>
           )}
         </main>
+      </div>
 
+      <div className="mt-auto w-full max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12">
         <Footer />
       </div>
     </div>

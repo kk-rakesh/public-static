@@ -132,7 +132,7 @@ export default function LoginForm({ onSignupClick }: LoginFormProps) {
           onClick={onSignupClick}
           className="text-[#5588ff] font-medium hover:underline cursor-pointer"
         >
-          Submit Intent / Sign up
+          Join Waitlist
         </button>
       </div>
     </form>
