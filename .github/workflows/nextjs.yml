@@ -41,6 +41,9 @@ jobs:
 
       - name: Build with Next.js
         run: npm run build
+        with:
+          env:
+            NODE_ENV: production
         working-directory: next-web
 
       - name: Upload artifact
