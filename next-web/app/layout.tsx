@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { getAssetPath } from "@/lib/constants";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   keywords: ["fintech", "investment", "futures", "options", "wealth management"],
   authors: [{ name: "O4F LLP" }],
   icons: {
-    icon: "/favicon.svg",
+    icon: getAssetPath("/favicon.svg"),
   },
   openGraph: {
     title: "O4F - Options For Futures",
