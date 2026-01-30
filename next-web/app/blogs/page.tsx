@@ -6,6 +6,7 @@ import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import blogsData from "@/data/blogs.json";
+import { getAssetPath } from "@/lib/constants";
 
 interface Blog {
   id: string;
@@ -77,7 +78,7 @@ function BlogCard({ blog }: { blog: Blog }) {
         {/* Thumbnail */}
         <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4 group-hover:shadow-lg transition-shadow">
           <Image
-            src={blog.thumbnail}
+            src={getAssetPath(blog.thumbnail)}
             alt={blog.thumbnailTitle}
             fill
             className="object-cover"

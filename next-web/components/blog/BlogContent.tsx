@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { getAssetPath } from "@/lib/constants";
 
 interface BlogSection {
   id: string;
@@ -121,7 +122,7 @@ export default function BlogContent({ blog }: { blog: Blog }) {
           {/* Thumbnail */}
           <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-6 shadow-sm border border-gray-100">
             <Image
-              src={blog.thumbnail}
+              src={getAssetPath(blog.thumbnail)}
               alt={blog.thumbnailTitle}
               fill
               className="object-cover"

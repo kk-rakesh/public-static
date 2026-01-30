@@ -2,6 +2,7 @@ import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ExpandableText from "@/components/home/ExpandableText";
+import { getAssetPath } from "@/lib/constants";
 
 export default function Home() {
   return (
@@ -23,7 +24,7 @@ export default function Home() {
             {/* Image Column */}
             <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
               <Image
-                src="/minimal.png"
+                src={getAssetPath("/minimal.png")}
                 alt="O4F - Options For Futures"
                 width={310}
                 height={310}
