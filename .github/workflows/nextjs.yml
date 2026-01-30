@@ -41,7 +41,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          NEXT_PUBLIC_BASE_PATH: ""
+          NEXT_PUBLIC_BASE_PATH: /public-static
         working-directory: next-web
 
       - name: Upload artifact
