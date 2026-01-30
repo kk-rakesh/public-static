@@ -17,8 +17,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,9 +39,8 @@ jobs:
 
       - name: Build with Next.js
         run: npm run build
-        with:
-          env:
-            NODE_ENV: production
+        env:
+          NODE_ENV: production
         working-directory: next-web
 
       - name: Upload artifact
