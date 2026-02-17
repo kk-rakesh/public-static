@@ -52,16 +52,16 @@ export default function Footer({ showNav = true }: FooterProps) {
       >
         <div className="space-y-4 text-text-gray">
           <p>
-            <strong className="text-foreground">Deep Systems Expertise.</strong> Proven experience building and operating high-performance, low-latency, and distributed systems in demanding fintech environments.
+            <strong>Deep Systems Expertise.</strong> Proven experience building and operating high-performance, low-latency, and distributed systems in demanding fintech environments.
           </p>
           <p>
-            <strong className="text-foreground">Quantitative &amp; Scientific Rigor.</strong> Grounded in rigorous quantitative research, market microstructure, and systems-level optimization.
+            <strong>Quantitative &amp; Scientific Rigor.</strong> Grounded in rigorous quantitative research, market microstructure, and systems-level optimization.
           </p>
           <p>
-            <strong className="text-foreground">Experienced Fintech Leadership.</strong> Led by seasoned fintech leaders with a track record of scaling complex platforms and trading infrastructure.
+            <strong>Experienced Fintech Leadership.</strong> Led by seasoned fintech leaders with a track record of scaling complex platforms and trading infrastructure.
           </p>
           <p>
-            <strong className="text-foreground">Engineered for Massive Scale.</strong> Designing platforms to operate at trillion-dollar scale, driven by discipline, precision, and resilience.
+            <strong>Engineered for Massive Scale.</strong> Designing platforms to operate at trillion-dollar scale, driven by discipline, precision, and resilience.
           </p>
         </div>
       </Modal>
