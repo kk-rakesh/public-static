@@ -1,0 +1,22 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0f23"/>
+      <stop offset="100%" style="stop-color:#1a1a3e"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg2)"/>
+  <!-- Bar chart -->
+  <rect x="60" y="140" width="40" height="80" fill="#6dd03f" opacity="0.7"/>
+  <rect x="120" y="120" width="40" height="100" fill="#6dd03f" opacity="0.8"/>
+  <rect x="180" y="100" width="40" height="120" fill="#6dd03f" opacity="0.9"/>
+  <rect x="240" y="80" width="40" height="140" fill="#6dd03f"/>
+  <rect x="300" y="60" width="40" height="160" fill="#4a90d9"/>
+  <!-- Title -->
+  <text x="200" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">February Week 1</text>
+  <text x="200" y="275" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6dd03f">Weekly Update</text>
+  <!-- O4F Badge -->
+  <text x="40" y="40" font-family="Arial, sans-serif" font-size="20" font-weight="bold">
+    <tspan fill="#ff0000">O</tspan><tspan fill="#4a90d9">4</tspan><tspan fill="#6dd03f">F</tspan>
+  </text>
+</svg>

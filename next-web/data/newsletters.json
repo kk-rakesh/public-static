@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "slug": "january-2025-market-outlook",
+    "title": "January 2025 Market Outlook",
+    "date": "January 15, 2025",
+    "month": 1,
+    "year": 2025,
+    "thumbnail": "/newsletters/thumbnails/jan-2025.svg",
+    "pdfUrl": "/newsletters/pdfs/sample.pdf",
+    "summary": "A comprehensive analysis of market trends and investment opportunities for the beginning of 2025."
+  },
+  {
+    "id": "2",
+    "slug": "february-2025-week-1",
+    "title": "Weekly Market Update - Week 1",
+    "date": "February 7, 2025",
+    "month": 2,
+    "year": 2025,
+    "thumbnail": "/newsletters/thumbnails/feb-2025-w1.svg",
+    "pdfUrl": "/newsletters/pdfs/sample.pdf",
+    "summary": "First week of February market analysis covering key economic indicators and sector performance."
+  },
+  {
+    "id": "3",
+    "slug": "february-2025-week-2",
+    "title": "Weekly Market Update - Week 2",
+    "date": "February 14, 2025",
+    "month": 2,
+    "year": 2025,
+    "thumbnail": "/newsletters/thumbnails/feb-2025-w2.svg",
+    "pdfUrl": "/newsletters/pdfs/sample.pdf",
+    "summary": "Second week of February covering earnings season highlights and market momentum."
+  },
+  {
+    "id": "4",
+    "slug": "march-2025-week-1",
+    "title": "Weekly Market Update - Week 1",
+    "date": "March 7, 2025",
+    "month": 3,
+    "year": 2025,
+    "thumbnail": "/newsletters/thumbnails/mar-2025-w1.svg",
+    "pdfUrl": "/newsletters/pdfs/sample.pdf",
+    "summary": "First week of March with focus on Q1 outlook and emerging market opportunities."
+  },
+  {
+    "id": "5",
+    "slug": "march-2025-mid-month",
+    "title": "Mid-Month Special Report",
+    "date": "March 15, 2025",
+    "month": 3,
+    "year": 2025,
+    "thumbnail": "/newsletters/thumbnails/mar-2025-special.svg",
+    "pdfUrl": "/newsletters/pdfs/sample.pdf",
+    "summary": "Special mid-month report analyzing sector rotations and portfolio rebalancing strategies."
+  }
+]

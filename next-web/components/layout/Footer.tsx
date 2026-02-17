@@ -30,6 +30,12 @@ export default function Footer({ showNav = true }: FooterProps) {
               >
                 Blogs
               </Link>
+              <Link
+                href="/newsletters"
+                className="hover:text-brand-green transition-colors"
+              >
+                Newsletters
+              </Link>
             </nav>
           )}
 
