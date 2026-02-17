@@ -17,7 +17,7 @@ export default function ExpandableText() {
   return (
     <div className="text-base leading-relaxed text-text-gray">
       <p>
-        We believe the future should be accessible to everyone. At O4F, we&apos;re building generational wealth by empowering investors through clarity and simplification in navigating modern markets.{" "}
+        We believe that the future should be accessible to everyone, and our mission is to empower investors with the tools they need to navigate the complexities of modern markets with ease and confidence.{" "}
         {!isExpanded && (
           <button
             onClick={() => setIsExpanded(true)}
@@ -34,10 +34,10 @@ export default function ExpandableText() {
       >
         <div ref={contentRef} className="pt-3 space-y-3">
           <p>
-            Our approach combines deep systems expertise in fintech environments with quantitative and scientific rigor in research. Led by experienced fintech professionals, we bring platform engineering capabilities designed for trillion-dollar scale operations.
+            Our approach is rooted in the philosophy that clarity and simplicity are the ultimate forms of sophistication. By stripping away the unnecessary and focusing on the essential, we help our investors build lasting value in an ever-changing financial landscape.
           </p>
           <p>
-            We don&apos;t just build products; we build pathways to financial empowerment. Our mission is to democratize access to sophisticated investment tools and strategies that were once reserved for institutional players.
+            Whether you are an individual investor or a large institution, O4F provides the strategic insights and innovative solutions required to thrive in the years ahead.
           </p>
           {isExpanded && (
             <button
