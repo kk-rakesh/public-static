@@ -100,9 +100,9 @@ function ArchitectureDiagram() {
 
 export default function PlatformArchitecture() {
   return (
-    <section className="w-full py-12 lg:py-16">
+    <section className="w-full py-8 lg:py-12">
       <div className="max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
-        <h2 className="text-2xl font-bold mb-4">Platform Architecture</h2>
+        <h2 className="text-xl font-bold mb-4">Platform Architecture</h2>
         <p className="text-text-gray mb-6">
           The O4F platform is built as a modular intelligent system.
         </p>

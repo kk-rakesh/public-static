@@ -35,9 +35,9 @@ export default function TechEra() {
   const activeEra = eras.find((e) => e.id === active)!;
 
   return (
-    <section className="w-full py-12 lg:py-16">
+    <section className="w-full py-8 lg:py-12">
       <div className="max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
-        <h2 className="text-2xl font-bold mb-6">The Next Era of Technology</h2>
+        <h2 className="text-xl font-bold mb-6">The Next Era of Technology</h2>
 
         {/* Timeline */}
         <div className="flex flex-col sm:flex-row sm:items-center mb-8">

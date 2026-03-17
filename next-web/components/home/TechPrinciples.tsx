@@ -54,9 +54,9 @@ const principles = [
 
 export default function TechPrinciples() {
   return (
-    <section className="w-full bg-gray-50 py-12 lg:py-16">
+    <section className="w-full bg-gray-50 py-8 lg:py-12">
       <div className="max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
-        <h2 className="text-2xl font-bold mb-4">Technology Principles</h2>
+        <h2 className="text-xl font-bold mb-4">Technology Principles</h2>
         <p className="text-text-gray mb-8">Great systems share common principles.</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

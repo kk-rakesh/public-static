@@ -90,9 +90,9 @@ const features = [
 
 export default function WhatWeBuild() {
   return (
-    <section className="w-full py-12 lg:py-16">
+    <section className="w-full py-8 lg:py-12">
       <div className="max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
-        <h2 className="text-2xl font-bold mb-6">What We Build</h2>
+        <h2 className="text-xl font-bold mb-6">What We Build</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {features.map((f) => (

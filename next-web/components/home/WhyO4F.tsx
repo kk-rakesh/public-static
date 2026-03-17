@@ -1,11 +1,11 @@
 export default function WhyO4F() {
   return (
-    <section className="w-full py-12 lg:py-16">
-      <div className="max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12 space-y-16">
+    <section className="w-full py-8 lg:py-12">
+      <div className="max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12 space-y-10">
 
         {/* Why O4F */}
         <div>
-          <h2 className="text-2xl font-bold mb-6">Why O4F</h2>
+          <h2 className="text-xl font-bold mb-6">Why O4F</h2>
           <p className="text-text-gray mb-8">We are building technology for a world where:</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -108,33 +108,6 @@ export default function WhyO4F() {
           <p className="text-text-gray mb-3">To build systems that expand human capability.</p>
           <p className="text-text-gray mb-3">Technology should not simply optimize the present.</p>
           <p className="text-text-gray">It should create new possibilities for the future.</p>
-        </div>
-
-        {/* Join the Builders */}
-        <div className="border border-gray-200 rounded-2xl p-8">
-          <div className="flex gap-4 items-start mb-4">
-            <div className="text-brand-green flex-shrink-0 mt-1">
-              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden>
-                <circle cx="18" cy="14" r="6" stroke="currentColor" strokeWidth="2" fill="none" />
-                <circle cx="34" cy="18" r="5" stroke="currentColor" strokeWidth="2" fill="none" />
-                <path d="M4 38c0-7.73 6.27-14 14-14s14 6.27 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
-                <path d="M34 28c4.42 0 8 3.58 8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold mt-2">Join the Builders</h3>
-          </div>
-          <p className="text-text-gray mb-3">
-            We are building a team of engineers, researchers, and thinkers who want to create lasting systems.
-          </p>
-          <p className="text-text-gray mb-6">
-            If you want to work on deep technology with real-world impact, we would love to connect.
-          </p>
-          <a
-            href="mailto:hello@o4f.com"
-            className="inline-block px-6 py-3 bg-brand-green text-white font-semibold rounded-lg hover:opacity-90 transition-opacity duration-150"
-          >
-            Get in touch
-          </a>
         </div>
 
       </div>
