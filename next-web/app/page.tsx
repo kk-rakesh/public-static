@@ -2,12 +2,17 @@ import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ExpandableText from "@/components/home/ExpandableText";
+import TechEra from "@/components/home/TechEra";
+import WhatWeBuild from "@/components/home/WhatWeBuild";
+import PlatformArchitecture from "@/components/home/PlatformArchitecture";
+import TechPrinciples from "@/components/home/TechPrinciples";
+import WhyO4F from "@/components/home/WhyO4F";
 import { getAssetPath } from "@/lib/constants";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-black">
-      <div className="flex-1 w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
+      <div className="w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
         <Header />
 
         <main className="py-4 lg:py-8">
@@ -36,7 +41,13 @@ export default function Home() {
         </main>
       </div>
 
-      <div className="mt-auto w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
+      <TechEra />
+      <WhatWeBuild />
+      <PlatformArchitecture />
+      <TechPrinciples />
+      <WhyO4F />
+
+      <div className="w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
         <Footer />
       </div>
     </div>

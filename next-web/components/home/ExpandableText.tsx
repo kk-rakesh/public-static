@@ -17,7 +17,7 @@ export default function ExpandableText() {
   return (
     <div className="text-base leading-relaxed text-text-gray">
       <p>
-        We believe that the future should be accessible to everyone, and our mission is to empower investors with the tools they need to navigate the complexities of modern markets with ease and confidence.{" "}
+        O4F designs next-generation platforms that combine AI, real-time data, and ultra-low latency infrastructure to power intelligent decision systems. From market intelligence to autonomous trading, we build the operating layer for the AI economy.{" "}
         {!isExpanded && (
           <button
             onClick={() => setIsExpanded(true)}
