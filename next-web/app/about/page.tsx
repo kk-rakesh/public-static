@@ -2,6 +2,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import TechEra from "@/components/home/TechEra";
 import WhyO4F from "@/components/home/WhyO4F";
+import ResearchInnovation from "@/components/home/ResearchInnovation";
+import OurMission from "@/components/home/OurMission";
 
 export default function AboutPage() {
   return (
@@ -20,6 +22,8 @@ export default function AboutPage() {
 
       <TechEra />
       <WhyO4F />
+      <ResearchInnovation />
+      <OurMission />
 
       <div className="mt-auto w-full max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12">
         <Footer />

@@ -16,39 +16,41 @@ export default function Header() {
 
   return (
     <header className="py-3">
-      <div className="flex justify-between items-center">
-        <Link href="/" className="block">
-          <Logo />
-        </Link>
+      {/* Row 1: Logo + Login */}
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <Link href="/" className="block">
+            <Logo />
+          </Link>
+          <p className="text-text-gray text-sm mt-0.5">Engineering your next 10x</p>
+        </div>
         <Link
           href="/login"
-          className="text-sm text-text-gray hover:bg-gray-100 hover:shadow-sm px-4 py-2 rounded-lg transition-all"
+          className="text-sm text-text-gray hover:bg-gray-100 hover:shadow-sm px-4 py-1.5 rounded-lg transition-all whitespace-nowrap"
         >
           Investors Login
         </Link>
       </div>
 
-      <div className="flex items-center justify-between mt-2">
-        <p className="text-text-gray text-sm hidden sm:block">Engineering your next 10x</p>
-        <nav className="flex items-center gap-1 overflow-x-auto">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm px-3 py-1.5 rounded-lg transition-all whitespace-nowrap
-                  ${isActive
-                    ? "text-black font-medium bg-gray-100"
-                    : "text-text-gray hover:text-black hover:bg-gray-100"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+      {/* Row 2: Nav links — spread on mobile, right-aligned on desktop */}
+      <nav className="flex items-center justify-between sm:justify-end gap-1">
+        {navLinks.map((link) => {
+          const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`text-sm px-3 py-1.5 rounded-lg transition-all whitespace-nowrap
+                ${isActive
+                  ? "text-black font-medium bg-gray-100"
+                  : "text-text-gray hover:text-black hover:bg-gray-100"
+                }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+      </nav>
     </header>
   );
 }

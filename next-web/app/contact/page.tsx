@@ -29,7 +29,7 @@ export default function ContactPage() {
           </p>
 
           <a
-            href="mailto:hello@o4f.com"
+            href="mailto:info@o4f.co.in"
             className="inline-block px-8 py-4 bg-brand-green text-white font-semibold rounded-lg hover:opacity-90 transition-opacity duration-150"
           >
             Get in touch
