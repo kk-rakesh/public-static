@@ -360,7 +360,7 @@ const Mission = () => {
 };
 
 const Join = () => {
-  const investorUrl = "https://docs.google.com/forms/d/e/1FAIpQLScIbH7GaqazZkbjeq-dwWh0h672N6bU-UFWRmnZGpBpFUZbqg/viewform?embedded=true";
+  const investorUrl = "https://forms.gle/TmK4SU1A2G5isAui6";
 
   return (
     <section id="contact" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
