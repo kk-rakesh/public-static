@@ -3,9 +3,71 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User } from 'lucide-react';
+import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User, X, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ReactNode, useState, useEffect } from 'react';
+
+const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative liquid-glass rounded-3xl p-8 md:p-12 border-white/5 max-w-md mx-auto"
+          >
+            <button
+              onClick={onClose}
+              className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <div className="space-y-6 text-center">
+              <div className="flex justify-center">
+                <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Zap className="w-8 h-8 text-primary" />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="heading-italic text-3xl md:text-4xl">Coming Soon</h2>
+                <p className="body-light text-lg">
+                  We're building something extraordinary. Stay with us as we launch the next generation of intelligent infrastructure.
+                </p>
+              </div>
+
+              <div className="pt-4 space-y-3">
+                <button
+                  onClick={onClose}
+                  className="w-full liquid-glass-strong rounded-full px-8 py-3 text-sm font-body hover:bg-white/10 transition-all"
+                >
+                  Got it
+                </button>
+                <a
+                  href="mailto:info@04f.co.in"
+                  onClick={onClose}
+                  className="block w-full border border-white/10 rounded-full px-8 py-3 text-sm font-body hover:bg-white/5 transition-all"
+                >
+                  Contact Us
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 const ProcessingWave = ({ color = "bg-primary" }: { color?: string }) => (
   <div className="flex items-center gap-1 h-8">
@@ -27,9 +89,23 @@ const ProcessingWave = ({ color = "bg-primary" }: { color?: string }) => (
   </div>
 );
 
-const Navbar = () => {
+const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <nav className="fixed top-4 left-0 w-full z-50 px-4 md:px-8">
+    <nav className={`fixed top-0 left-0 w-full z-50 horizontal-padding py-3 md:py-4 transition-all duration-300 ${
+      isScrolled ? 'liquid-glass' : 'bg-transparent'
+    }`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="text-2xl font-bold tracking-tighter">
           <span className="text-primary">O4</span>
@@ -48,18 +124,58 @@ const Navbar = () => {
           ))}
         </div>
 
-        <button className="liquid-glass-strong rounded-full px-6 py-2.5 flex items-center gap-2 text-sm font-body group hover:bg-white/10 transition-all">
-          Explore Platform
-          <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-        </button>
+        <div className="hidden md:flex items-center gap-4">
+          <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-6 py-2.5 flex items-center gap-2 text-sm font-body group hover:bg-white/10 transition-all">
+            Explore Platform
+            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </button>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center gap-4">
+          <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-4 py-2 text-sm font-body hover:bg-white/10 transition-all">
+            Explore
+          </button>
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-white/70 hover:text-white transition-colors"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden absolute top-full left-0 right-0 mt-2 horizontal-padding bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl mx-3"
+          >
+            <div className="flex flex-col gap-2 py-4">
+              {['Home', 'Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-2 text-sm font-body text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
 
-const Hero = () => {
+const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
   return (
-    <section id="home" className="relative h-[1000px] flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+    <section id="home" className="relative h-[1000px] flex flex-col items-center justify-center text-center horizontal-padding overflow-x-hidden">
       {/* Background Glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
@@ -84,12 +200,12 @@ const Hero = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button className="liquid-glass-strong rounded-full px-8 py-4 text-sm font-body hover:bg-white/10 transition-all">
+          <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-8 py-4 text-sm font-body hover:bg-white/10 transition-all">
             Explore Platform
           </button>
-          <button className="border border-white/10 rounded-full px-8 py-4 text-sm font-body hover:bg-white/5 transition-all">
+          <a href="#contact" className="border border-white/10 rounded-full px-8 py-4 text-sm font-body hover:bg-white/5 transition-all">
             Partner With Us
-          </button>
+          </a>
         </div>
       </motion.div>
     </section>
@@ -98,7 +214,7 @@ const Hero = () => {
 
 const Vision = () => {
   return (
-    <section id="mission" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
+    <section id="mission" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <div className="grid md:grid-row-2 gap-16">
         <div>
           <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Vision</span>
@@ -171,7 +287,7 @@ const FeatureCard = ({ title, content, icon: Icon, children }: { title: string, 
 
 const WhatWeBuild = () => {
   return (
-    <section id="platform" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
+    <section id="platform" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Capabilities</span>
       <h2 className="heading-italic text-5xl md:text-7xl mb-16">What We Build</h2>
       
@@ -233,7 +349,7 @@ const Architecture = () => {
   ];
 
   return (
-    <section id="architecture" className="py-16 md:py-32 px-4 md:px-8 bg-white/[0.02]">
+    <section id="architecture" className="py-16 md:py-32 horizontal-padding bg-white/[0.02]">
       <div className="max-w-7xl mx-auto">
         <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Architecture</span>
         <h2 className="heading-italic text-5xl md:text-7xl mb-4">Platform Architecture</h2>
@@ -265,7 +381,7 @@ const Architecture = () => {
 
 const TechnologyPrinciples = () => {
   return (
-    <section className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
+    <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <h2 className="heading-italic text-5xl md:text-7xl mb-16 text-center">Technology Principles</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {['Modular', 'Event Driven', 'AI Native', 'Real Time'].map((principle) => (
@@ -281,7 +397,7 @@ const TechnologyPrinciples = () => {
 
 const WhyO4F = () => {
   return (
-    <section className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
+    <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <div className="grid md:grid-cols-2 gap-16 items-center">
         <div>
           <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Strategy</span>
@@ -317,7 +433,7 @@ const WhyO4F = () => {
 
 const Research = () => {
   return (
-    <section id="research" className="py-16 md:py-32 px-4 md:px-8 bg-white/[0.02]">
+    <section id="research" className="py-16 md:py-32 horizontal-padding bg-white/[0.02]">
       <div className="max-w-7xl mx-auto text-center">
         <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Innovation</span>
         <h2 className="heading-italic text-5xl md:text-7xl mb-8">Research & Innovation</h2>
@@ -345,7 +461,7 @@ const Research = () => {
 
 const Mission = () => {
   return (
-    <section className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto text-center">
+    <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto text-center">
       <h2 className="heading-italic text-5xl md:text-7xl mb-12">Our Mission</h2>
       <div className="max-w-3xl mx-auto space-y-8">
         <p className="text-3xl md:text-4xl font-body font-light leading-tight">
@@ -363,7 +479,7 @@ const Join = () => {
   const investorUrl = "https://forms.gle/TmK4SU1A2G5isAui6";
 
   return (
-    <section id="contact" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
+    <section id="contact" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <div className="liquid-glass rounded-[48px] p-16 md:p-24 text-center border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
         
@@ -373,9 +489,12 @@ const Join = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-          <button className="liquid-glass-strong rounded-full px-12 py-5 text-base font-body hover:bg-white/10 transition-all">
+          <a
+            href="mailto:info@04f.co.in"
+            className="liquid-glass-strong rounded-full px-12 py-5 text-base font-body hover:bg-white/10 transition-all"
+          >
             Contact Us
-          </button>
+          </a>
           <a 
             href={investorUrl}
             target="_blank"
@@ -392,7 +511,7 @@ const Join = () => {
 
 const Footer = ({ onNavigate }: { onNavigate?: (page: string) => void }) => {
   return (
-    <footer className="py-10 md:py-20 px-4 md:px-8 border-t border-white/5">
+    <footer className="py-10 md:py-20 horizontal-padding border-t border-white/5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         <div className="space-y-6">
           <div className="text-3xl font-bold tracking-tighter">
@@ -468,7 +587,7 @@ const BlogPage = ({ onBack }: { onBack: () => void, key?: string }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="pt-32 pb-20 px-4 md:px-8 max-w-4xl mx-auto"
+      className="pt-32 pb-20 horizontal-padding max-w-4xl mx-auto overflow-x-hidden"
     >
       <button 
         onClick={onBack}
@@ -604,10 +723,11 @@ const Blogs = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [showComingSoonDialog, setShowComingSoonDialog] = useState(false);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30">
-      <Navbar />
+      <Navbar onExplorePlatform={() => setShowComingSoonDialog(true)} />
       <main>
         <AnimatePresence mode="wait">
           {currentPage === 'home' ? (
@@ -617,7 +737,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <Hero />
+              <Hero onExplorePlatform={() => setShowComingSoonDialog(true)} />
               <Vision />
               <WhatWeBuild />
               <Architecture />
@@ -634,6 +754,7 @@ export default function App() {
         </AnimatePresence>
       </main>
       <Footer onNavigate={setCurrentPage} />
+      <ComingSoonDialog isOpen={showComingSoonDialog} onClose={() => setShowComingSoonDialog(false)} />
     </div>
   );
 }
