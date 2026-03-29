@@ -54,7 +54,7 @@ const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                   Got it
                 </button>
                 <a
-                  href="mailto:info@04f.co.in"
+                  href="mailto:info@o4f.co.in"
                   onClick={onClose}
                   className="block w-full border border-white/10 rounded-full px-8 py-3 text-sm font-body hover:bg-white/5 transition-all"
                 >
@@ -103,20 +103,19 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 horizontal-padding py-3 md:py-4 transition-all duration-300 ${
-      isScrolled ? 'liquid-glass' : 'bg-transparent'
-    }`}>
+    <nav className={`fixed top-0 left-0 w-full z-50 horizontal-padding py-3 md:py-4 transition-all duration-300 ${isScrolled ? 'liquid-glass' : 'bg-transparent'
+      }`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="text-2xl font-bold tracking-tighter">
           <span className="text-primary">O4</span>
           <span className="text-secondary">F</span>
         </div>
-        
+
         <div className="hidden md:flex liquid-glass rounded-full px-8 py-3 gap-8 items-center">
           {['Home', 'Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
-            <a 
-              key={item} 
-              href={`#${item.toLowerCase()}`} 
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
               className="text-sm font-body font-normal text-white/70 hover:text-white transition-colors"
             >
               {item}
@@ -180,7 +179,7 @@ const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -198,7 +197,7 @@ const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
         <p className="body-light text-base md:text-lg max-w-xl mx-auto mb-12">
           From market intelligence to autonomous trading, we build the operating layer for the AI economy.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-8 py-4 text-sm font-body hover:bg-white/10 transition-all">
             Explore Platform
@@ -220,7 +219,7 @@ const Vision = () => {
           <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Vision</span>
           <h2 className="heading-italic text-5xl md:text-7xl mb-12">The Next Era of Technology</h2>
         </div>
-        
+
         <div className="grid md:grid-cols-2 gap-12">
           <div className="space-y-8">
             <div className="space-y-2">
@@ -248,7 +247,7 @@ const Vision = () => {
               O4F is building the foundation for this new era.
             </p>
           </div>
-          
+
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent rounded-3xl blur-2xl group-hover:opacity-100 opacity-50 transition-opacity" />
             <div className="relative liquid-glass rounded-3xl p-8 h-full flex flex-col justify-center border-white/5">
@@ -290,15 +289,15 @@ const WhatWeBuild = () => {
     <section id="platform" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Capabilities</span>
       <h2 className="heading-italic text-5xl md:text-7xl mb-16">What We Build</h2>
-      
+
       <div className="grid md:grid-cols-2 gap-8">
-        <FeatureCard 
-          title="Real-Time Data Infrastructure" 
+        <FeatureCard
+          title="Real-Time Data Infrastructure"
           content="Continuous real-time ingestion of market data, exchange feeds, signals, news, and events. All processed in milliseconds."
           icon={Database}
         />
-        <FeatureCard 
-          title="AI Native Decision Systems" 
+        <FeatureCard
+          title="AI Native Decision Systems"
           content="AI agents, quantitative models, signal generation, and automated decision engines."
           icon={Cpu}
         >
@@ -307,8 +306,8 @@ const WhatWeBuild = () => {
             <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Processing Intelligence</span>
           </div>
         </FeatureCard>
-        <FeatureCard 
-          title="Autonomous Trading Infrastructure" 
+        <FeatureCard
+          title="Autonomous Trading Infrastructure"
           content="Strategy development, backtesting, real-time execution engines, and risk management pipelines."
           icon={Zap}
         >
@@ -330,8 +329,8 @@ const WhatWeBuild = () => {
             </div>
           </div>
         </FeatureCard>
-        <FeatureCard 
-          title="Ultra-Low Latency Compute" 
+        <FeatureCard
+          title="Ultra-Low Latency Compute"
           content="Event-driven processing, high-frequency pipelines, distributed compute, optimized execution."
           icon={Activity}
         />
@@ -354,10 +353,10 @@ const Architecture = () => {
         <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Architecture</span>
         <h2 className="heading-italic text-5xl md:text-7xl mb-4">Platform Architecture</h2>
         <p className="body-light text-xl mb-16">The O4F platform is built as a modular intelligent system.</p>
-        
+
         <div className="space-y-4">
           {layers.map((layer, i) => (
-            <motion.div 
+            <motion.div
               key={layer.name}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -440,7 +439,7 @@ const Research = () => {
         <p className="body-light text-xl max-w-2xl mx-auto mb-16">
           Our work spans multiple domains including:
         </p>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { title: 'AI infrastructure', icon: Cpu },
@@ -482,20 +481,20 @@ const Join = () => {
     <section id="contact" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <div className="liquid-glass rounded-[48px] p-16 md:p-24 text-center border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
-        
+
         <h2 className="heading-italic text-5xl md:text-8xl mb-8 relative z-10">Join the Builders</h2>
         <p className="body-light text-xl max-w-2xl mx-auto mb-12 relative z-10">
           We are building a team of engineers, researchers, and thinkers who want to create lasting systems.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
           <a
-            href="mailto:info@04f.co.in"
+            href="mailto:info@o4f.co.in"
             className="liquid-glass-strong rounded-full px-12 py-5 text-base font-body hover:bg-white/10 transition-all"
           >
             Contact Us
           </a>
-          <a 
+          <a
             href={investorUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -529,14 +528,14 @@ const Footer = ({ onNavigate }: { onNavigate?: (page: string) => void }) => {
             </p>
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-4">
           <h4 className="text-xs uppercase tracking-widest text-white/40 font-body">Navigation</h4>
           <div className="flex flex-col gap-3">
             {['Home', 'Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
-              <a 
-                key={item} 
-                href={item === 'Home' ? '#' : `#${item.toLowerCase()}`} 
+              <a
+                key={item}
+                href={item === 'Home' ? '#' : `#${item.toLowerCase()}`}
                 onClick={(e) => {
                   if (item === 'Home' && onNavigate) {
                     e.preventDefault();
@@ -554,7 +553,7 @@ const Footer = ({ onNavigate }: { onNavigate?: (page: string) => void }) => {
         <div className="flex flex-col gap-4">
           <h4 className="text-xs uppercase tracking-widest text-white/40 font-body">Resources</h4>
           <div className="flex flex-col gap-3">
-            <button 
+            <button
               onClick={() => onNavigate?.('blog-ma-macd')}
               className="text-sm font-body text-white/40 hover:text-white transition-colors text-left"
             >
@@ -565,7 +564,7 @@ const Footer = ({ onNavigate }: { onNavigate?: (page: string) => void }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between gap-4">
         <p className="text-[10px] uppercase tracking-widest text-white/20">© 2026 O4F LLP. ALL RIGHTS RESERVED.</p>
         <div className="flex gap-6">
@@ -583,13 +582,13 @@ const BlogPage = ({ onBack }: { onBack: () => void, key?: string }) => {
   }, []);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="pt-32 pb-20 horizontal-padding max-w-4xl mx-auto overflow-x-hidden"
     >
-      <button 
+      <button
         onClick={onBack}
         className="flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-12 group"
       >
@@ -692,9 +691,9 @@ const Blogs = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
     <section id="research" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Insights</span>
       <h2 className="heading-italic text-5xl md:text-7xl mb-16">Research & Insights</h2>
-      
+
       <div className="grid md:grid-cols-1 gap-8">
-        <motion.div 
+        <motion.div
           whileHover={{ x: 10 }}
           onClick={() => onNavigate('blog-ma-macd')}
           className="liquid-glass rounded-3xl p-8 md:p-12 border-white/5 hover:border-primary/30 transition-all cursor-pointer group flex flex-col md:flex-row gap-8 items-center"
