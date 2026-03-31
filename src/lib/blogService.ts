@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Simple in-memory cache for blog posts
+const blogCache = new Map<string, BlogContent>();
+const prefetchingBlogsSet = new Set<string>();
+
 export interface BlogMetadata {
   id: string;
   title: string;
@@ -58,19 +62,50 @@ export async function fetchBlogsIndex(): Promise<BlogMetadata[]> {
 }
 
 /**
- * Fetch a specific blog by ID
+ * Fetch a specific blog by ID with caching
  */
 export async function fetchBlogById(blogId: string): Promise<BlogContent | null> {
+  // Check cache first
+  if (blogCache.has(blogId)) {
+    return blogCache.get(blogId) || null;
+  }
+
   try {
     const response = await fetch(`/blogs/${blogId}.json`);
     if (!response.ok) {
       throw new Error(`Failed to fetch blog with ID: ${blogId}`);
     }
-    return await response.json();
+    const data = await response.json();
+    // Cache the result
+    blogCache.set(blogId, data);
+    return data;
   } catch (error) {
     console.error(`Error fetching blog ${blogId}:`, error);
     return null;
   }
+}
+
+/**
+ * Prefetch a blog by ID in the background (non-blocking)
+ */
+export function prefetchBlogById(blogId: string): void {
+  // Skip if already cached
+  if (blogCache.has(blogId)) {
+    return;
+  }
+  // Skip if already prefetching
+  if (prefetchingBlogsSet.has(blogId)) {
+    return;
+  }
+
+  prefetchingBlogsSet.add(blogId);
+  // Use requestIdleCallback if available, otherwise use setTimeout
+  const idleCallback = (typeof requestIdleCallback !== 'undefined') ? requestIdleCallback : (cb: () => void) => setTimeout(cb, 100);
+  idleCallback(() => {
+    fetchBlogById(blogId).finally(() => {
+      prefetchingBlogsSet.delete(blogId);
+    });
+  });
 }
 
 /**

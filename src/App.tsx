@@ -7,7 +7,7 @@ import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Gl
 import { motion, AnimatePresence } from 'motion/react';
 import { ReactNode, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
-import { fetchBlogsIndex, fetchBlogById, type BlogMetadata, type BlogContent } from './lib/blogService';
+import { fetchBlogsIndex, fetchBlogById, prefetchBlogById, type BlogMetadata, type BlogContent } from './lib/blogService';
 
 const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   return (
@@ -808,6 +808,15 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (blogId: string) => void }) => {
     return () => window.removeEventListener('resize', checkScroll);
   }, [blogs]);
 
+  useEffect(() => {
+    // Prefetch all blog content in the background after blogs list loads
+    if (blogs.length > 0 && loading === false) {
+      blogs.forEach((blog) => {
+        prefetchBlogById(blog.id);
+      });
+    }
+  }, [blogs, loading]);
+
   const scroll = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
       const scrollAmount = 400;
@@ -860,6 +869,7 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (blogId: string) => void }) => {
                 key={blog.id}
                 whileHover={{ y: -8 }}
                 onClick={() => handleBlogClick(blog.id)}
+                onMouseEnter={() => prefetchBlogById(blog.id)}
                 className="flex-shrink-0 w-[60vw] sm:w-96 liquid-glass rounded-3xl p-6 md:p-8 border-white/5 hover:border-primary/30 transition-all cursor-pointer group flex flex-col"
               >
                 <div className="w-full aspect-video rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative mb-6">
@@ -964,6 +974,17 @@ export function HomePage() {
 
 export function BlogsPage() {
   const navigate = useNavigate();
+
+  // Prefetch all blogs when the page loads
+  useEffect(() => {
+    const prefetchAllBlogs = async () => {
+      const blogsData = await fetchBlogsIndex();
+      blogsData.forEach((blog) => {
+        prefetchBlogById(blog.id);
+      });
+    };
+    prefetchAllBlogs();
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30">
