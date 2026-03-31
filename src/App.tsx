@@ -90,7 +90,7 @@ const ProcessingWave = ({ color = "bg-primary" }: { color?: string }) => (
   </div>
 );
 
-const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
+const Navbar = ({ onExplorePlatform, onNavigateSection }: { onExplorePlatform: () => void; onNavigateSection: (sectionId: string) => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -117,6 +117,10 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigateSection(item.toLowerCase());
+              }}
               className="text-sm font-body font-normal text-white/70 hover:text-white transition-colors"
             >
               {item}
@@ -159,7 +163,11 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
                 <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsMenuOpen(false);
+                    onNavigateSection(item.toLowerCase());
+                  }}
                   className="px-4 py-2 text-sm font-body text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                 >
                   {item}
@@ -851,10 +859,45 @@ const Blogs = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [showComingSoonDialog, setShowComingSoonDialog] = useState(false);
+  const [pendingSectionId, setPendingSectionId] = useState<string | null>(null);
+
+  const navigateToSection = (sectionId: string) => {
+    setPendingSectionId(sectionId);
+    if (currentPage !== 'home') {
+      setCurrentPage('home');
+      return;
+    }
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.replaceState(null, '', `#${sectionId}`);
+    }
+  };
+
+  useEffect(() => {
+    if (currentPage !== 'home' || !pendingSectionId) {
+      return;
+    }
+
+    const scrollTimer = window.setTimeout(() => {
+      const target = document.getElementById(pendingSectionId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.history.replaceState(null, '', `#${pendingSectionId}`);
+      }
+      setPendingSectionId(null);
+    }, 120);
+
+    return () => window.clearTimeout(scrollTimer);
+  }, [currentPage, pendingSectionId]);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30">
-      <Navbar onExplorePlatform={() => setShowComingSoonDialog(true)} />
+      <Navbar
+        onExplorePlatform={() => setShowComingSoonDialog(true)}
+        onNavigateSection={navigateToSection}
+      />
       <main>
         <AnimatePresence mode="wait">
           {currentPage === 'home' ? (
