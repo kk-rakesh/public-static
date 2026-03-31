@@ -6,6 +6,7 @@
 import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User, X, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ReactNode, useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import { fetchBlogsIndex, fetchBlogById, type BlogMetadata, type BlogContent } from './lib/blogService';
 
 const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
@@ -90,9 +91,41 @@ const ProcessingWave = ({ color = "bg-primary" }: { color?: string }) => (
   </div>
 );
 
-const Navbar = ({ onExplorePlatform, onNavigateSection }: { onExplorePlatform: () => void; onNavigateSection: (sectionId: string) => void }) => {
+const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('');
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const sectionItems = ['platform', 'architecture', 'research', 'mission', 'contact'];
+
+  const navLinkClass = (active: boolean) =>
+    `text-base font-body font-normal px-3 py-1.5 rounded-full transition-colors ${active ? 'text-white bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/5'}`;
+
+  const menuLinkClass = (active: boolean) =>
+    `px-4 py-2 text-sm font-body rounded-lg transition-colors ${active ? 'text-white bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/5'}`;
+
+  const navigateToSection = (sectionId: string) => {
+    if (pathname !== '/') {
+      navigate({ to: '/' });
+      window.history.replaceState(null, '', `/#${sectionId}`);
+      window.setTimeout(() => {
+        const target = document.getElementById(sectionId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 150);
+      return;
+    }
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.replaceState(null, '', `/#${sectionId}`);
+      setActiveSection(sectionId);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -103,25 +136,48 @@ const Navbar = ({ onExplorePlatform, onNavigateSection }: { onExplorePlatform: (
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const isHomeActive = pathname === '/' && !activeSection;
+  const isBlogsActive = pathname.startsWith('/blogs');
+
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 horizontal-padding py-3 md:py-4 transition-all duration-300 ${isScrolled ? 'liquid-glass' : 'bg-transparent'
-      }`}>
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 horizontal-padding py-2 md:py-2 transition-all duration-300 liquid-glass border-b border-white/10 md:border-0 ${isScrolled ? 'md:liquid-glass md:border md:border-white/10' : 'md:bg-transparent/5 md:backdrop-blur-none'}`}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="text-2xl font-bold tracking-tighter">
+        <Link
+          to="/"
+          onClick={() => {
+            setActiveSection('');
+            setIsMenuOpen(false);
+          }}
+          className="text-2xl font-bold tracking-tighter"
+        >
           <span className="text-primary">O4</span>
           <span className="text-secondary">F</span>
-        </div>
+        </Link>
 
-        <div className="hidden md:flex liquid-glass rounded-full px-8 py-3 gap-8 items-center">
-          {['Home', 'Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
+        <div className="hidden md:flex liquid-glass rounded-full px-4 py-2 gap-2 items-center">
+          <Link
+            to="/"
+            className={navLinkClass(isHomeActive)}
+          >
+            Home
+          </Link>
+          <Link
+            to="/blogs"
+            className={navLinkClass(isBlogsActive)}
+          >
+            Blogs
+          </Link>
+          {['Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
               onClick={(e) => {
                 e.preventDefault();
-                onNavigateSection(item.toLowerCase());
+                navigateToSection(item.toLowerCase());
               }}
-              className="text-sm font-body font-normal text-white/70 hover:text-white transition-colors"
+              className="text-base font-body font-normal px-3 py-1.5 rounded-full transition-colors text-white/70 hover:text-white hover:bg-white/5"
             >
               {item}
             </a>
@@ -129,7 +185,7 @@ const Navbar = ({ onExplorePlatform, onNavigateSection }: { onExplorePlatform: (
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-6 py-2.5 flex items-center gap-2 text-sm font-body group hover:bg-white/10 transition-all">
+          <button onClick={onExplorePlatform} className="rounded-full px-5 py-2 flex items-center gap-2 text-sm font-body group border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all">
             Explore Platform
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
@@ -137,7 +193,7 @@ const Navbar = ({ onExplorePlatform, onNavigateSection }: { onExplorePlatform: (
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-4">
-          <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-4 py-2 text-sm font-body hover:bg-white/10 transition-all">
+          <button onClick={onExplorePlatform} className="rounded-full px-3 py-1.5 text-sm font-body border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all">
             Explore
           </button>
           <button
@@ -159,16 +215,30 @@ const Navbar = ({ onExplorePlatform, onNavigateSection }: { onExplorePlatform: (
             className="md:hidden absolute top-full left-0 right-0 mt-2 horizontal-padding bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl mx-3"
           >
             <div className="flex flex-col gap-2 py-4">
-              {['Home', 'Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
+              <Link
+                to="/"
+                onClick={() => setIsMenuOpen(false)}
+                className={menuLinkClass(isHomeActive)}
+              >
+                Home
+              </Link>
+              <Link
+                to="/blogs"
+                onClick={() => setIsMenuOpen(false)}
+                className={menuLinkClass(isBlogsActive)}
+              >
+                Blogs
+              </Link>
+              {['Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
                   onClick={(e) => {
                     e.preventDefault();
                     setIsMenuOpen(false);
-                    onNavigateSection(item.toLowerCase());
+                    navigateToSection(item.toLowerCase());
                   }}
-                  className="px-4 py-2 text-sm font-body text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  className={menuLinkClass(pathname === '/' && activeSection === item.toLowerCase())}
                 >
                   {item}
                 </a>
@@ -517,7 +587,7 @@ const Join = () => {
   );
 };
 
-const Footer = ({ onNavigate }: { onNavigate?: (page: string) => void }) => {
+const Footer = () => {
   return (
     <footer className="py-10 md:py-20 horizontal-padding border-t border-white/5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -541,33 +611,20 @@ const Footer = ({ onNavigate }: { onNavigate?: (page: string) => void }) => {
         <div className="flex flex-col gap-4">
           <h4 className="text-xs uppercase tracking-widest text-white/40 font-body">Navigation</h4>
           <div className="flex flex-col gap-3">
-            {['Home', 'Platform', 'Architecture', 'Research', 'Mission', 'Contact'].map((item) => (
-              <a
-                key={item}
-                href={item === 'Home' ? '#' : `#${item.toLowerCase()}`}
-                onClick={(e) => {
-                  if (item === 'Home' && onNavigate) {
-                    e.preventDefault();
-                    onNavigate('home');
-                  }
-                }}
-                className="text-sm font-body text-white/40 hover:text-white transition-colors"
-              >
-                {item}
-              </a>
-            ))}
+            <Link to="/" className="text-sm font-body text-white/40 hover:text-white transition-colors">Home</Link>
+            <Link to="/blogs" className="text-sm font-body text-white/40 hover:text-white transition-colors">Blogs</Link>
           </div>
         </div>
 
         <div className="flex flex-col gap-4">
           <h4 className="text-xs uppercase tracking-widest text-white/40 font-body">Resources</h4>
           <div className="flex flex-col gap-3">
-            <button
-              onClick={() => onNavigate?.('blog-ma-macd')}
+            <Link
+              to="/blogs/ma-macd"
               className="text-sm font-body text-white/40 hover:text-white transition-colors text-left"
             >
               Technical Indicators Guide
-            </button>
+            </Link>
             <a href="#" className="text-sm font-body text-white/40 hover:text-white transition-colors">Documentation</a>
             <a href="#" className="text-sm font-body text-white/40 hover:text-white transition-colors">API Reference</a>
           </div>
@@ -647,9 +704,9 @@ const BlogPage = ({ blogId, onBack }: { blogId: string; onBack: () => void; key?
         );
       case 'data-table':
         return (
-          <div key="data-table" className="liquid-glass p-8 rounded-3xl border-white/5 space-y-4">
+          <div key="data-table" className="liquid-glass p-8 rounded-3xl border-white/5 space-y-6">
             {subsection.items?.map((item: any, idx: number) => (
-              <div key={idx} className={`flex justify-between items-center ${idx < subsection.items.length - 1 ? 'border-b border-white/5 pb-4' : ''}`}>
+              <div key={idx} className={`flex justify-between items-center gap-8 ${idx < subsection.items.length - 1 ? 'border-b border-white/5 pb-6' : ''}`}>
                 <span className="text-white/60">{item.label}</span>
                 <span className={idx === 0 ? 'text-primary' : idx === 1 ? 'text-secondary' : 'text-white'}>{item.value}</span>
               </div>
@@ -714,7 +771,7 @@ const BlogPage = ({ blogId, onBack }: { blogId: string; onBack: () => void; key?
   );
 };
 
-const Blogs = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
+const Blogs = ({ onOpenBlog }: { onOpenBlog: (blogId: string) => void }) => {
   const [blogs, setBlogs] = useState<BlogMetadata[]>([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -763,7 +820,7 @@ const Blogs = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
   };
 
   const handleBlogClick = (blogId: string) => {
-    onNavigate(`blog-${blogId}`);
+    onOpenBlog(blogId);
   };
 
   return (
@@ -856,79 +913,79 @@ const Blogs = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
   );
 };
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+export function HomePage() {
+  const navigate = useNavigate();
   const [showComingSoonDialog, setShowComingSoonDialog] = useState(false);
-  const [pendingSectionId, setPendingSectionId] = useState<string | null>(null);
-
-  const navigateToSection = (sectionId: string) => {
-    setPendingSectionId(sectionId);
-    if (currentPage !== 'home') {
-      setCurrentPage('home');
-      return;
-    }
-
-    const target = document.getElementById(sectionId);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.history.replaceState(null, '', `#${sectionId}`);
-    }
-  };
 
   useEffect(() => {
-    if (currentPage !== 'home' || !pendingSectionId) {
+    const sectionId = window.location.hash.replace('#', '');
+    if (!sectionId) {
       return;
     }
 
     const scrollTimer = window.setTimeout(() => {
-      const target = document.getElementById(pendingSectionId);
+      const target = document.getElementById(sectionId);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        window.history.replaceState(null, '', `#${pendingSectionId}`);
+        window.history.replaceState(null, '', `/#${sectionId}`);
       }
-      setPendingSectionId(null);
     }, 120);
 
     return () => window.clearTimeout(scrollTimer);
-  }, [currentPage, pendingSectionId]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30">
-      <Navbar
-        onExplorePlatform={() => setShowComingSoonDialog(true)}
-        onNavigateSection={navigateToSection}
-      />
+      <Navbar onExplorePlatform={() => setShowComingSoonDialog(true)} />
       <main>
-        <AnimatePresence mode="wait">
-          {currentPage === 'home' ? (
-            <motion.div
-              key="home"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <Hero onExplorePlatform={() => setShowComingSoonDialog(true)} />
-              <Vision />
-              <WhatWeBuild />
-              <Architecture />
-              <TechnologyPrinciples />
-              <WhyO4F />
-              <Research />
-              <Blogs onNavigate={setCurrentPage} />
-              <Mission />
-              <Join />
-            </motion.div>
-          ) : (
-            <BlogPage
-              key="blog"
-              blogId={currentPage.startsWith('blog-') ? currentPage.slice(5) : ''}
-              onBack={() => setCurrentPage('home')}
-            />
-          )}
-        </AnimatePresence>
+        <motion.div
+          key="home"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <Hero onExplorePlatform={() => setShowComingSoonDialog(true)} />
+          <Vision />
+          <WhatWeBuild />
+          <Architecture />
+          <TechnologyPrinciples />
+          <WhyO4F />
+          <Research />
+          <Blogs onOpenBlog={(blogId) => navigate({ to: `/blogs/${blogId}` })} />
+          <Mission />
+          <Join />
+        </motion.div>
       </main>
-      <Footer onNavigate={setCurrentPage} />
+      <Footer />
       <ComingSoonDialog isOpen={showComingSoonDialog} onClose={() => setShowComingSoonDialog(false)} />
+    </div>
+  );
+}
+
+export function BlogsPage() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-black text-white selection:bg-primary/30">
+      <Navbar onExplorePlatform={() => {}} />
+      <main className="pt-20">
+        <Blogs onOpenBlog={(blogId) => navigate({ to: `/blogs/${blogId}` })} />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+export function BlogDetailsPage({ blogId }: { blogId: string }) {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-black text-white selection:bg-primary/30">
+      <Navbar onExplorePlatform={() => {}} />
+      <main>
+        <BlogPage blogId={blogId} onBack={() => navigate({ to: '/' })} />
+      </main>
+      <Footer />
     </div>
   );
 }
