@@ -3,12 +3,12 @@ import { BlogDetailsPage } from '../App';
 import { rootRoute } from './rootRoute';
 
 function BlogDetailsRouteComponent() {
-  const { blogId } = blogDetailsRoute.useParams();
-  return <BlogDetailsPage blogId={blogId} />;
+  const { slug } = blogDetailsRoute.useParams();
+  return <BlogDetailsPage slug={slug} />;
 }
 
 export const blogDetailsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/blogs/$blogId',
+  path: '/blogs/$slug',
   component: BlogDetailsRouteComponent,
 });

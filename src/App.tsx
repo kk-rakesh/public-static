@@ -7,7 +7,7 @@ import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Gl
 import { motion, AnimatePresence } from 'motion/react';
 import { ReactNode, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
-import { fetchBlogsIndex, fetchBlogById, prefetchBlogById, type BlogMetadata, type BlogContent } from './lib/blogService';
+import { fetchBlogsIndex, fetchBlogBySlug, prefetchBlogBySlug, type BlogMetadata, type BlogContent } from './lib/blogService';
 
 const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   return (
@@ -642,7 +642,7 @@ const Footer = () => {
   );
 };
 
-const BlogPage = ({ blogId, onBack }: { blogId: string; onBack: () => void; key?: string }) => {
+const BlogPage = ({ slug, onBack }: { slug: string; onBack: () => void; key?: string }) => {
   const [blog, setBlog] = useState<BlogContent | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -650,7 +650,7 @@ const BlogPage = ({ blogId, onBack }: { blogId: string; onBack: () => void; key?
     window.scrollTo(0, 0);
     const loadBlog = async () => {
       try {
-        const blogContent = await fetchBlogById(blogId);
+        const blogContent = await fetchBlogBySlug(slug);
         setBlog(blogContent);
       } catch (error) {
         console.error('Error loading blog:', error);
@@ -659,7 +659,7 @@ const BlogPage = ({ blogId, onBack }: { blogId: string; onBack: () => void; key?
       }
     };
     loadBlog();
-  }, [blogId]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -771,7 +771,7 @@ const BlogPage = ({ blogId, onBack }: { blogId: string; onBack: () => void; key?
   );
 };
 
-const Blogs = ({ onOpenBlog }: { onOpenBlog: (blogId: string) => void }) => {
+const Blogs = ({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) => {
   const [blogs, setBlogs] = useState<BlogMetadata[]>([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -812,7 +812,7 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (blogId: string) => void }) => {
     // Prefetch all blog content in the background after blogs list loads
     if (blogs.length > 0 && loading === false) {
       blogs.forEach((blog) => {
-        prefetchBlogById(blog.id);
+        prefetchBlogBySlug(blog.slug);
       });
     }
   }, [blogs, loading]);
@@ -828,8 +828,8 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (blogId: string) => void }) => {
     }
   };
 
-  const handleBlogClick = (blogId: string) => {
-    onOpenBlog(blogId);
+  const handleBlogClick = (slug: string) => {
+    onOpenBlog(slug);
   };
 
   return (
@@ -866,10 +866,10 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (blogId: string) => void }) => {
           >
             {blogs.map((blog) => (
               <motion.div
-                key={blog.id}
+                key={blog.slug}
                 whileHover={{ y: -8 }}
-                onClick={() => handleBlogClick(blog.id)}
-                onMouseEnter={() => prefetchBlogById(blog.id)}
+                onClick={() => handleBlogClick(blog.slug)}
+                onMouseEnter={() => prefetchBlogBySlug(blog.slug)}
                 className="flex-shrink-0 w-[60vw] sm:w-96 liquid-glass rounded-3xl p-6 md:p-8 border-white/5 hover:border-primary/30 transition-all cursor-pointer group flex flex-col"
               >
                 <div className="w-full aspect-video rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative mb-6">
@@ -961,7 +961,7 @@ export function HomePage() {
           <TechnologyPrinciples />
           <WhyO4F />
           <Research />
-          <Blogs onOpenBlog={(blogId) => navigate({ to: `/blogs/${blogId}` })} />
+          <Blogs onOpenBlog={(slug) => navigate({ to: `/blogs/${slug}` })} />
           <Mission />
           <Join />
         </motion.div>
@@ -980,7 +980,7 @@ export function BlogsPage() {
     const prefetchAllBlogs = async () => {
       const blogsData = await fetchBlogsIndex();
       blogsData.forEach((blog) => {
-        prefetchBlogById(blog.id);
+        prefetchBlogBySlug(blog.slug);
       });
     };
     prefetchAllBlogs();
@@ -990,21 +990,21 @@ export function BlogsPage() {
     <div className="min-h-screen bg-black text-white selection:bg-primary/30">
       <Navbar onExplorePlatform={() => {}} />
       <main className="pt-20">
-        <Blogs onOpenBlog={(blogId) => navigate({ to: `/blogs/${blogId}` })} />
+        <Blogs onOpenBlog={(slug) => navigate({ to: `/blogs/${slug}` })} />
       </main>
       <Footer />
     </div>
   );
 }
 
-export function BlogDetailsPage({ blogId }: { blogId: string }) {
+export function BlogDetailsPage({ slug }: { slug: string }) {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30">
       <Navbar onExplorePlatform={() => {}} />
       <main>
-        <BlogPage blogId={blogId} onBack={() => navigate({ to: '/' })} />
+        <BlogPage slug={slug} onBack={() => navigate({ to: '/' })} />
       </main>
       <Footer />
     </div>

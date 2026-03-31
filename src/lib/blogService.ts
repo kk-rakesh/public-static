@@ -5,6 +5,7 @@
 
 // Simple in-memory cache for blog posts
 const blogCache = new Map<string, BlogContent>();
+const slugToIdCache = new Map<string, string>();
 const prefetchingBlogsSet = new Set<string>();
 
 export interface BlogMetadata {
@@ -45,16 +46,26 @@ export interface BlogContent {
 }
 
 /**
- * Fetch all blog metadata from the index file
+ * Fetch all blog metadata from the index file (cached)
  */
+let blogsIndexCache: BlogMetadata[] | null = null;
+
 export async function fetchBlogsIndex(): Promise<BlogMetadata[]> {
+  if (blogsIndexCache) {
+    return blogsIndexCache;
+  }
   try {
     const response = await fetch('/blogs/index.json');
     if (!response.ok) {
       throw new Error('Failed to fetch blogs index');
     }
     const data = await response.json();
-    return data.blogs || [];
+    blogsIndexCache = data.blogs || [];
+    // Build slug→id mapping while we have the index
+    for (const blog of (blogsIndexCache as BlogMetadata[])) {
+      slugToIdCache.set(blog.slug, blog.id);
+    }
+    return blogsIndexCache as BlogMetadata[];
   } catch (error) {
     console.error('Error fetching blogs index:', error);
     return [];
@@ -109,20 +120,30 @@ export function prefetchBlogById(blogId: string): void {
 }
 
 /**
- * Fetch a specific blog by slug
+ * Fetch a specific blog by slug with caching
  */
 export async function fetchBlogBySlug(slug: string): Promise<BlogContent | null> {
-  try {
+  // Resolve slug → id, using cache if available
+  let blogId = slugToIdCache.get(slug);
+  if (!blogId) {
     const blogs = await fetchBlogsIndex();
-    const blogMeta = blogs.find((blog) => blog.slug === slug);
-    if (!blogMeta) {
+    const meta = blogs.find((b) => b.slug === slug);
+    if (!meta) {
       return null;
     }
-    return fetchBlogById(blogMeta.id);
-  } catch (error) {
-    console.error(`Error fetching blog with slug ${slug}:`, error);
-    return null;
+    blogId = meta.id;
   }
+  return fetchBlogById(blogId);
+}
+
+/**
+ * Prefetch a blog by slug in the background (non-blocking)
+ */
+export function prefetchBlogBySlug(slug: string): void {
+  const idleCallback = (typeof requestIdleCallback !== 'undefined') ? requestIdleCallback : (cb: () => void) => setTimeout(cb, 100);
+  idleCallback(() => {
+    fetchBlogBySlug(slug);
+  });
 }
 
 /**
