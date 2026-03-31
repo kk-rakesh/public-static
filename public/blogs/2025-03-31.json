@@ -1,0 +1,81 @@
+{
+  "id": "2025-03-31",
+  "title": "Mastering Technical Indicators: Understanding Moving Averages and MACD",
+  "slug": "ma-macd",
+  "category": "Technical Analysis",
+  "readTime": 8,
+  "author": "O4F Research Lab",
+  "description": "A deep dive into the mechanics of trend analysis and momentum oscillators for intelligent trading systems.",
+  "date": "2025-03-31",
+  "subtitle": "Technical indicators are the sensory organs of automated trading systems. In this guide, we explore the foundational mechanics of Moving Averages and the MACD oscillator.",
+  "sections": [
+    {
+      "id": "moving-averages-foundation",
+      "title": "1. Moving Averages: The Foundation of Trend Analysis",
+      "content": "Moving averages (MA) smooth out price action by filtering out the \"noise\" from random short-term price fluctuations. They are lagging indicators, meaning they are based on past prices.",
+      "subsections": [
+        {
+          "type": "highlight",
+          "title": "Simple Moving Average (SMA)",
+          "content": "The arithmetic mean of a given set of prices over a specific number of days. It treats all data points equally."
+        },
+        {
+          "type": "highlight",
+          "title": "Exponential Moving Average (EMA)",
+          "content": "Gives more weight to recent prices, making it more responsive to new information and trend shifts."
+        }
+      ]
+    },
+    {
+      "id": "ma-crossover-strategies",
+      "title": "2. Moving Average Crossover Strategies",
+      "content": "Crossovers are one of the main moving average strategies. The first type is a price crossover, which is when the price crosses above or below a moving average to signal a potential change in trend.\n\nThe second type is the \"Golden Cross\" and \"Death Cross\". A Golden Cross occurs when a short-term MA (e.g., 50-day) crosses above a long-term MA (e.g., 200-day), signaling a long-term bull market. Conversely, a Death Cross signals a bear market."
+    },
+    {
+      "id": "macd-momentum",
+      "title": "3. MACD: Measuring Momentum and Trend Strength",
+      "content": "The Moving Average Convergence Divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages of a security's price.",
+      "subsections": [
+        {
+          "type": "data-table",
+          "items": [
+            {
+              "label": "MACD Line",
+              "value": "12-day EMA - 26-day EMA"
+            },
+            {
+              "label": "Signal Line",
+              "value": "9-day EMA of MACD Line"
+            },
+            {
+              "label": "Histogram",
+              "value": "MACD Line - Signal Line"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "macd-divergence",
+      "title": "4. MACD Divergence: Spotting Trend Reversals",
+      "content": "Divergence occurs when the MACD does not confirm the price action. For example, if the price makes a new high but the MACD makes a lower high, it indicates weakening momentum and a potential reversal."
+    },
+    {
+      "id": "combining-ma-macd",
+      "title": "5. Combining MA 200 and MACD for Better Decisions",
+      "content": "At O4F, we emphasize multi-layered validation. Using the 200-day SMA as a primary trend filter ensures that MACD signals are only taken in the direction of the long-term trend, significantly reducing false positives in volatile markets."
+    },
+    {
+      "id": "practical-implementation",
+      "title": "6. Practical Implementation and Best Practices",
+      "content": "While indicators are powerful, they are not crystal balls. Successful systems combine these with robust risk management, position sizing, and real-time execution monitoring.",
+      "subsections": [
+        {
+          "type": "note",
+          "title": "Engineering Note",
+          "content": "Always backtest indicator-based strategies across multiple market cycles to understand their performance characteristics in different volatility regimes."
+        }
+      ]
+    }
+  ]
+}

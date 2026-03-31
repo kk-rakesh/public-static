@@ -1,0 +1,26 @@
+{
+  "blogs": [
+    {
+      "id": "2025-03-31",
+      "title": "Mastering Technical Indicators: Understanding Moving Averages and MACD",
+      "slug": "ma-macd",
+      "category": "Technical Analysis",
+      "readTime": 8,
+      "author": "O4F Research Lab",
+      "description": "A deep dive into the mechanics of trend analysis and momentum oscillators for intelligent trading systems.",
+      "date": "2025-03-31",
+      "featured": true
+    },
+    {
+      "id": "2026-04-01",
+      "title": "Investor Psychology: Why Your Mind Matters More Than Your Stock Picks",
+      "slug": "investor-psychology",
+      "category": "Behavioral Finance",
+      "readTime": 8,
+      "author": "O4F Research Lab",
+      "description": "How fear, greed, loss aversion, and cognitive biases silently shape your investment returns — and how mastering your psychology can transform your financial future.",
+      "date": "2026-04-01",
+      "featured": true
+    }
+  ]
+}

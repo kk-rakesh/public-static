@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User, X, Menu } from 'lucide-react';
+import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User, X, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, useRef } from 'react';
+import { fetchBlogsIndex, fetchBlogById, type BlogMetadata, type BlogContent } from './lib/blogService';
 
 const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   return (
@@ -576,10 +577,88 @@ const Footer = ({ onNavigate }: { onNavigate?: (page: string) => void }) => {
   );
 };
 
-const BlogPage = ({ onBack }: { onBack: () => void, key?: string }) => {
+const BlogPage = ({ blogId, onBack }: { blogId: string; onBack: () => void; key?: string }) => {
+  const [blog, setBlog] = useState<BlogContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    const loadBlog = async () => {
+      try {
+        const blogContent = await fetchBlogById(blogId);
+        setBlog(blogContent);
+      } catch (error) {
+        console.error('Error loading blog:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBlog();
+  }, [blogId]);
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="pt-32 pb-20 horizontal-padding max-w-4xl mx-auto flex items-center justify-center min-h-screen"
+      >
+        <div className="text-white/60">Loading blog...</div>
+      </motion.div>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="pt-32 pb-20 horizontal-padding max-w-4xl mx-auto flex items-center justify-center min-h-screen"
+      >
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-white/40 hover:text-white transition-colors group"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          Back to Home
+        </button>
+      </motion.div>
+    );
+  }
+
+  const renderSubsection = (subsection: any) => {
+    switch (subsection.type) {
+      case 'highlight':
+        return (
+          <div key={subsection.title} className="liquid-glass p-6 rounded-2xl border-white/5">
+            <h4 className="text-primary mb-2 font-medium">{subsection.title}</h4>
+            <p className="text-sm body-light">{subsection.content}</p>
+          </div>
+        );
+      case 'data-table':
+        return (
+          <div key="data-table" className="liquid-glass p-8 rounded-3xl border-white/5 space-y-4">
+            {subsection.items?.map((item: any, idx: number) => (
+              <div key={idx} className={`flex justify-between items-center ${idx < subsection.items.length - 1 ? 'border-b border-white/5 pb-4' : ''}`}>
+                <span className="text-white/60">{item.label}</span>
+                <span className={idx === 0 ? 'text-primary' : idx === 1 ? 'text-secondary' : 'text-white'}>{item.value}</span>
+              </div>
+            ))}
+          </div>
+        );
+      case 'note':
+        return (
+          <div key={subsection.title} className="p-6 rounded-2xl bg-primary/5 border border-primary/20 mt-8">
+            <p className="text-primary font-medium mb-2 italic">{subsection.title}:</p>
+            <p className="text-sm body-light">{subsection.content}</p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <motion.div
@@ -597,125 +676,174 @@ const BlogPage = ({ onBack }: { onBack: () => void, key?: string }) => {
       </button>
 
       <div className="space-y-8 mb-16">
-        <div className="flex items-center gap-4 text-xs uppercase tracking-widest text-primary font-body">
-          <span className="liquid-glass px-3 py-1 rounded-full">Research</span>
-          <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> 8 min read</span>
-          <span className="flex items-center gap-1"><User className="w-3 h-3" /> O4F Research Lab</span>
+        <div className="flex items-center gap-4 text-xs uppercase tracking-widest text-primary font-body flex-wrap">
+          <span className="liquid-glass px-3 py-1 rounded-full">{blog.category}</span>
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" /> {blog.readTime} min read
+          </span>
+          <span className="flex items-center gap-1">
+            <User className="w-3 h-3" /> {blog.author}
+          </span>
         </div>
-        <h1 className="heading-italic text-5xl md:text-7xl">Mastering Technical Indicators: Understanding Moving Averages and MACD</h1>
-        <p className="body-light text-xl leading-relaxed italic">
-          Technical indicators are the sensory organs of automated trading systems. In this guide, we explore the foundational mechanics of Moving Averages and the MACD oscillator.
-        </p>
+        <h1 className="heading-italic text-5xl md:text-7xl">{blog.title}</h1>
+        <p className="body-light text-xl leading-relaxed italic">{blog.subtitle}</p>
       </div>
 
       <div className="prose prose-invert max-w-none space-y-12 font-body">
-        <section className="space-y-4">
-          <h2 className="text-3xl font-medium text-white">1. Moving Averages: The Foundation of Trend Analysis</h2>
-          <p className="body-light text-lg leading-relaxed">
-            Moving averages (MA) smooth out price action by filtering out the "noise" from random short-term price fluctuations. They are lagging indicators, meaning they are based on past prices.
-          </p>
-          <div className="grid md:grid-cols-2 gap-6 mt-6">
-            <div className="liquid-glass p-6 rounded-2xl border-white/5">
-              <h4 className="text-primary mb-2 font-medium">Simple Moving Average (SMA)</h4>
-              <p className="text-sm body-light">The arithmetic mean of a given set of prices over a specific number of days. It treats all data points equally.</p>
-            </div>
-            <div className="liquid-glass p-6 rounded-2xl border-white/5">
-              <h4 className="text-secondary mb-2 font-medium">Exponential Moving Average (EMA)</h4>
-              <p className="text-sm body-light">Gives more weight to recent prices, making it more responsive to new information and trend shifts.</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-3xl font-medium text-white">2. Moving Average Crossover Strategies</h2>
-          <p className="body-light text-lg leading-relaxed">
-            Crossovers are one of the main moving average strategies. The first type is a price crossover, which is when the price crosses above or below a moving average to signal a potential change in trend.
-          </p>
-          <p className="body-light text-lg leading-relaxed">
-            The second type is the "Golden Cross" and "Death Cross". A Golden Cross occurs when a short-term MA (e.g., 50-day) crosses above a long-term MA (e.g., 200-day), signaling a long-term bull market. Conversely, a Death Cross signals a bear market.
-          </p>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-3xl font-medium text-white">3. MACD: Measuring Momentum and Trend Strength</h2>
-          <p className="body-light text-lg leading-relaxed">
-            The Moving Average Convergence Divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages of a security’s price.
-          </p>
-          <div className="liquid-glass p-8 rounded-3xl border-white/5 space-y-4">
-            <div className="flex justify-between items-center border-b border-white/5 pb-4">
-              <span className="text-white/60">MACD Line</span>
-              <span className="text-primary">12-day EMA - 26-day EMA</span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/5 pb-4">
-              <span className="text-white/60">Signal Line</span>
-              <span className="text-secondary">9-day EMA of MACD Line</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-white/60">Histogram</span>
-              <span className="text-white">MACD Line - Signal Line</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-3xl font-medium text-white">4. MACD Divergence: Spotting Trend Reversals</h2>
-          <p className="body-light text-lg leading-relaxed">
-            Divergence occurs when the MACD does not confirm the price action. For example, if the price makes a new high but the MACD makes a lower high, it indicates weakening momentum and a potential reversal.
-          </p>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-3xl font-medium text-white">5. Combining MA 200 and MACD for Better Decisions</h2>
-          <p className="body-light text-lg leading-relaxed">
-            At O4F, we emphasize multi-layered validation. Using the 200-day SMA as a primary trend filter ensures that MACD signals are only taken in the direction of the long-term trend, significantly reducing false positives in volatile markets.
-          </p>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-3xl font-medium text-white">6. Practical Implementation and Best Practices</h2>
-          <p className="body-light text-lg leading-relaxed">
-            While indicators are powerful, they are not crystal balls. Successful systems combine these with robust risk management, position sizing, and real-time execution monitoring.
-          </p>
-          <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 mt-8">
-            <p className="text-primary font-medium mb-2 italic">Engineering Note:</p>
-            <p className="text-sm body-light">Always backtest indicator-based strategies across multiple market cycles to understand their performance characteristics in different volatility regimes.</p>
-          </div>
-        </section>
+        {blog.sections.map((section) => (
+          <section key={section.id} className="space-y-4">
+            <h2 className="text-3xl font-medium text-white">{section.title}</h2>
+            <p className="body-light text-lg leading-relaxed whitespace-pre-line">{section.content}</p>
+            {section.subsections && (
+              <div className="grid md:grid-cols-2 gap-6 mt-6">
+                {section.subsections.map((subsection) => renderSubsection(subsection))}
+              </div>
+            )}
+          </section>
+        ))}
       </div>
     </motion.div>
   );
 };
 
 const Blogs = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
+  const [blogs, setBlogs] = useState<BlogMetadata[]>([]);
+  const [loading, setLoading] = useState(true);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  useEffect(() => {
+    const loadBlogs = async () => {
+      try {
+        const blogsData = await fetchBlogsIndex();
+        // Sort by date descending (most recent first)
+        const sorted = blogsData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setBlogs(sorted);
+      } catch (error) {
+        console.error('Error loading blogs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBlogs();
+  }, []);
+
+  const checkScroll = () => {
+    if (carouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [blogs]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = 400;
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+      setTimeout(checkScroll, 300);
+    }
+  };
+
+  const handleBlogClick = (blogId: string) => {
+    onNavigate(`blog-${blogId}`);
+  };
+
   return (
     <section id="research" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Insights</span>
       <h2 className="heading-italic text-5xl md:text-7xl mb-16">Research & Insights</h2>
 
-      <div className="grid md:grid-cols-1 gap-8">
-        <motion.div
-          whileHover={{ x: 10 }}
-          onClick={() => onNavigate('blog-ma-macd')}
-          className="liquid-glass rounded-3xl p-8 md:p-12 border-white/5 hover:border-primary/30 transition-all cursor-pointer group flex flex-col md:flex-row gap-8 items-center"
-        >
-          <div className="w-full md:w-1/3 aspect-video rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <BookOpen className="w-12 h-12 text-primary/40 group-hover:text-primary transition-colors" />
+      {loading ? (
+        <div className="text-white/60 text-center py-12">Loading blogs...</div>
+      ) : blogs.length === 0 ? (
+        <div className="text-white/60 text-center py-12">No blogs available yet.</div>
+      ) : (
+        <div className="relative group">
+          {/* Left Scroll Button */}
+          {canScrollLeft && (
+            <motion.button
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              onClick={() => scroll('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-r from-black/80 via-black/60 to-transparent p-3 rounded-r-lg hover:from-black hover:via-black/80 transition-all -ml-2"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </motion.button>
+          )}
+
+          {/* Carousel Container */}
+          <div
+            ref={carouselRef}
+            onScroll={checkScroll}
+            className="flex gap-6 overflow-x-auto scroll-smooth pb-4 hide-scrollbar"
+            style={{ scrollBehavior: 'smooth' }}
+          >
+            {blogs.map((blog) => (
+              <motion.div
+                key={blog.id}
+                whileHover={{ y: -8 }}
+                onClick={() => handleBlogClick(blog.id)}
+                className="flex-shrink-0 w-[60vw] sm:w-96 liquid-glass rounded-3xl p-6 md:p-8 border-white/5 hover:border-primary/30 transition-all cursor-pointer group flex flex-col"
+              >
+                <div className="w-full aspect-video rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <BookOpen className="w-12 h-12 text-primary/40 group-hover:text-primary transition-colors" />
+                </div>
+                <div className="flex-1 space-y-3 flex flex-col">
+                  <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-white/40 flex-wrap">
+                    <span className="liquid-glass px-2 py-1 rounded-full text-white/60">{blog.category}</span>
+                    <span>•</span>
+                    <span>{blog.readTime} min read</span>
+                  </div>
+                  <h3 className="text-xl font-body font-medium group-hover:text-primary transition-colors line-clamp-3">
+                    {blog.title}
+                  </h3>
+                  <p className="body-light text-sm flex-1 line-clamp-2">{blog.description}</p>
+                  <div className="flex items-center gap-2 text-primary text-xs font-medium pt-2">
+                    Read Article <ArrowUpRight className="w-3 h-3" />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          <div className="flex-1 space-y-4 text-left">
-            <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-white/40">
-              <span>Technical Analysis</span>
-              <span>•</span>
-              <span>8 min read</span>
-            </div>
-            <h3 className="text-3xl font-body font-medium group-hover:text-primary transition-colors">Mastering Technical Indicators: Understanding Moving Averages and MACD</h3>
-            <p className="body-light text-lg">A deep dive into the mechanics of trend analysis and momentum oscillators for intelligent trading systems.</p>
-            <div className="flex items-center gap-2 text-primary text-sm font-medium">
-              Read Article <ArrowUpRight className="w-4 h-4" />
-            </div>
-          </div>
-        </motion.div>
-      </div>
+
+          {/* Right Scroll Button */}
+          {canScrollRight && (
+            <motion.button
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              onClick={() => scroll('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-l from-black/80 via-black/60 to-transparent p-3 rounded-l-lg hover:from-black hover:via-black/80 transition-all -mr-2"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </motion.button>
+          )}
+        </div>
+      )}
+
+      <style>{`
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </section>
   );
 };
@@ -748,7 +876,11 @@ export default function App() {
               <Join />
             </motion.div>
           ) : (
-            <BlogPage key="blog" onBack={() => setCurrentPage('home')} />
+            <BlogPage
+              key="blog"
+              blogId={currentPage.startsWith('blog-') ? currentPage.slice(5) : ''}
+              onBack={() => setCurrentPage('home')}
+            />
           )}
         </AnimatePresence>
       </main>
