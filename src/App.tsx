@@ -4,10 +4,11 @@
  */
 
 import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User, X, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ReactNode, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import { fetchBlogsIndex, fetchBlogBySlug, prefetchBlogBySlug, type BlogMetadata, type BlogContent } from './lib/blogService';
+import { Logo } from './components/Logo';
 
 const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   return (
@@ -150,10 +151,8 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
             setActiveSection('');
             setIsMenuOpen(false);
           }}
-          className="text-2xl font-bold tracking-tighter"
         >
-          <span className="text-primary">O4</span>
-          <span className="text-secondary">F</span>
+          <Logo className="text-2xl font-bold tracking-tighter" />
         </Link>
 
         <div className="hidden md:flex liquid-glass rounded-full px-4 py-2 gap-2 items-center">
@@ -592,10 +591,7 @@ const Footer = () => {
     <footer className="py-10 md:py-20 horizontal-padding border-t border-white/5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         <div className="space-y-6">
-          <div className="text-3xl font-bold tracking-tighter">
-            <span className="text-primary">O4</span>
-            <span className="text-secondary">F</span>
-          </div>
+          <Logo className="text-3xl font-bold tracking-tighter" />
           <p className="body-light text-sm max-w-xs">
             Engineering the foundations of intelligent systems.
           </p>
