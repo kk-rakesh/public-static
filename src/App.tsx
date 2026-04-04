@@ -4,6 +4,8 @@
  */
 
 import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User, X, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
+import introVideoWebm from './assets/intro-o4f.webm';
+import introVideoMp4 from './assets/intro-o4f-optimized.mp4';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReactNode, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
@@ -252,39 +254,58 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
 
 const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
   return (
-    <section id="home" className="relative h-[1000px] flex flex-col items-center justify-center text-center horizontal-padding overflow-x-hidden">
+    <section id="home" className="relative min-h-screen flex items-center horizontal-padding overflow-x-hidden">
       {/* Background Glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-4xl z-10"
-      >
-        <h1 className="heading-italic text-6xl md:text-8xl mb-8">
-          Building the Infrastructure for Intelligent Systems
-        </h1>
-        <div className="flex justify-center mb-8 opacity-40">
-          <ProcessingWave color="bg-primary" />
-        </div>
-        <p className="body-light text-lg md:text-xl max-w-2xl mx-auto mb-6">
-          O4F designs next-generation platforms that combine AI, real-time data, and ultra-low latency infrastructure to power intelligent decision systems.
-        </p>
-        <p className="body-light text-base md:text-lg max-w-xl mx-auto mb-12">
-          From market intelligence to autonomous trading, we build the operating layer for the AI economy.
-        </p>
+      <div className="max-w-7xl mx-auto w-full z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center py-32">
+        {/* Video - Left */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="rounded-3xl overflow-hidden"
+        >
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto rounded-3xl"
+          >
+            <source src={introVideoWebm} type="video/webm" />
+            <source src={introVideoMp4} type="video/mp4" />
+          </video>
+        </motion.div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-8 py-4 text-sm font-body hover:bg-white/10 transition-all">
-            Explore Platform
-          </button>
-          <a href="#contact" className="border border-white/10 rounded-full px-8 py-4 text-sm font-body hover:bg-white/5 transition-all">
-            Partner With Us
-          </a>
-        </div>
-      </motion.div>
+        {/* Text - Right */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex flex-col gap-6"
+        >
+          <h1 className="heading-italic text-5xl md:text-7xl">
+            Infrastructure for Intelligent Systems
+          </h1>
+          <div className="opacity-40">
+            <ProcessingWave color="bg-primary" />
+          </div>
+          <p className="body-light text-lg md:text-xl text-white/80">
+            AI-native platforms powering real-time data, ultra-low latency compute, and autonomous decision systems.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
+            <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-8 py-4 text-sm font-body hover:bg-white/10 transition-all">
+              Explore Platform
+            </button>
+            <a href="#contact" className="border border-white/10 rounded-full px-8 py-4 text-sm font-body hover:bg-white/5 transition-all">
+              Partner With Us
+            </a>
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 };
