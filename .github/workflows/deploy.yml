@@ -43,8 +43,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      # url: ${{ steps.deployment.outputs.page_url }}
-      url: https://kk-rakesh.github.io/public-static/
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
