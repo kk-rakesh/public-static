@@ -259,7 +259,7 @@ const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-8xl mx-auto w-full z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center pt-8 md:pt-20 pb-32">
+      <div className="max-w-7xl mx-auto w-full z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center py-32">
         {/* Video - Left */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
