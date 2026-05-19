@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O4F Cockpit — Information Architecture</title>
+<style>
+  :root {
+    --bg: #000;
+    --fg: #fff;
+    --primary: hsl(210, 100%, 60%);
+    --secondary: hsl(145, 100%, 50%);
+    --muted: rgba(255,255,255,0.55);
+    --border: rgba(255,255,255,0.10);
+    --glass: rgba(255,255,255,0.03);
+    --glass-strong: rgba(255,255,255,0.06);
+    --danger: hsl(0, 90%, 60%);
+    --warn: hsl(35, 100%, 60%);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--fg); margin: 0; font-family: 'Barlow', sans-serif; font-weight: 400; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 32px 96px; max-width: 1240px; margin: 0 auto; }
+  .heading-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; }
+  h1 { font-size: 56px; margin: 0 0 8px; }
+  h2 { font-size: 32px; margin: 64px 0 16px; }
+  h3 { font-size: 22px; margin: 32px 0 12px; font-family: 'Barlow', sans-serif; font-weight: 500; font-style: normal; letter-spacing: 0; }
+  p, li { color: var(--muted); font-weight: 300; line-height: 1.6; max-width: 70ch; }
+  .tag-o4f { font-weight: 600; letter-spacing: 0.02em; }
+  .tag-o4f .o4 { color: var(--primary); }
+  .tag-o4f .f { color: var(--secondary); }
+  .lede { font-size: 18px; color: rgba(255,255,255,0.75); max-width: 70ch; margin-bottom: 8px; }
+  .meta { font-size: 13px; color: var(--muted); margin-top: 0; }
+  .meta code { background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, SF Mono, Menlo, monospace; }
+  .card { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin: 16px 0; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 720px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-weight: 500; color: var(--fg); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+  td { color: var(--muted); font-weight: 300; }
+  td code { font-family: ui-monospace, SF Mono, Menlo, monospace; color: var(--fg); font-size: 13px; background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 500; }
+  .pill.blue { background: hsla(210, 100%, 60%, 0.15); color: var(--primary); border: 1px solid hsla(210, 100%, 60%, 0.3); }
+  .pill.green { background: hsla(145, 100%, 50%, 0.15); color: var(--secondary); border: 1px solid hsla(145, 100%, 50%, 0.3); }
+  .pill.red { background: hsla(0, 90%, 60%, 0.15); color: var(--danger); border: 1px solid hsla(0, 90%, 60%, 0.3); }
+  .pill.warn { background: hsla(35, 100%, 60%, 0.15); color: var(--warn); border: 1px solid hsla(35, 100%, 60%, 0.3); }
+  .pill.muted { background: var(--glass-strong); color: var(--muted); border: 1px solid var(--border); }
+  .check { color: var(--secondary); font-weight: 600; }
+  .x { color: var(--muted); }
+  pre.tree { font-family: ui-monospace, SF Mono, Menlo, monospace; font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.85); background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; overflow-x: auto; }
+  pre.tree .node { color: var(--primary); }
+  pre.tree .auth { color: var(--secondary); }
+  pre.tree .role { color: var(--warn); font-style: italic; }
+  pre.tree .comment { color: var(--muted); }
+  .flow { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; font-family: ui-monospace, SF Mono, Menlo, monospace; font-size: 13px; line-height: 1.7; overflow-x: auto; white-space: pre; color: rgba(255,255,255,0.85); }
+  .badge-role { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; margin-right: 4px; }
+  .badge-role.super { background: hsla(330, 80%, 60%, 0.2); color: hsl(330, 80%, 70%); }
+  .badge-role.admin { background: hsla(210, 100%, 60%, 0.2); color: var(--primary); }
+  .badge-role.user { background: hsla(145, 100%, 50%, 0.2); color: var(--secondary); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .note { background: hsla(35, 100%, 60%, 0.08); border-left: 3px solid var(--warn); padding: 12px 16px; border-radius: 0 8px 8px 0; color: rgba(255,255,255,0.85); font-size: 14px; }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="meta"><span class="tag-o4f"><span class="o4">O4</span><span class="f">F</span></span> · Phase 1 Cockpit · Design Doc 01 of N · Round 1</div>
+<h1 class="heading-italic">Information<br/>Architecture</h1>
+<p class="lede">The internal staff cockpit for O4F's Phase 1 release — strategy review, order management, risk control, and historical analysis. One SPA, three deploy surfaces: web, Android TWA, iOS WKWebView. This doc defines the structure the wireframes are built on.</p>
+
+<h2 class="heading-italic">The product in one paragraph</h2>
+<p>Every morning, the screener (derivatives repo) and external signal sources (Trendlyne PCR, short buildup, big-player flows, block deals) emit a list of FnO candidates. <strong>Rakesh</strong> currently narrows this to ~5 stocks/day and posts to Telegram. The cockpit replaces Telegram as the operational layer: candidates land in <code>/today</code> with their RMS-derived risk envelope; <strong>auto-qualifying low-risk candidates execute themselves</strong> via the OMS, <strong>high-risk candidates wait for admin approval</strong>, and the <strong>kill switch</strong> can veto everything in flight. Filled orders, PnL, and per-strategy attribution roll up into <code>/history</code>.</p>
+
+<h2 class="heading-italic">Sitemap</h2>
+<pre class="tree">
+o4f.co.in
+├── /                          <span class="comment"># existing marketing site (public)</span>
+├── /blogs                     <span class="comment"># existing</span>
+├── /blogs/:slug               <span class="comment"># existing</span>
+│
+└── /app                       <span class="auth">🔒 authenticated · internal staff only</span>
+    ├── /app/login             <span class="comment"># the only unauth page under /app/*</span>
+    │
+    ├── /app/today             <span class="node">★ THE CENTRAL SCREEN</span>
+    │                          <span class="comment"># strategy outputs queue, auto/manual decisions, approve buttons</span>
+    │
+    ├── /app/orders            <span class="comment"># live order board, status pills, broker badges</span>
+    │   └── /app/orders/:tag   <span class="comment"># single order detail: timeline, modifications, fills</span>
+    │
+    ├── /app/killswitch        <span class="comment"># big red button + scope + impact preview</span>
+    │
+    ├── /app/rms               <span class="comment"># rules with daily toggles</span>
+    │   └── /app/rms/:ruleId   <span class="comment"># edit a rule (super admin only writes)</span>
+    │
+    ├── /app/backtest          <span class="comment"># pick strategy + date range + symbols, run</span>
+    │   └── /app/backtest/:id  <span class="comment"># results: equity curve, trade list, metrics</span>
+    │
+    ├── /app/history           <span class="comment"># yesterday + last week, PnL attribution, drilldowns</span>
+    │
+    ├── /app/admin             <span class="role">super admin only</span>
+    │   ├── /app/admin/users   <span class="comment"># role assignment, invites</span>
+    │   └── /app/admin/audit   <span class="comment"># every privileged action, timestamped</span>
+    │
+    └── /app/settings          <span class="comment"># per-user: broker creds, notifications, theme</span>
+</pre>
+
+<h2 class="heading-italic">Roles &amp; permissions</h2>
+<p>Three roles. Permission is additive — admin inherits user, super-admin inherits admin. All routes auth-gated; <strong>no implicit assumptions about read-only access</strong>: even viewing requires a session.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Capability</th>
+      <th>User <span class="badge-role user">U</span></th>
+      <th>Admin <span class="badge-role admin">A</span></th>
+      <th>Super admin <span class="badge-role super">S</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>View <code>/today</code> candidates</td>      <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Approve a candidate for execution</td>        <td><span class="x">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Pause an auto-firing candidate</td>            <td><span class="x">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Cancel a queued/auto candidate</td>            <td><span class="x">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>View <code>/orders</code> live board</td>      <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Modify / cancel an open order</td>             <td><span class="x">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Trigger kill switch</td>                       <td><span class="x">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Disarm kill switch</td>                        <td><span class="x">—</span></td><td><span class="x">—</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Toggle an RMS rule for today</td>              <td><span class="x">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Edit RMS rule parameters</td>                  <td><span class="x">—</span></td><td><span class="x">—</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Run backtests</td>                             <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>View <code>/history</code> &amp; PnL</td>          <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>Invite/remove users, assign roles</td>         <td><span class="x">—</span></td><td><span class="x">—</span></td><td><span class="check">✓</span></td></tr>
+    <tr><td>View audit log</td>                            <td><span class="x">—</span></td><td><span class="x">—</span></td><td><span class="check">✓</span></td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>Why super-admin holds disarm but not arm:</strong> "kill the trading day" is reversible only by a senior. Anyone with admin can stop trades; only super-admin can resume after a kill. Prevents social-pressure resume mid-incident.
+</div>
+
+<h2 class="heading-italic">Critical flows</h2>
+
+<h3>Flow 1 — Candidate → execution (hybrid)</h3>
+<div class="flow">[06:00 IST]   screener (derivatives) + Trendlyne signals emit batch
+       │
+       ▼
+[ /today ]   candidate lands; RMS evaluates risk envelope:
+              SL, target, position size, notional value
+       │
+       ├──── notional &lt; ₹AUTO_MAX  ─────────┐
+       │                                    │
+       │                                    ▼
+       │                          status = AUTO_QUEUED
+       │                          countdown = 30s (admin can pause)
+       │                                    │  if not paused
+       │                                    ▼
+       │                          status = APPROVED → OMS.PlaceOrder
+       │
+       └──── notional ≥ ₹AUTO_MAX  ─────────┐
+                                            │
+                                            ▼
+                                  status = NEEDS_APPROVAL
+                                  waits indefinitely
+                                            │  admin clicks Approve
+                                            ▼
+                                  status = APPROVED → OMS.PlaceOrder
+                                            │
+                                            ▼
+                                  status = WORKING (in OMS)
+                                            │  WebSocket push (Zerodha)
+                                            │  or polling (AngelOne/Dhan)
+                                            ▼
+                                  status = FILLED / CANCELLED / REJECTED
+                                            │
+                                            ▼
+                                  /history rolls up at EOD</div>
+
+<h3>Flow 2 — Kill switch</h3>
+<div class="flow">[ admin clicks kill ]
+       │
+       ▼
+choose scope:  ⊙ all brokers   ○ this broker   ○ symbol = ___
+       │
+       ▼
+impact preview shows: N candidates will be cancelled,
+                      M open orders will be cancelled
+       │
+       ▼
+type "KILL" + 3-second hold to confirm
+       │
+       ▼
+1. OMS.SetSystemHealth(false)        ← stops new orders system-wide
+2. for each open order: OMS.CancelOrder(tag)
+3. for each AUTO_QUEUED candidate: mark CANCELLED
+4. emit kill event to audit log + all connected SSE clients
+       │
+       ▼
+[ red banner shown system-wide ]
+[ all WRITE actions disabled site-wide except super-admin "Disarm" ]
+       │
+       ▼
+super-admin clicks Disarm → status returns to normal
+                            (audit log entry: who, when, why-note required)</div>
+
+<h3>Flow 3 — RMS rule daily toggle</h3>
+<div class="flow">[ /rms ]
+   rule "MAX_INTRADAY_LOSS_PCT = 2%"   [today: ON  | OFF ]
+   rule "PER_SYMBOL_NOTIONAL_CAP = ₹100k"   [today: ON  | OFF ]
+   rule "AUTO_EXECUTE_THRESHOLD = ₹50k"   [today: ON  | OFF ]
+   ...
+       │
+       ▼
+admin toggles → state persists in DB with date=today
+       │
+       ▼
+RMS engine re-reads rules at evaluation time (no daemon restart)
+       │
+       ▼
+candidates landing AFTER toggle are evaluated under new rules;
+those already AUTO_QUEUED keep their original envelope</div>
+
+<h2 class="heading-italic">Data dependencies per screen</h2>
+<p>What backend each screen needs. <strong>BFF</strong> = a thin new service we'll add inside the o4f-app deploy that aggregates oms/, derivatives/, and the new auth/users service — saves the SPA from doing 4-way joins.</p>
+
+<table>
+  <thead>
+    <tr><th>Screen</th><th>Reads from</th><th>Writes to</th><th>Push channel</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>/app/today</code></td>
+      <td>derivatives/screener output, Trendlyne ingest, RMS engine (envelope), OMS (order status)</td>
+      <td>BFF /today/approve, /today/pause, /today/cancel</td>
+      <td>SSE: <code>candidate_added</code>, <code>candidate_status_changed</code></td>
+    </tr>
+    <tr>
+      <td><code>/app/orders</code></td>
+      <td>OMS /orders (list), DB orders table</td>
+      <td>OMS /orders/:tag/modify, /orders/:tag/cancel</td>
+      <td>SSE: <code>order_status_changed</code></td>
+    </tr>
+    <tr>
+      <td><code>/app/killswitch</code></td>
+      <td>OMS system_state, count of open orders, count of auto-queued candidates</td>
+      <td>OMS /system/health, batch cancel</td>
+      <td>SSE: <code>kill_armed</code>, <code>kill_disarmed</code></td>
+    </tr>
+    <tr>
+      <td><code>/app/rms</code></td>
+      <td>BFF /rms/rules (today + tomorrow effective view)</td>
+      <td>BFF /rms/rules/:id/toggle, /rms/rules/:id (super admin only)</td>
+      <td>SSE: <code>rms_rule_toggled</code></td>
+    </tr>
+    <tr>
+      <td><code>/app/backtest</code></td>
+      <td>backtesting/ /strategies, /symbols, /backtest/run</td>
+      <td>BFF proxies the backtest API; no direct writes</td>
+      <td>SSE: <code>backtest_progress</code>, <code>backtest_complete</code></td>
+    </tr>
+    <tr>
+      <td><code>/app/history</code></td>
+      <td>BFF /history (joins orders + fills + RMS envelope at-time-of)</td>
+      <td>none</td>
+      <td>none — historical only</td>
+    </tr>
+    <tr>
+      <td><code>/app/admin/users</code></td>
+      <td>auth service /users</td>
+      <td>auth /users (invite, role assign, deactivate)</td>
+      <td>none</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 class="heading-italic">URL conventions</h2>
+<div class="grid-2">
+  <div class="card">
+    <h3>SPA routes</h3>
+    <p>TanStack Router nested layout. <code>/app</code> wraps a <code>RequireAuth</code> boundary; <code>/app/admin/*</code> wraps a <code>RequireRole&lt;'super'&gt;</code>.</p>
+    <p>Deep links work everywhere (e.g. share <code>/app/orders/ORD-abc</code> in Slack).</p>
+  </div>
+  <div class="card">
+    <h3>API routes (BFF, proposed)</h3>
+    <p>Versioned: <code>/api/v1/...</code>. JSON only. Server-Sent Events at <code>/api/v1/stream</code> with topic filters in query string.</p>
+    <p>Auth: short-lived JWT in <code>Authorization</code> header; refresh via httpOnly cookie.</p>
+  </div>
+</div>
+
+<h2 class="heading-italic">Deploy surfaces</h2>
+<table>
+  <thead><tr><th>Surface</th><th>How it renders</th><th>Constraints to honor</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Web (o4f.co.in/app)</td>
+      <td>Vite SPA, public-static deploy</td>
+      <td>None beyond same-origin auth</td>
+    </tr>
+    <tr>
+      <td>Android (TWA)</td>
+      <td>Chrome Custom Tabs wraps the live web URL</td>
+      <td>Must be HTTPS, must declare a digital asset link, must work offline-tolerant (network errors render gracefully)</td>
+    </tr>
+    <tr>
+      <td>iOS (WKWebView shell)</td>
+      <td>Native shell loads the live web URL</td>
+      <td>Must avoid <code>window.alert</code> (renders ugly), must size for safe-area insets, no third-party cookies allowed</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>Design rule we'll enforce in wireframes:</strong> Every screen must work in a 360×640 viewport. Bottom-nav for mobile (5 tabs max). Desktop layout is an enhancement, not a redesign.
+</div>
+
+<h2 class="heading-italic">What's NOT in Round 1</h2>
+<ul>
+  <li>RMS rule editor wireframe (Round 2)</li>
+  <li>Backtest UX (Round 2 — likely embeds the existing backtesting/ui-solid Solid.js view in an iframe initially)</li>
+  <li>History / PnL screen (Round 2)</li>
+  <li>Admin user management (Round 2)</li>
+  <li>Auth provider choice (Clerk / Auth0 / self-rolled JWT) — decision needed before Round 2 ends</li>
+  <li>BFF skeleton service code — design now; build after wireframes are approved</li>
+</ul>
+
+<hr/>
+<p class="meta">Round 1 · Information Architecture · See <a href="wireframes/02-today.html">wireframes/02-today.html</a> next.</p>
+
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>O4F Cockpit · Prototype</title>
+<style>
+  :root {
+    --bg: #000; --fg: #fff;
+    --primary: hsl(210, 100%, 60%);
+    --secondary: hsl(145, 100%, 50%);
+    --muted: rgba(255,255,255,0.55);
+    --muted-2: rgba(255,255,255,0.35);
+    --border: rgba(255,255,255,0.10);
+    --border-strong: rgba(255,255,255,0.18);
+    --glass: rgba(255,255,255,0.03);
+    --glass-strong: rgba(255,255,255,0.07);
+    --danger: hsl(0, 90%, 60%);
+    --warn: hsl(35, 100%, 60%);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  * { box-sizing: border-box; }
+  html, body, #root { height: 100%; }
+  html, body { background: var(--bg); color: var(--fg); margin: 0; font-family: 'Barlow', sans-serif; font-weight: 400; -webkit-font-smoothing: antialiased; }
+  .heading-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Layout */
+  .app { display: flex; flex-direction: column; height: 100%; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); position: relative; z-index: 5; }
+  .topbar .left { display: flex; align-items: center; gap: 24px; }
+  .logo { font-weight: 600; font-size: 18px; letter-spacing: 0.02em; }
+  .logo .o4 { color: var(--primary); } .logo .f { color: var(--secondary); }
+  .breadcrumb { font-weight: 300; color: var(--muted); font-size: 14px; }
+  .breadcrumb strong { color: var(--fg); font-weight: 500; }
+  .topbar .right { display: flex; align-items: center; gap: 12px; }
+  .conn-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .conn-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); box-shadow: 0 0 8px var(--secondary); }
+  .conn-dot.armed::before { background: var(--danger); box-shadow: 0 0 8px var(--danger); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .kill-btn { padding: 8px 16px; border-radius: 9999px; background: hsla(0, 90%, 60%, 0.12); border: 1px solid hsla(0, 90%, 60%, 0.4); color: var(--danger); font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: 'Barlow', sans-serif; }
+  .kill-btn:hover { background: hsla(0, 90%, 60%, 0.2); }
+  .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: 1px solid var(--border); }
+
+  .main { display: flex; flex: 1; min-height: 0; }
+  .sidebar { width: 220px; padding: 24px 16px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; }
+  .sidebar .nav-section { font-size: 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 12px 4px; }
+  .sidebar a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 300; cursor: pointer; }
+  .sidebar a:hover { color: var(--fg); background: var(--glass); }
+  .sidebar a.active { background: var(--glass-strong); color: var(--fg); }
+  .sidebar a.active.kill { background: hsla(0, 90%, 60%, 0.12); color: var(--danger); border: 1px solid hsla(0, 90%, 60%, 0.3); }
+  .sidebar a .ico { width: 16px; height: 16px; border-radius: 4px; background: var(--glass-strong); flex-shrink: 0; }
+  .sidebar a.active .ico { background: var(--primary); }
+  .sidebar a.active.kill .ico { background: var(--danger); }
+  .sidebar .spacer { flex: 1; }
+
+  .content { flex: 1; padding: 24px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+  /* Banner (armed) */
+  .armed-banner { background: linear-gradient(90deg, hsla(0, 100%, 35%, 0.3) 0%, hsla(0, 100%, 45%, 0.45) 50%, hsla(0, 100%, 35%, 0.3) 100%); border-bottom: 1px solid hsla(0, 100%, 55%, 0.5); padding: 10px 24px; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; }
+  .armed-banner .badge { padding: 2px 8px; border-radius: 4px; background: var(--danger); color: #000; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+
+  /* Stats strip */
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .stat { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .stat .label { font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat .value { font-size: 24px; font-weight: 300; }
+  .stat .value.pos { color: var(--secondary); }
+  .stat .value.warn { color: var(--warn); }
+  .stat .delta { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+  /* Filter chips */
+  .filter-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .filter-chip { padding: 6px 12px; border-radius: 9999px; background: var(--glass); border: 1px solid var(--border); font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .filter-chip.active { color: var(--fg); border-color: var(--border-strong); background: var(--glass-strong); }
+  .filter-chip .count { background: var(--glass-strong); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+  /* Candidate cards */
+  .cand { background: var(--glass); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: grid; grid-template-columns: 220px 1fr 240px; gap: 24px; align-items: center; transition: border-color 0.2s; }
+  .cand.needs-approval { border-color: hsla(35, 100%, 60%, 0.4); background: hsla(35, 100%, 60%, 0.04); }
+  .cand.auto-queued { border-color: hsla(210, 100%, 60%, 0.3); }
+  .cand.working { border-color: hsla(145, 100%, 50%, 0.3); }
+  .cand.filled { opacity: 0.6; }
+  .cand.cancelled { opacity: 0.4; }
+  .cand .sym-row { display: flex; align-items: baseline; gap: 8px; }
+  .cand .sym { font-size: 20px; font-weight: 500; letter-spacing: 0.02em; }
+  .side { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+  .side.buy { background: hsla(145, 100%, 50%, 0.18); color: var(--secondary); }
+  .side.sell { background: hsla(0, 90%, 60%, 0.18); color: var(--danger); }
+  .signals { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .signal-pill { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--glass-strong); color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .envelope { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .env-item { display: flex; flex-direction: column; gap: 2px; }
+  .env-item .k { font-size: 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .env-item .v { font-size: 14px; font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+  .env-item .v.sl { color: var(--danger); }
+  .env-item .v.tgt { color: var(--secondary); }
+  .actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+  .status-pill { padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 500; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 6px; }
+  .status-pill.auto { background: hsla(210, 100%, 60%, 0.15); color: var(--primary); border: 1px solid hsla(210, 100%, 60%, 0.3); }
+  .status-pill.needs { background: hsla(35, 100%, 60%, 0.15); color: var(--warn); border: 1px solid hsla(35, 100%, 60%, 0.3); }
+  .status-pill.working { background: hsla(145, 100%, 50%, 0.15); color: var(--secondary); border: 1px solid hsla(145, 100%, 50%, 0.3); }
+  .status-pill.filled { background: hsla(145, 100%, 50%, 0.25); color: var(--secondary); }
+  .status-pill.cancelled { background: var(--glass-strong); color: var(--muted); border: 1px solid var(--border); }
+  .countdown { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .countdown .timer { color: var(--warn); font-weight: 600; }
+  .btn-row { display: flex; gap: 6px; }
+  .btn { padding: 5px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: var(--glass); color: var(--muted); cursor: pointer; font-family: 'Barlow', sans-serif; }
+  .btn:hover { background: var(--glass-strong); color: var(--fg); }
+  .btn.approve { background: hsla(145, 100%, 50%, 0.18); border-color: hsla(145, 100%, 50%, 0.4); color: var(--secondary); }
+  .btn.approve:hover { background: hsla(145, 100%, 50%, 0.3); }
+  .btn.danger { background: hsla(0, 90%, 60%, 0.12); border-color: hsla(0, 90%, 60%, 0.3); color: var(--danger); }
+  .btn.danger:hover { background: hsla(0, 90%, 60%, 0.2); }
+  .btn.primary { background: hsla(210, 100%, 60%, 0.18); border-color: hsla(210, 100%, 60%, 0.4); color: var(--primary); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .candidates { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Order table */
+  .order-table { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .order-row { display: grid; grid-template-columns: 132px 110px 70px 70px 100px 110px 120px 1fr; gap: 12px; padding: 12px 16px; align-items: center; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .order-row.header { background: var(--glass-strong); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-2); font-weight: 500; }
+  .order-row:hover:not(.header) { background: var(--glass-strong); }
+  .ot-tag { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  .ot-sym { font-weight: 500; font-size: 14px; }
+  .qty-cell { font-family: 'JetBrains Mono', monospace; }
+  .qty-cell .partial { color: var(--warn); }
+  .price-cell { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  .broker-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--glass-strong); color: var(--muted); letter-spacing: 0.04em; }
+  .broker-badge.zerodha { color: hsl(20, 100%, 65%); border: 1px solid hsla(20, 100%, 65%, 0.3); }
+  .broker-badge.angelone { color: hsl(210, 100%, 70%); border: 1px solid hsla(210, 100%, 70%, 0.3); }
+  .age { font-size: 11px; color: var(--muted-2); font-family: 'JetBrains Mono', monospace; }
+
+  /* Kill switch */
+  .hero { background: radial-gradient(ellipse at center, hsla(0, 90%, 60%, 0.08) 0%, transparent 60%); border: 1px solid var(--border); border-radius: 16px; padding: 32px; display: flex; flex-direction: column; gap: 24px; }
+  .hero h2 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 40px; margin: 0; line-height: 1; }
+  .hero-state { display: inline-flex; gap: 6px; align-items: center; padding: 4px 10px; border-radius: 9999px; background: hsla(145, 100%, 50%, 0.15); border: 1px solid hsla(145, 100%, 50%, 0.3); color: var(--secondary); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; width: fit-content; letter-spacing: 0.04em; }
+  .hero-state.armed { background: hsla(0, 100%, 55%, 0.18); border-color: hsla(0, 100%, 55%, 0.5); color: var(--danger); }
+  .kill-row { display: flex; gap: 24px; align-items: center; }
+  .big-kill { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, hsla(0, 100%, 55%, 0.25) 0%, hsla(0, 100%, 35%, 0.1) 70%, transparent 100%); border: 2px solid var(--danger); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 80px hsla(0, 100%, 55%, 0.2), inset 0 0 40px hsla(0, 100%, 55%, 0.1); cursor: pointer; flex-shrink: 0; transition: transform 0.15s; }
+  .big-kill:hover { transform: scale(1.03); box-shadow: 0 0 120px hsla(0, 100%, 55%, 0.35), inset 0 0 40px hsla(0, 100%, 55%, 0.15); }
+  .big-kill .icon { font-size: 56px; color: var(--danger); line-height: 1; }
+  .big-kill .label { font-size: 18px; font-weight: 600; color: var(--danger); letter-spacing: 0.08em; margin-top: 8px; }
+  .big-kill .sublabel { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .impact-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .impact-title { font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+  .impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .impact-stat .v { font-size: 28px; font-weight: 300; color: var(--danger); }
+  .impact-stat .k { font-size: 11px; color: var(--muted); }
+
+  /* Modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; }
+  .modal { background: #1a0808; border: 1px solid hsla(0, 100%, 55%, 0.6); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 24px 64px hsla(0, 100%, 30%, 0.5); width: 480px; max-width: 92vw; }
+  .modal h3 { margin: 0; font-size: 26px; color: var(--danger); font-family: 'Instrument Serif', serif; font-style: italic; }
+  .modal p { margin: 0; color: var(--muted); font-size: 13px; }
+  .modal-impact { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 14px; background: rgba(0,0,0,0.5); border-radius: 10px; }
+  .modal-impact .item { display: flex; flex-direction: column; gap: 4px; }
+  .modal-impact .item .k { font-size: 10px; color: var(--muted-2); text-transform: uppercase; }
+  .modal-impact .item .v { font-size: 20px; font-weight: 500; color: var(--danger); font-family: 'JetBrains Mono', monospace; }
+  .modal-input { padding: 12px 14px; background: var(--glass-strong); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); font-size: 14px; font-family: 'Barlow', sans-serif; outline: none; }
+  .modal-input:focus { border-color: var(--danger); }
+  .modal-input.token { font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; }
+  .hold-btn { padding: 14px; border-radius: 9999px; background: var(--danger); color: #000; font-weight: 700; font-size: 14px; border: none; letter-spacing: 0.04em; position: relative; overflow: hidden; cursor: pointer; }
+  .hold-btn:disabled { background: var(--glass-strong); color: var(--muted); cursor: not-allowed; }
+  .hold-btn .fill { position: absolute; inset: 0; background: hsla(0, 100%, 25%, 0.7); width: 0%; transition: width 0.05s linear; }
+  .hold-btn .label { position: relative; z-index: 1; }
+  .modal-cancel { background: none; border: none; color: var(--muted); font-size: 12px; text-align: center; cursor: pointer; padding: 4px; font-family: 'Barlow', sans-serif; }
+  .modal-cancel:hover { color: var(--fg); }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--glass-strong); border: 1px solid var(--border); border-radius: 9999px; padding: 10px 20px; font-size: 13px; backdrop-filter: blur(12px); z-index: 200; animation: slideup 0.2s ease; }
+  .toast.success { border-color: hsla(145, 100%, 50%, 0.4); color: var(--secondary); }
+  .toast.danger { border-color: hsla(0, 90%, 60%, 0.4); color: var(--danger); }
+  @keyframes slideup { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translateX(-50%); opacity: 1; } }
+
+  /* Mobile responsive */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .bottom-nav { display: flex; }
+    .content { padding: 16px; }
+    .stats { grid-template-columns: repeat(3, 1fr); }
+    .cand { grid-template-columns: 1fr; gap: 14px; padding: 14px; }
+    .cand .envelope { grid-template-columns: repeat(2, 1fr); }
+    .cand .actions { align-items: stretch; }
+    .cand .actions .btn-row { justify-content: stretch; }
+    .cand .actions .btn-row .btn { flex: 1; }
+    .kill-row { flex-direction: column; }
+    .impact-grid { grid-template-columns: repeat(2, 1fr); }
+    .order-row { grid-template-columns: 1fr; gap: 6px; padding: 14px; }
+    .order-row.header { display: none; }
+  }
+  .bottom-nav { display: none; justify-content: space-around; padding: 8px 0 12px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); flex-shrink: 0; }
+  .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--muted-2); font-size: 10px; padding: 4px 8px; cursor: pointer; }
+  .bottom-nav a.active { color: var(--fg); }
+  .bottom-nav a .ico { width: 22px; height: 22px; border-radius: 5px; background: var(--glass-strong); }
+  .bottom-nav a.active .ico { background: var(--primary); }
+  .bottom-nav a.kill .ico { background: hsla(0, 90%, 60%, 0.3); }
+  .bottom-nav a.kill { color: var(--danger); }
+  .bottom-nav a.active.kill .ico { background: var(--danger); }
+
+  /* prototype watermark */
+  .proto-watermark { position: fixed; bottom: 12px; right: 16px; font-size: 10px; color: var(--muted-2); font-family: 'JetBrains Mono', monospace; pointer-events: none; z-index: 50; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="proto-watermark">prototype · mock data · simulated SSE</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useReducer, useRef } = React;
+
+// ============ MOCK DATA ============
+const initialCandidates = [
+  {
+    id: 'c1', symbol: 'RELIANCE', side: 'BUY',
+    signals: ['Trendlyne · PCR', 'Block deal', 'Big-player flow'],
+    entry: 2847.5, sl: 2838.96, target: 2881.67, qty: 50, notional: 142375,
+    status: 'NEEDS_APPROVAL', countdown: null, brokerOrderId: null, filled: 0,
+  },
+  {
+    id: 'c2', symbol: 'TATAMOTORS', side: 'BUY',
+    signals: ['Screener · MACD↑', 'Short buildup'],
+    entry: 924.8, sl: 922.03, target: 935.9, qty: 50, notional: 46240,
+    status: 'AUTO_QUEUED', countdown: 18, brokerOrderId: null, filled: 0,
+  },
+  {
+    id: 'c3', symbol: 'HDFCBANK', side: 'SELL',
+    signals: ['Trendlyne · PCR', 'Manual (Rakesh)'],
+    entry: 1624.1, sl: 1629.0, target: 1604.6, qty: 25, notional: 40603,
+    status: 'WORKING', countdown: null, brokerOrderId: 'ORD-7f3a', filled: 14,
+    broker: 'ZERODHA', age: 42,
+  },
+  {
+    id: 'c4', symbol: 'ICICIBANK', side: 'BUY',
+    signals: ['Screener · RSI'],
+    entry: 1088.2, sl: 1084.94, target: 1101.26, qty: 30, notional: 32646,
+    status: 'AUTO_QUEUED', countdown: 8, brokerOrderId: null, filled: 0,
+  },
+  {
+    id: 'c5', symbol: 'INFY', side: 'SELL',
+    signals: ['Manual (Rakesh)'],
+    entry: 1510.0, sl: 1514.53, target: 1491.88, qty: 50, notional: 75500,
+    status: 'NEEDS_APPROVAL', countdown: null, brokerOrderId: null, filled: 0,
+  },
+  {
+    id: 'c6', symbol: 'SBIN', side: 'BUY',
+    signals: ['Screener · MACD↑'],
+    entry: 789.4, sl: 787.03, target: 798.87, qty: 100, notional: 78940,
+    status: 'FILLED', countdown: null, brokerOrderId: 'ORD-5b9c', filled: 100,
+    broker: 'ZERODHA', age: 483,
+  },
+];
+
+const initialOrders = [
+  { tag: 'ORD-7f3a', sym: 'HDFCBANK', side: 'SELL', qty: 25, filled: 14, price: 1624.1, status: 'PARTIAL', broker: 'ZERODHA', age: 42 },
+  { tag: 'ORD-8c1b', sym: 'TATAMOTORS', side: 'BUY', qty: 50, filled: 50, price: 924.8, status: 'WORKING', broker: 'ZERODHA', age: 12 },
+  { tag: 'ORD-9d4e', sym: 'ICICIBANK', side: 'BUY', qty: 30, filled: 0, price: 1088.2, status: 'PENDING', broker: 'ZERODHA', age: 3 },
+  { tag: 'ORD-6a2f', sym: 'INFY', side: 'BUY', qty: 20, filled: 20, price: 1510.0, status: 'FILLED', broker: 'ANGEL_ONE', age: 252 },
+  { tag: 'ORD-5b9c', sym: 'SBIN', side: 'BUY', qty: 100, filled: 100, price: 789.4, status: 'FILLED', broker: 'ZERODHA', age: 483 },
+  { tag: 'ORD-4e7d', sym: 'LT', side: 'SELL', qty: 10, filled: 0, price: 3420.5, status: 'CANCELLED', broker: 'ZERODHA', age: 720 },
+  { tag: 'ORD-3a8b', sym: 'MARUTI', side: 'BUY', qty: 5, filled: 5, price: 11240.0, status: 'FILLED', broker: 'ZERODHA', age: 1380 },
+];
+
+// ============ STATE REDUCER ============
+function appReducer(state, action) {
+  switch (action.type) {
+    case 'TICK': {
+      // Decrement countdowns; AUTO_QUEUED → WORKING when timer hits 0
+      const candidates = state.candidates.map(c => {
+        if (c.status === 'AUTO_QUEUED' && c.countdown != null && c.countdown > 0) {
+          return { ...c, countdown: c.countdown - 1 };
+        }
+        if (c.status === 'AUTO_QUEUED' && c.countdown === 0) {
+          return { ...c, status: 'WORKING', brokerOrderId: 'ORD-' + Math.random().toString(36).slice(2, 6), broker: 'ZERODHA', age: 0, countdown: null };
+        }
+        if (c.status === 'WORKING') {
+          return { ...c, age: (c.age || 0) + 1 };
+        }
+        return c;
+      });
+      const orders = state.orders.map(o => o.status === 'WORKING' || o.status === 'PARTIAL' || o.status === 'PENDING' ? { ...o, age: o.age + 1 } : o);
+      return { ...state, candidates, orders, tick: state.tick + 1 };
+    }
+    case 'APPROVE': {
+      const candidates = state.candidates.map(c =>
+        c.id === action.id ? { ...c, status: 'WORKING', brokerOrderId: 'ORD-' + Math.random().toString(36).slice(2, 6), broker: 'ZERODHA', age: 0 } : c
+      );
+      return { ...state, candidates, toast: { type: 'success', msg: `${state.candidates.find(c => c.id === action.id).symbol} approved → sent to OMS` } };
+    }
+    case 'PAUSE': {
+      const candidates = state.candidates.map(c =>
+        c.id === action.id ? { ...c, status: 'NEEDS_APPROVAL', countdown: null } : c
+      );
+      return { ...state, candidates, toast: { type: 'success', msg: `paused — admin approval required` } };
+    }
+    case 'CANCEL': {
+      const c = state.candidates.find(c => c.id === action.id);
+      const candidates = state.candidates.map(c =>
+        c.id === action.id ? { ...c, status: 'CANCELLED', countdown: null } : c
+      );
+      return { ...state, candidates, toast: { type: 'danger', msg: `${c.symbol} cancelled` } };
+    }
+    case 'ARM_KILL': {
+      const candidates = state.candidates.map(c => {
+        if (['AUTO_QUEUED', 'NEEDS_APPROVAL', 'WORKING'].includes(c.status)) {
+          return { ...c, status: 'CANCELLED', countdown: null };
+        }
+        return c;
+      });
+      const orders = state.orders.map(o => {
+        if (['WORKING', 'PENDING', 'PARTIAL'].includes(o.status)) {
+          return { ...o, status: 'CANCELLED' };
+        }
+        return o;
+      });
+      return { ...state, candidates, orders, killArmed: true, killedAt: Date.now(), killReason: action.reason, toast: { type: 'danger', msg: '⏻ KILL ARMED — all trading halted' } };
+    }
+    case 'DISARM_KILL': {
+      return { ...state, killArmed: false, killedAt: null, killReason: null, toast: { type: 'success', msg: '✓ Disarmed — trading resumes' } };
+    }
+    case 'CLEAR_TOAST':
+      return { ...state, toast: null };
+    default:
+      return state;
+  }
+}
+
+// ============ ROUTER ============
+function useHashRoute() {
+  const [hash, setHash] = useState(window.location.hash || '#/today');
+  useEffect(() => {
+    const onChange = () => setHash(window.location.hash || '#/today');
+    window.addEventListener('hashchange', onChange);
+    return () => window.removeEventListener('hashchange', onChange);
+  }, []);
+  return [hash, (h) => { window.location.hash = h; }];
+}
+
+// ============ COMPONENTS ============
+function Logo() {
+  return <span className="logo"><span className="o4">O4</span><span className="f">F</span></span>;
+}
+
+function TopBar({ route, killArmed }) {
+  const titles = { '#/today': 'Today', '#/orders': 'Orders', '#/killswitch': 'Killswitch' };
+  return (
+    <div className="topbar">
+      <div className="left">
+        <Logo />
+        <span className="breadcrumb">Cockpit · <strong>{titles[route] || 'Today'}</strong></span>
+      </div>
+      <div className="right">
+        <span className={`conn-dot ${killArmed ? 'armed' : ''}`}>{killArmed ? 'SYSTEM HALTED' : 'live · 42ms'}</span>
+        {!killArmed && <button className="kill-btn" onClick={() => { window.location.hash = '#/killswitch'; }}>⏻ Kill switch</button>}
+        <div className="user-avatar" title="Aman G. (super admin)"></div>
+      </div>
+    </div>
+  );
+}
+
+function Sidebar({ route, navigate }) {
+  const items = [
+    { section: 'Trading' },
+    { id: '#/today', label: 'Today' },
+    { id: '#/orders', label: 'Orders' },
+    { id: '#/killswitch', label: 'Killswitch', kill: true },
+    { section: 'Strategy' },
+    { id: '#/rms', label: 'RMS rules', disabled: true },
+    { id: '#/backtest', label: 'Backtest', disabled: true },
+    { id: '#/history', label: 'History', disabled: true },
+  ];
+  return (
+    <div className="sidebar">
+      {items.map((it, i) =>
+        it.section ?
+          <div key={i} className="nav-section">{it.section}</div> :
+          <a key={i}
+            className={`${route === it.id ? 'active' : ''} ${it.kill ? 'kill' : ''}`}
+            onClick={() => !it.disabled && navigate(it.id)}
+            style={it.disabled ? { opacity: 0.3, cursor: 'not-allowed' } : {}}
+            title={it.disabled ? 'Round 2 — not yet implemented' : ''}>
+            <span className="ico"></span><span>{it.label}</span>
+          </a>
+      )}
+      <div className="spacer"></div>
+      <a style={{ opacity: 0.4 }}><span className="ico"></span><span>Settings</span></a>
+    </div>
+  );
+}
+
+function BottomNav({ route, navigate }) {
+  const items = [
+    { id: '#/today', label: 'Today' },
+    { id: '#/orders', label: 'Orders' },
+    { id: '#/killswitch', label: 'Kill', kill: true },
+    { id: '#/backtest', label: 'Backtest', disabled: true },
+    { id: '#/more', label: 'More', disabled: true },
+  ];
+  return (
+    <div className="bottom-nav">
+      {items.map((it, i) =>
+        <a key={i}
+          className={`${route === it.id ? 'active' : ''} ${it.kill ? 'kill' : ''}`}
+          onClick={() => !it.disabled && navigate(it.id)}
+          style={it.disabled ? { opacity: 0.3 } : {}}>
+          <span className="ico"></span><span>{it.label}</span>
+        </a>
+      )}
+    </div>
+  );
+}
+
+function StatusPill({ status, broker, countdown }) {
+  if (status === 'AUTO_QUEUED') {
+    return <span className="status-pill auto">⟳ AUTO · firing in <span className="timer" style={{color:'var(--warn)', fontWeight:600, marginLeft:2}}>0:{String(countdown).padStart(2, '0')}</span></span>;
+  }
+  if (status === 'NEEDS_APPROVAL') return <span className="status-pill needs">⚠ NEEDS APPROVAL</span>;
+  if (status === 'WORKING') return <span className="status-pill working">● WORKING · {broker || 'ZERODHA'}</span>;
+  if (status === 'FILLED') return <span className="status-pill filled">✓ FILLED</span>;
+  if (status === 'CANCELLED') return <span className="status-pill cancelled">○ CANCELLED</span>;
+  return <span className="status-pill">{status}</span>;
+}
+
+function CandidateCard({ c, dispatch }) {
+  const cls = {
+    'NEEDS_APPROVAL': 'needs-approval',
+    'AUTO_QUEUED': 'auto-queued',
+    'WORKING': 'working',
+    'FILLED': 'filled',
+    'CANCELLED': 'cancelled',
+  }[c.status] || '';
+
+  return (
+    <div className={`cand ${cls}`}>
+      <div>
+        <div className="sym-row">
+          <span className="sym">{c.symbol}</span>
+          <span className={`side ${c.side.toLowerCase()}`}>{c.side}</span>
+        </div>
+        <div className="signals">
+          {c.signals.map((s, i) => <span key={i} className="signal-pill">{s}</span>)}
+        </div>
+      </div>
+      <div className="envelope">
+        <div className="env-item"><span className="k">Entry</span><span className="v">₹{c.entry.toFixed(2)}</span></div>
+        <div className="env-item"><span className="k">SL ({c.side === 'BUY' ? '−' : '+'}0.3%)</span><span className="v sl">₹{c.sl.toFixed(2)}</span></div>
+        <div className="env-item"><span className="k">Target ({c.side === 'BUY' ? '+' : '−'}1.2%)</span><span className="v tgt">₹{c.target.toFixed(2)}</span></div>
+        <div className="env-item">
+          <span className="k">{c.status === 'WORKING' || c.status === 'FILLED' ? 'Filled' : 'Notional'}</span>
+          <span className="v">{c.status === 'WORKING' || c.status === 'FILLED' ? `${c.filled} / ${c.qty}` : `₹${(c.notional/1000).toFixed(0)}k`}</span>
+        </div>
+      </div>
+      <div className="actions">
+        <StatusPill status={c.status} broker={c.broker} countdown={c.countdown} />
+        {c.status === 'NEEDS_APPROVAL' && (
+          <div className="btn-row">
+            <button className="btn approve" onClick={() => dispatch({type: 'APPROVE', id: c.id})}>✓ Approve</button>
+            <button className="btn" onClick={() => dispatch({type: 'CANCEL', id: c.id})}>Skip</button>
+          </div>
+        )}
+        {c.status === 'AUTO_QUEUED' && (
+          <div className="btn-row">
+            <button className="btn" onClick={() => dispatch({type: 'PAUSE', id: c.id})}>⏸ Pause</button>
+            <button className="btn" onClick={() => dispatch({type: 'CANCEL', id: c.id})}>Cancel</button>
+          </div>
+        )}
+        {c.status === 'WORKING' && (
+          <>
+            <span className="countdown">{c.brokerOrderId} · {c.age}s</span>
+            <div className="btn-row">
+              <button className="btn">View</button>
+              <button className="btn danger" onClick={() => dispatch({type: 'CANCEL', id: c.id})}>Cancel</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TodayScreen({ state, dispatch }) {
+  const [filter, setFilter] = useState('All');
+  const filtered = state.candidates.filter(c => {
+    if (filter === 'All') return true;
+    if (filter === 'Auto') return c.status === 'AUTO_QUEUED';
+    if (filter === 'Needs') return c.status === 'NEEDS_APPROVAL';
+    if (filter === 'Working') return c.status === 'WORKING';
+    if (filter === 'Filled') return c.status === 'FILLED';
+    return true;
+  });
+
+  const counts = {
+    all: state.candidates.length,
+    auto: state.candidates.filter(c => c.status === 'AUTO_QUEUED').length,
+    needs: state.candidates.filter(c => c.status === 'NEEDS_APPROVAL').length,
+    working: state.candidates.filter(c => c.status === 'WORKING').length,
+    filled: state.candidates.filter(c => c.status === 'FILLED').length,
+  };
+
+  return (
+    <div className="content">
+      <div className="stats">
+        <div className="stat"><span className="label">Candidates</span><span className="value">{counts.all}</span><span className="delta">today</span></div>
+        <div className="stat"><span className="label">Auto-firing</span><span className={`value ${counts.auto > 0 ? 'warn' : ''}`}>{counts.auto}</span><span className="delta">in countdown</span></div>
+        <div className="stat"><span className="label">Awaiting</span><span className="value">{counts.needs}</span><span className="delta">admin needed</span></div>
+        <div className="stat"><span className="label">Working</span><span className="value pos">{counts.working}</span><span className="delta">at broker</span></div>
+        <div className="stat"><span className="label">Filled today</span><span className="value pos">{counts.filled}</span><span className="delta">+ today P&amp;L est.</span></div>
+      </div>
+      <div className="filter-bar">
+        {['All', 'Auto', 'Needs', 'Working', 'Filled'].map(f => (
+          <span key={f} className={`filter-chip ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+            {f} <span className="count">{counts[f.toLowerCase()] ?? counts.all}</span>
+          </span>
+        ))}
+        <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--muted)' }}>Sorted by: <strong style={{ color: 'var(--fg)' }}>signal strength ↓</strong></span>
+      </div>
+      <div className="candidates">
+        {filtered.map(c => <CandidateCard key={c.id} c={c} dispatch={dispatch} />)}
+        {filtered.length === 0 && <div style={{ color: 'var(--muted)', textAlign: 'center', padding: 32 }}>no candidates in this filter</div>}
+      </div>
+    </div>
+  );
+}
+
+function OrdersScreen({ state }) {
+  return (
+    <div className="content">
+      <div className="filter-bar">
+        <span className="filter-chip active">Today <span className="count">{state.orders.length}</span></span>
+        <span className="filter-chip">Working <span className="count">{state.orders.filter(o => o.status === 'WORKING' || o.status === 'PARTIAL').length}</span></span>
+        <span className="filter-chip">Filled <span className="count">{state.orders.filter(o => o.status === 'FILLED').length}</span></span>
+        <span className="filter-chip">Cancelled <span className="count">{state.orders.filter(o => o.status === 'CANCELLED').length}</span></span>
+      </div>
+      <div className="order-table">
+        <div className="order-row header">
+          <span>Ordertag</span><span>Symbol</span><span>Side</span><span>Qty</span><span>Price</span><span>Status</span><span>Broker · Age</span><span>Actions</span>
+        </div>
+        {state.orders.map((o, i) => (
+          <div key={o.tag} className="order-row">
+            <span className="ot-tag">{o.tag}…</span>
+            <span className="ot-sym">{o.sym}</span>
+            <span><span className={`side ${o.side.toLowerCase()}`}>{o.side}</span></span>
+            <span className="qty-cell">
+              {o.filled !== o.qty && o.status !== 'CANCELLED' ? <span className="partial">{o.filled}</span> : o.filled}/{o.qty}
+            </span>
+            <span className="price-cell">₹{o.price.toFixed(2)}</span>
+            <span>
+              <span className={`status-pill ${o.status.toLowerCase()}`} style={{
+                background: o.status === 'WORKING' ? 'hsla(145, 100%, 50%, 0.15)' :
+                            o.status === 'PARTIAL' ? 'hsla(35, 100%, 60%, 0.15)' :
+                            o.status === 'PENDING' ? 'hsla(210, 100%, 60%, 0.15)' :
+                            o.status === 'FILLED' ? 'hsla(145, 100%, 50%, 0.25)' :
+                            o.status === 'CANCELLED' ? 'var(--glass-strong)' :
+                            'hsla(0, 90%, 60%, 0.15)',
+                color: o.status === 'WORKING' || o.status === 'FILLED' ? 'var(--secondary)' :
+                       o.status === 'PARTIAL' ? 'var(--warn)' :
+                       o.status === 'PENDING' ? 'var(--primary)' :
+                       o.status === 'CANCELLED' ? 'var(--muted)' :
+                       'var(--danger)',
+              }}>{o.status === 'WORKING' ? '●' : o.status === 'PARTIAL' ? '◐' : o.status === 'FILLED' ? '✓' : '○'} {o.status}</span>
+            </span>
+            <span>
+              <span className={`broker-badge ${o.broker.toLowerCase().replace('_', '')}`}>{o.broker}</span>{' '}
+              <span className="age">{o.age < 60 ? o.age + 's' : Math.floor(o.age/60) + 'm ' + (o.age % 60) + 's'}</span>
+            </span>
+            <span>
+              {['WORKING', 'PARTIAL', 'PENDING'].includes(o.status) ?
+                <><button className="btn">Modify</button> <button className="btn danger">Cancel</button></> :
+                <span style={{ color: 'var(--muted-2)', fontSize: 11 }}>terminal</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function KillSwitchScreen({ state, dispatch }) {
+  const [showModal, setShowModal] = useState(false);
+  const workingOrders = state.orders.filter(o => ['WORKING', 'PARTIAL', 'PENDING'].includes(o.status)).length;
+  const autoQueued = state.candidates.filter(c => c.status === 'AUTO_QUEUED').length;
+  const needsApproval = state.candidates.filter(c => c.status === 'NEEDS_APPROVAL').length;
+  const totalNotional = state.candidates.filter(c => ['WORKING', 'AUTO_QUEUED', 'NEEDS_APPROVAL'].includes(c.status)).reduce((a, c) => a + c.notional, 0);
+
+  if (state.killArmed) {
+    return <DisarmPanel state={state} dispatch={dispatch} />;
+  }
+
+  return (
+    <div className="content">
+      <div className="hero">
+        <span className="hero-state">● DISARMED · trading active</span>
+        <h2>Halt all orders.</h2>
+        <p style={{ color: 'var(--muted)', fontWeight: 300, margin: 0, maxWidth: '50ch', fontSize: 14 }}>
+          One click cancels everything in flight and stops new orders from being placed.
+          Triggering requires a 3-second hold + typed "KILL" confirmation.
+          Only super admin can disarm.
+        </p>
+        <div className="kill-row">
+          <div className="big-kill" onClick={() => setShowModal(true)}>
+            <div className="icon">⏻</div>
+            <div className="label">KILL</div>
+            <div className="sublabel">click to arm</div>
+          </div>
+          <div style={{ flex: 1, fontSize: 13, color: 'var(--muted)' }}>
+            <div style={{ fontSize: 15, color: 'var(--fg)', fontWeight: 500, marginBottom: 8 }}>Scope: All brokers, all symbols</div>
+            <div>Stops every order across AngelOne, Zerodha, Dhan.</div>
+            <div style={{ marginTop: 8, color: 'var(--warn)', fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>
+              would cancel {workingOrders} working order{workingOrders === 1 ? '' : 's'} · {autoQueued} auto-queued · {needsApproval} awaiting
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="impact-panel">
+        <div className="impact-title">Impact preview · if armed now</div>
+        <div className="impact-grid">
+          <div className="impact-stat"><span className="v">{workingOrders}</span><span className="k">working orders will be cancelled</span></div>
+          <div className="impact-stat"><span className="v">{autoQueued}</span><span className="k">auto-queued candidates will be cancelled</span></div>
+          <div className="impact-stat"><span className="v">{needsApproval}</span><span className="k">awaiting-approval candidates will be skipped</span></div>
+          <div className="impact-stat"><span className="v">₹{(totalNotional/100000).toFixed(1)}L</span><span className="k">total notional currently exposed</span></div>
+        </div>
+      </div>
+
+      {showModal && (
+        <KillConfirmModal
+          impact={{ workingOrders, autoQueued, needsApproval, notional: totalNotional }}
+          onConfirm={(reason) => { dispatch({ type: 'ARM_KILL', reason }); setShowModal(false); }}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function DisarmPanel({ state, dispatch }) {
+  const [reason, setReason] = useState('');
+  const elapsed = Math.floor((Date.now() - state.killedAt) / 1000);
+  return (
+    <div className="content">
+      <div className="hero" style={{ background: 'linear-gradient(180deg, hsla(0, 100%, 30%, 0.15) 0%, var(--glass) 100%)', borderColor: 'hsla(0, 100%, 55%, 0.4)' }}>
+        <span className="hero-state armed">⏻ ARMED · trading halted {elapsed}s ago</span>
+        <h2 style={{ color: 'var(--danger)' }}>System is in kill mode.</h2>
+        <p style={{ color: 'var(--muted)', fontSize: 14, margin: 0, maxWidth: '60ch' }}>
+          All new orders are blocked. Place-order endpoints return 503. Polling continues read-only.
+          Strategy outputs are queued but not evaluated.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, padding: 20, background: 'rgba(0,0,0,0.4)', borderRadius: 12 }}>
+          <div><span style={{ fontSize: 11, color: 'var(--muted-2)', textTransform: 'uppercase' }}>Triggered by</span><div style={{ fontSize: 18, marginTop: 4 }}>Aman G.</div></div>
+          <div><span style={{ fontSize: 11, color: 'var(--muted-2)', textTransform: 'uppercase' }}>Scope</span><div style={{ fontSize: 18, marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>all brokers</div></div>
+          <div><span style={{ fontSize: 11, color: 'var(--muted-2)', textTransform: 'uppercase' }}>Reason</span><div style={{ fontSize: 13, marginTop: 4, color: 'var(--fg)' }}>"{state.killReason || '—'}"</div></div>
+        </div>
+
+        <div style={{ padding: 16, background: 'hsla(35, 100%, 60%, 0.08)', borderLeft: '3px solid var(--warn)', borderRadius: '0 8px 8px 0', fontSize: 13 }}>
+          <strong>Disarming resumes all order acceptance.</strong> Cancelled candidates do NOT auto-restart.
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <input
+            className="modal-input"
+            style={{ flex: 1 }}
+            placeholder="Disarm reason (required) — e.g. 'Market stabilized, resuming'"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <button
+            className="hold-btn"
+            style={{ background: reason ? 'var(--secondary)' : 'var(--glass-strong)', color: reason ? '#000' : 'var(--muted)', padding: '12px 24px', borderRadius: 9999 }}
+            disabled={!reason}
+            onClick={() => dispatch({ type: 'DISARM_KILL' })}
+          >
+            <span className="label">⚡ Disarm system</span>
+          </button>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--muted-2)' }}>Current user: <strong style={{ color: 'var(--fg)' }}>Aman G. (super)</strong> · disarm enabled.</div>
+      </div>
+    </div>
+  );
+}
+
+function KillConfirmModal({ impact, onConfirm, onCancel }) {
+  const [token, setToken] = useState('');
+  const [reason, setReason] = useState('');
+  const [holdProgress, setHoldProgress] = useState(0);
+  const holdInterval = useRef(null);
+
+  const startHold = () => {
+    if (holdInterval.current) return;
+    holdInterval.current = setInterval(() => {
+      setHoldProgress(p => {
+        if (p >= 100) {
+          clearInterval(holdInterval.current);
+          holdInterval.current = null;
+          setTimeout(() => onConfirm(reason), 100);
+          return 100;
+        }
+        return p + 100/30; // 3 seconds = 30 steps of 100ms
+      });
+    }, 100);
+  };
+  const stopHold = () => {
+    if (holdInterval.current) {
+      clearInterval(holdInterval.current);
+      holdInterval.current = null;
+      setHoldProgress(0);
+    }
+  };
+
+  const canHold = token === 'KILL' && reason.trim().length > 0;
+
+  return (
+    <div className="modal-bg" onClick={(e) => e.target === e.currentTarget && onCancel()}>
+      <div className="modal">
+        <h3>Arm kill switch?</h3>
+        <p>This stops every order across all brokers. Cancellations begin immediately and cannot be undone (orders that are already filled stay filled).</p>
+        <div className="modal-impact">
+          <div className="item"><span className="k">Orders</span><span className="v">{impact.workingOrders}</span></div>
+          <div className="item"><span className="k">Candidates</span><span className="v">{impact.autoQueued + impact.needsApproval}</span></div>
+          <div className="item"><span className="k">Notional</span><span className="v">₹{(impact.notional/100000).toFixed(1)}L</span></div>
+          <div className="item"><span className="k">Brokers</span><span className="v">3</span></div>
+        </div>
+        <input className="modal-input token" placeholder="type KILL" value={token} onChange={(e) => setToken(e.target.value.toUpperCase())} />
+        <input className="modal-input" placeholder="reason (required) — e.g. NIFTY -2% in 5min" value={reason} onChange={(e) => setReason(e.target.value)} />
+        <button
+          className="hold-btn"
+          disabled={!canHold}
+          onMouseDown={startHold} onMouseUp={stopHold} onMouseLeave={stopHold}
+          onTouchStart={startHold} onTouchEnd={stopHold}
+        >
+          <span className="fill" style={{ width: holdProgress + '%' }}></span>
+          <span className="label">{canHold ? (holdProgress > 0 ? `${Math.ceil((100 - holdProgress)/100 * 3)}s` : 'HOLD 3s TO ARM') : token !== 'KILL' ? 'type KILL above' : 'enter reason above'}</span>
+        </button>
+        <button className="modal-cancel" onClick={onCancel}>cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function Toast({ toast, onClear }) {
+  useEffect(() => {
+    if (toast) {
+      const t = setTimeout(onClear, 3000);
+      return () => clearTimeout(t);
+    }
+  }, [toast]);
+  if (!toast) return null;
+  return <div className={`toast ${toast.type}`}>{toast.msg}</div>;
+}
+
+// ============ APP ============
+function App() {
+  const [state, dispatch] = useReducer(appReducer, {
+    candidates: initialCandidates,
+    orders: initialOrders,
+    killArmed: false,
+    killedAt: null,
+    killReason: null,
+    toast: null,
+    tick: 0,
+  });
+  const [route, navigate] = useHashRoute();
+
+  // Simulated SSE: tick every second
+  useEffect(() => {
+    const id = setInterval(() => dispatch({ type: 'TICK' }), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  let screen;
+  if (route === '#/orders') screen = <OrdersScreen state={state} />;
+  else if (route === '#/killswitch') screen = <KillSwitchScreen state={state} dispatch={dispatch} />;
+  else screen = <TodayScreen state={state} dispatch={dispatch} />;
+
+  return (
+    <div className="app">
+      {state.killArmed && (
+        <div className="armed-banner">
+          <span className="badge">KILL ARMED</span>
+          <span>All trading halted by <strong>Aman G.</strong> · cancellations processed · disarm requires super admin</span>
+        </div>
+      )}
+      <TopBar route={route} killArmed={state.killArmed} />
+      <div className="main">
+        <Sidebar route={route} navigate={navigate} />
+        {screen}
+      </div>
+      <BottomNav route={route} navigate={navigate} />
+      <Toast toast={state.toast} onClear={() => dispatch({ type: 'CLEAR_TOAST' })} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>

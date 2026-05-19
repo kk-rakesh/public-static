@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O4F Cockpit — /killswitch wireframe</title>
+<style>
+  :root {
+    --bg: #000; --canvas: #0a0a0a; --fg: #fff;
+    --primary: hsl(210, 100%, 60%); --secondary: hsl(145, 100%, 50%);
+    --muted: rgba(255,255,255,0.55); --muted-2: rgba(255,255,255,0.35);
+    --border: rgba(255,255,255,0.10); --border-strong: rgba(255,255,255,0.18);
+    --glass: rgba(255,255,255,0.03); --glass-strong: rgba(255,255,255,0.07);
+    --danger: hsl(0, 90%, 60%); --danger-strong: hsl(0, 100%, 55%);
+    --warn: hsl(35, 100%, 60%); --annot: hsl(280, 70%, 70%);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  * { box-sizing: border-box; }
+  html, body { background: var(--canvas); color: var(--fg); margin: 0; font-family: 'Barlow', sans-serif; font-weight: 400; -webkit-font-smoothing: antialiased; }
+  body { padding: 40px 24px 120px; }
+  .doc-header { max-width: 1240px; margin: 0 auto 48px; }
+  .heading-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; }
+  .doc-header h1 { font-size: 56px; margin: 0 0 8px; }
+  .doc-header .meta { font-size: 13px; color: var(--muted); margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; }
+  .doc-header .meta code { background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; }
+  .doc-header .lede { font-size: 18px; color: rgba(255,255,255,0.75); max-width: 70ch; }
+  .tag-o4f { font-weight: 600; } .tag-o4f .o4 { color: var(--primary); } .tag-o4f .f { color: var(--secondary); }
+  .canvas { display: flex; flex-wrap: wrap; gap: 64px 32px; align-items: flex-start; padding: 32px; background: #0a0a0a; border: 1px solid var(--border); border-radius: 16px; background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 24px 24px; }
+  .frame { position: relative; background: #000; border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,0.6); overflow: hidden; flex-shrink: 0; }
+  .frame-label { position: absolute; top: -28px; left: 0; right: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; display: flex; gap: 8px; align-items: baseline; }
+  .frame-label .name { color: var(--fg); } .frame-label .size { color: var(--muted-2); }
+  .frame.desktop { width: 1280px; height: 820px; } .frame.mobile { width: 360px; height: 720px; }
+
+  .screen { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+  .topbar .left { display: flex; align-items: center; gap: 24px; }
+  .logo { font-weight: 600; font-size: 18px; } .logo .o4 { color: var(--primary); } .logo .f { color: var(--secondary); }
+  .breadcrumb { font-weight: 300; color: var(--muted); font-size: 14px; } .breadcrumb strong { color: var(--fg); font-weight: 500; }
+  .topbar .right { display: flex; align-items: center; gap: 12px; }
+  .conn-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .conn-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); box-shadow: 0 0 8px var(--secondary); }
+  .conn-dot.armed::before { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+  .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--glass-strong); border: 1px solid var(--border); }
+  .main { display: flex; flex: 1; min-height: 0; }
+  .sidebar { width: 220px; padding: 24px 16px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; }
+  .sidebar .nav-section { font-size: 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 12px 4px; }
+  .sidebar a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 300; }
+  .sidebar a.active { background: hsla(0, 90%, 60%, 0.12); color: var(--danger); border: 1px solid hsla(0, 90%, 60%, 0.3); }
+  .sidebar a .ico { width: 16px; height: 16px; border-radius: 4px; background: var(--glass-strong); flex-shrink: 0; }
+  .sidebar a.active .ico { background: var(--danger); } .sidebar .spacer { flex: 1; }
+
+  .content { flex: 1; padding: 32px; overflow: hidden; display: flex; gap: 32px; }
+  .main-pane { flex: 1; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+  /* DISARMED hero */
+  .hero {
+    background: radial-gradient(ellipse at center, hsla(0, 90%, 60%, 0.08) 0%, transparent 60%),
+                linear-gradient(180deg, var(--glass) 0%, transparent 100%);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; display: flex; flex-direction: column; gap: 24px;
+  }
+  .hero h2 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 40px; margin: 0; line-height: 1; }
+  .hero p { color: var(--muted); font-weight: 300; margin: 0; max-width: 50ch; font-size: 14px; }
+  .hero-state { display: inline-flex; gap: 6px; align-items: center; padding: 4px 10px; border-radius: 9999px; background: hsla(145, 100%, 50%, 0.15); border: 1px solid hsla(145, 100%, 50%, 0.3); color: var(--secondary); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; width: fit-content; letter-spacing: 0.04em; }
+  .hero-state.armed { background: hsla(0, 100%, 55%, 0.18); border-color: hsla(0, 100%, 55%, 0.5); color: var(--danger); }
+
+  .kill-button-row { display: flex; gap: 24px; align-items: center; }
+  .big-kill {
+    position: relative; width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle at center, hsla(0, 100%, 55%, 0.25) 0%, hsla(0, 100%, 35%, 0.1) 70%, transparent 100%);
+    border: 2px solid var(--danger); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 0 80px hsla(0, 100%, 55%, 0.2), inset 0 0 40px hsla(0, 100%, 55%, 0.1);
+    cursor: pointer; flex-shrink: 0;
+  }
+  .big-kill .icon { font-size: 56px; color: var(--danger); line-height: 1; }
+  .big-kill .label { font-size: 18px; font-weight: 600; color: var(--danger); letter-spacing: 0.08em; margin-top: 8px; }
+  .big-kill .sublabel { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .kill-context { flex: 1; }
+  .kill-context h3 { font-size: 16px; margin: 0 0 8px; font-weight: 500; }
+  .scope-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .scope-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--glass); cursor: pointer; }
+  .scope-option.selected { border-color: var(--danger); background: hsla(0, 90%, 60%, 0.05); }
+  .radio { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--border-strong); flex-shrink: 0; margin-top: 2px; }
+  .scope-option.selected .radio { border-color: var(--danger); box-shadow: inset 0 0 0 3px var(--danger); }
+  .scope-text { flex: 1; }
+  .scope-title { font-size: 13px; font-weight: 500; }
+  .scope-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .scope-impact { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--warn); margin-top: 4px; }
+
+  /* Impact preview */
+  .impact-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .impact-title { font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+  .impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .impact-stat { display: flex; flex-direction: column; gap: 4px; }
+  .impact-stat .v { font-size: 28px; font-weight: 300; color: var(--danger); font-family: 'Barlow', sans-serif; }
+  .impact-stat .k { font-size: 11px; color: var(--muted); }
+
+  /* Audit log */
+  .audit-section { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .audit-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .audit-header h3 { margin: 0; font-size: 14px; font-weight: 500; }
+  .audit-header .since { font-size: 11px; color: var(--muted-2); font-family: 'JetBrains Mono', monospace; }
+  .audit-row { display: grid; grid-template-columns: 100px 100px 100px 1fr 120px; gap: 12px; padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 12px; align-items: center; }
+  .audit-row:last-child { border-bottom: none; }
+  .audit-row .ts { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .audit-row .actor { font-size: 11px; color: var(--fg); }
+  .event-pill { padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500; }
+  .event-pill.armed { background: hsla(0, 90%, 60%, 0.18); color: var(--danger); }
+  .event-pill.disarmed { background: hsla(145, 100%, 50%, 0.15); color: var(--secondary); }
+  .audit-row .text { color: var(--muted); font-size: 12px; }
+  .audit-row .scope { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted-2); }
+
+  /* Right rail */
+  .right-rail { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+  .rail-card { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .rail-title { font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .rail-grid { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; font-size: 12px; }
+  .rail-grid .k { color: var(--muted); }
+  .rail-grid .v { color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+
+  /* ARMED state */
+  .screen.armed { background: linear-gradient(180deg, hsla(0, 100%, 30%, 0.12) 0%, transparent 50%); }
+  .screen.armed::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--danger-strong); animation: pulse 1.5s infinite; pointer-events: none; }
+  .armed-banner {
+    background: linear-gradient(90deg, hsla(0, 100%, 35%, 0.25) 0%, hsla(0, 100%, 45%, 0.4) 50%, hsla(0, 100%, 35%, 0.25) 100%);
+    border-bottom: 1px solid hsla(0, 100%, 55%, 0.5);
+    padding: 10px 24px; display: flex; align-items: center; justify-content: space-between;
+    color: var(--fg); font-weight: 500; font-size: 13px;
+  }
+  .armed-banner .left { display: flex; align-items: center; gap: 12px; }
+  .armed-banner .badge { padding: 2px 8px; border-radius: 4px; background: var(--danger); color: #000; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .disarm-panel {
+    background: linear-gradient(180deg, hsla(0, 100%, 30%, 0.15) 0%, var(--glass) 100%);
+    border: 1px solid hsla(0, 100%, 55%, 0.4); border-radius: 16px;
+    padding: 32px; display: flex; flex-direction: column; gap: 20px;
+  }
+  .disarm-panel h2 { margin: 0; font-size: 28px; font-family: 'Instrument Serif', serif; font-style: italic; color: var(--danger); }
+  .disarm-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 12px; }
+  .disarm-summary .item .k { font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .disarm-summary .item .v { font-size: 24px; font-weight: 300; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+  .disarm-note { padding: 16px; background: hsla(35, 100%, 60%, 0.08); border-left: 3px solid var(--warn); border-radius: 0 8px 8px 0; font-size: 13px; color: rgba(255,255,255,0.85); }
+  .disarm-actions { display: flex; gap: 12px; align-items: center; }
+  .reason-input { flex: 1; padding: 12px 16px; background: var(--glass-strong); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); font-family: 'Barlow', sans-serif; font-size: 14px; }
+  .btn-disarm { padding: 12px 24px; border-radius: 9999px; background: var(--secondary); color: #000; font-weight: 600; font-size: 13px; border: none; cursor: pointer; letter-spacing: 0.02em; }
+  .btn-disarm:disabled { background: var(--glass-strong); color: var(--muted); }
+
+  /* Confirmation modal (mobile) */
+  .confirm-modal { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 10; }
+  .confirm-card { width: 100%; max-width: 320px; background: #1a0808; border: 1px solid hsla(0, 100%, 55%, 0.6); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 24px 64px hsla(0, 100%, 30%, 0.5); }
+  .confirm-card h3 { margin: 0; font-size: 22px; color: var(--danger); font-family: 'Instrument Serif', serif; font-style: italic; }
+  .confirm-card p { margin: 0; color: var(--muted); font-size: 13px; }
+  .confirm-impact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 8px; }
+  .confirm-impact .item .k { font-size: 10px; color: var(--muted-2); }
+  .confirm-impact .item .v { font-size: 18px; font-weight: 500; color: var(--danger); font-family: 'JetBrains Mono', monospace; }
+  .confirm-input { padding: 10px 12px; background: var(--glass-strong); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .hold-button { padding: 14px; border-radius: 9999px; background: var(--danger); color: #000; font-weight: 700; font-size: 14px; border: none; letter-spacing: 0.04em; position: relative; overflow: hidden; }
+  .hold-button .fill { position: absolute; inset: 0; background: hsla(0, 100%, 25%, 0.6); width: 65%; }
+  .hold-button .label { position: relative; }
+  .cancel-link { color: var(--muted); font-size: 12px; text-align: center; }
+
+  /* Mobile-specific */
+  .mobile .content { padding: 16px; flex-direction: column; gap: 16px; overflow: hidden; }
+  .mobile .hero { padding: 20px; gap: 16px; }
+  .mobile .hero h2 { font-size: 28px; }
+  .mobile .kill-button-row { flex-direction: column; gap: 16px; }
+  .mobile .big-kill { width: 160px; height: 160px; }
+  .mobile .big-kill .icon { font-size: 40px; }
+  .mobile .big-kill .label { font-size: 14px; }
+  .bottom-nav { display: flex; justify-content: space-around; padding: 8px 0 12px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.85); flex-shrink: 0; }
+  .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--muted-2); font-size: 10px; padding: 4px 8px; }
+  .bottom-nav a.active.kill { color: var(--danger); }
+  .bottom-nav a.active.kill .ico { background: var(--danger); }
+  .bottom-nav a .ico { width: 22px; height: 22px; border-radius: 5px; background: var(--glass-strong); }
+  .bottom-nav a.kill .ico { background: hsla(0, 90%, 60%, 0.3); }
+  .bottom-nav a.kill { color: var(--danger); }
+
+  /* Annotations */
+  .annotations { max-width: 1240px; margin: 64px auto 0; display: grid; grid-template-columns: 80px 1fr; gap: 24px 16px; }
+  .annot-num { display: flex; align-items: flex-start; justify-content: flex-end; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--annot); font-weight: 500; padding-top: 2px; }
+  .annot-body { color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 300; line-height: 1.65; }
+  .annot-body strong { color: var(--fg); font-weight: 500; }
+  .annot-body code { background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .section-title { max-width: 1240px; margin: 64px auto 16px; display: flex; align-items: baseline; gap: 16px; }
+  .section-title h2 { font-size: 32px; margin: 0; }
+  .section-title .num { font-family: 'JetBrains Mono', monospace; color: var(--annot); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <p class="meta"><span class="tag-o4f"><span class="o4">O4</span><span class="f">F</span></span> · Phase 1 Cockpit · Wireframe 04 · <code>/app/killswitch</code></p>
+  <h1 class="heading-italic">Killswitch<br/><span style="color: var(--muted);">— the emergency stop</span></h1>
+  <p class="lede">A single screen with one job: halt all order activity, cancel everything in flight, and prevent new orders from being placed. The flow is intentionally deliberate — scope-aware, impact-previewed, two-step confirmed — because false-positive kills are operationally expensive but missing-a-real-kill is catastrophic.</p>
+</div>
+
+<div class="section-title"><span class="num">FRAME 01</span><h2 class="heading-italic">Desktop · disarmed (steady state)</h2></div>
+
+<div class="canvas">
+  <div class="frame desktop">
+    <div class="frame-label"><span class="name">killswitch / desktop / disarmed</span><span class="size">1280 × 820 @ 1x</span></div>
+    <div class="screen">
+      <div class="topbar">
+        <div class="left">
+          <span class="logo"><span class="o4">O4</span><span class="f">F</span></span>
+          <span class="breadcrumb">Cockpit · <strong>Killswitch</strong></span>
+        </div>
+        <div class="right">
+          <span class="conn-dot">live · 36ms</span>
+          <div class="user-avatar"></div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="sidebar">
+          <div class="nav-section">Trading</div>
+          <a><span class="ico"></span><span>Today</span></a>
+          <a><span class="ico"></span><span>Orders</span></a>
+          <a class="active"><span class="ico"></span><span>Killswitch</span></a>
+          <div class="nav-section" style="margin-top:16px;">Strategy</div>
+          <a><span class="ico"></span><span>RMS rules</span></a>
+          <a><span class="ico"></span><span>Backtest</span></a>
+          <a><span class="ico"></span><span>History</span></a>
+          <div class="spacer"></div>
+          <a><span class="ico"></span><span>Settings</span></a>
+        </div>
+
+        <div class="content">
+          <div class="main-pane">
+
+            <div class="hero">
+              <span class="hero-state">● DISARMED · trading active</span>
+              <h2>Halt all orders.</h2>
+              <p>One click cancels everything in flight and stops new orders from being placed. Triggering requires a 3-second hold + typed "KILL" confirmation. Only super admin can disarm.</p>
+
+              <div class="kill-button-row">
+                <div class="big-kill">
+                  <div class="icon">⏻</div>
+                  <div class="label">KILL</div>
+                  <div class="sublabel">hold to arm</div>
+                </div>
+                <div class="kill-context">
+                  <h3>Scope</h3>
+                  <div class="scope-options">
+                    <div class="scope-option selected">
+                      <span class="radio"></span>
+                      <div class="scope-text">
+                        <div class="scope-title">All brokers, all symbols</div>
+                        <div class="scope-desc">Stops every order across AngelOne, Zerodha, Dhan</div>
+                        <div class="scope-impact">would cancel 3 working orders · 2 auto-queued candidates</div>
+                      </div>
+                    </div>
+                    <div class="scope-option">
+                      <span class="radio"></span>
+                      <div class="scope-text">
+                        <div class="scope-title">Specific broker</div>
+                        <div class="scope-desc">Choose broker → kills only that broker's orders</div>
+                      </div>
+                    </div>
+                    <div class="scope-option">
+                      <span class="radio"></span>
+                      <div class="scope-text">
+                        <div class="scope-title">Single symbol</div>
+                        <div class="scope-desc">Type a symbol → cancels all orders + candidates for that symbol</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="impact-panel">
+              <div class="impact-title">Impact preview · if armed now</div>
+              <div class="impact-grid">
+                <div class="impact-stat"><span class="v">3</span><span class="k">working orders will be cancelled</span></div>
+                <div class="impact-stat"><span class="v">2</span><span class="k">auto-queued candidates will be cancelled</span></div>
+                <div class="impact-stat"><span class="v">2</span><span class="k">needs-approval candidates will be skipped</span></div>
+                <div class="impact-stat"><span class="v">₹4.2L</span><span class="k">total notional currently exposed</span></div>
+              </div>
+            </div>
+
+            <div class="audit-section">
+              <div class="audit-header">
+                <h3>Kill events log</h3>
+                <span class="since">last 7 days · 4 events</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">May 14<br/>14:23:08</span>
+                <span class="actor">Aman G.</span>
+                <span><span class="event-pill armed">ARMED</span></span>
+                <span class="text">Unexpected market move (NIFTY -2% in 5min). All brokers killed; 4 orders cancelled.</span>
+                <span class="scope">scope: all</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">May 14<br/>14:31:42</span>
+                <span class="actor">Aman G. <em style="color:var(--muted-2)">(super)</em></span>
+                <span><span class="event-pill disarmed">DISARMED</span></span>
+                <span class="text">Market stabilized. Resuming normal trading.</span>
+                <span class="scope">—</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">May 9<br/>10:18:55</span>
+                <span class="actor">Rakesh K.</span>
+                <span><span class="event-pill armed">ARMED</span></span>
+                <span class="text">Zerodha session expired mid-day; cancelling Zerodha orders only.</span>
+                <span class="scope">scope: ZERODHA</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">May 9<br/>10:24:13</span>
+                <span class="actor">Aman G. <em style="color:var(--muted-2)">(super)</em></span>
+                <span><span class="event-pill disarmed">DISARMED</span></span>
+                <span class="text">Re-bootstrapped Zerodha session. Resuming.</span>
+                <span class="scope">—</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="right-rail">
+            <div class="rail-card">
+              <div class="rail-title">Current exposure</div>
+              <div class="rail-grid">
+                <span class="k">Working orders</span><span class="v">3</span>
+                <span class="k">Pending fills</span><span class="v">11 qty</span>
+                <span class="k">Notional · long</span><span class="v" style="color:var(--secondary);">₹2.6L</span>
+                <span class="k">Notional · short</span><span class="v" style="color:var(--danger);">₹1.6L</span>
+                <span class="k">Net delta</span><span class="v">+₹1.0L</span>
+              </div>
+            </div>
+
+            <div class="rail-card">
+              <div class="rail-title">Broker connectivity</div>
+              <div class="rail-grid">
+                <span class="k">Zerodha</span><span class="v" style="color:var(--secondary);">● up · 4h12m</span>
+                <span class="k">AngelOne</span><span class="v" style="color:var(--secondary);">● up</span>
+                <span class="k">Dhan</span><span class="v" style="color:var(--muted);">○ standby</span>
+              </div>
+            </div>
+
+            <div class="rail-card">
+              <div class="rail-title">Last kill drill</div>
+              <div style="font-size: 13px; color: var(--muted); line-height: 1.5;">
+                <strong style="color:var(--fg);">May 14 · 8:25 IST</strong><br/>
+                Tested partial scope (Zerodha only). 1 mock order cancelled in 0.8s. Audit log entry intact.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="annotations">
+  <div class="annot-num">①</div>
+  <div class="annot-body"><strong>Disarmed = no urgency, full information.</strong> When trading is healthy this screen is rarely the focus, so it doubles as the "kill switch readiness dashboard." Hero state pill shows we're disarmed; the rest of the screen tells you what would happen if you armed — so the action is never blind.</div>
+
+  <div class="annot-num">②</div>
+  <div class="annot-body"><strong>The button is large and round on purpose.</strong> Fitts's Law: a kill action must be hard to miss but the gesture itself (hold + type) protects against accidental clicks. The radial gradient + glow signals "important and dangerous" without being noisy.</div>
+
+  <div class="annot-num">③</div>
+  <div class="annot-body"><strong>Scope before action.</strong> Three options, "All brokers" as default. Each option shows its own impact line in amber so the trader can compare blast radius before committing. Single-symbol kills are surgical — useful when one position is misbehaving but others are fine.</div>
+
+  <div class="annot-num">④</div>
+  <div class="annot-body"><strong>Impact preview updates live.</strong> As candidates and orders change in the background via SSE, these numbers re-render. The trader always sees the cost of arming <em>right now</em>, not at some stale earlier moment.</div>
+
+  <div class="annot-num">⑤</div>
+  <div class="annot-body"><strong>Audit log is on-screen, not buried in admin.</strong> Showing the last 7 days of kill events normalizes the action — it's been used, here's when and why. Each row pairs an ARMED event with its DISARMED counterpart so context is contiguous.</div>
+
+  <div class="annot-num">⑥</div>
+  <div class="annot-body"><strong>Right rail tracks exposure and connectivity.</strong> When the kill button is at the center, the trader's natural next question is "do I need to use it?" — current exposure (long/short notional, net delta) and broker health are the answers.</div>
+
+  <div class="annot-num">⑦</div>
+  <div class="annot-body"><strong>"Last kill drill"</strong> reminds operators to test the path. We'll wire up a Monday 8 AM IST scheduled drill: arm scope=DRY_RUN, verify telemetry, disarm. If the drill hasn't run in &gt;7 days, this card turns amber.</div>
+</div>
+
+
+<div class="section-title"><span class="num">FRAME 02</span><h2 class="heading-italic">Desktop · armed (post-kill, awaiting disarm)</h2></div>
+
+<div class="canvas">
+  <div class="frame desktop">
+    <div class="frame-label"><span class="name">killswitch / desktop / armed</span><span class="size">1280 × 820 @ 1x</span></div>
+    <div class="screen armed">
+
+      <div class="armed-banner">
+        <div class="left">
+          <span class="badge">KILL ARMED</span>
+          <span>All trading halted at <strong style="font-family:'JetBrains Mono',monospace;">14:23:08 IST</strong> by <strong>Aman G.</strong> · 4 orders cancelled · 2 candidates skipped</span>
+        </div>
+        <span style="font-size: 12px; color: var(--muted);">disarm requires super admin</span>
+      </div>
+
+      <div class="topbar">
+        <div class="left">
+          <span class="logo"><span class="o4">O4</span><span class="f">F</span></span>
+          <span class="breadcrumb">Cockpit · <strong>Killswitch</strong></span>
+        </div>
+        <div class="right">
+          <span class="conn-dot armed">SYSTEM HALTED</span>
+          <div class="user-avatar"></div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="sidebar">
+          <div class="nav-section">Trading</div>
+          <a><span class="ico"></span><span>Today</span></a>
+          <a><span class="ico"></span><span>Orders</span></a>
+          <a class="active"><span class="ico"></span><span>Killswitch</span></a>
+          <div class="nav-section" style="margin-top:16px;">Strategy</div>
+          <a><span class="ico"></span><span>RMS rules</span></a>
+          <a><span class="ico"></span><span>Backtest</span></a>
+          <a><span class="ico"></span><span>History</span></a>
+          <div class="spacer"></div>
+          <a><span class="ico"></span><span>Settings</span></a>
+        </div>
+
+        <div class="content">
+          <div class="main-pane">
+            <div class="disarm-panel">
+              <span class="hero-state armed">⏻ ARMED · trading halted 2m 14s ago</span>
+              <h2>System is in kill mode.</h2>
+              <p style="color: var(--muted); font-size: 14px; max-width: 60ch; margin: 0;">All new orders are blocked. Place-order endpoints return 503. Polling continues read-only. Strategy outputs are queued but not evaluated.</p>
+
+              <div class="disarm-summary">
+                <div class="item"><span class="k">Triggered by</span><span class="v" style="font-size: 18px;">Aman G.</span></div>
+                <div class="item"><span class="k">Scope</span><span class="v">all brokers</span></div>
+                <div class="item"><span class="k">Reason given</span><span class="v" style="font-size: 14px; color: var(--fg);">"NIFTY -2% in 5min, unusual"</span></div>
+                <div class="item"><span class="k">Orders cancelled</span><span class="v">4</span></div>
+                <div class="item"><span class="k">Candidates skipped</span><span class="v">2</span></div>
+                <div class="item"><span class="k">Time since</span><span class="v">2m 14s</span></div>
+              </div>
+
+              <div class="disarm-note">
+                <strong>Disarming resumes all order acceptance.</strong> Active candidates that were skipped during the halt do NOT auto-restart — they remain CANCELLED. Strategy will need to re-emit signals.
+              </div>
+
+              <div class="disarm-actions">
+                <input class="reason-input" placeholder="Disarm reason (required) — e.g. 'Market stabilized, resuming'" />
+                <button class="btn-disarm">⚡ Disarm system</button>
+              </div>
+              <div style="font-size: 11px; color: var(--muted-2); margin-top: -8px;">Only super admins can disarm. Current user: <strong style="color: var(--fg);">Aman G. (super)</strong> · disarm enabled.</div>
+            </div>
+
+            <div class="audit-section">
+              <div class="audit-header">
+                <h3>This kill event · live timeline</h3>
+                <span class="since">arming at 14:23:08 → now</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">14:23:08</span>
+                <span class="actor">Aman G.</span>
+                <span><span class="event-pill armed">ARMED</span></span>
+                <span class="text">3-sec hold + KILL typed · scope=all · reason="NIFTY -2% in 5min, unusual"</span>
+                <span class="scope">scope: all</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">14:23:08</span>
+                <span class="actor"><em style="color: var(--muted-2);">system</em></span>
+                <span><span class="event-pill armed">SETHEALTH(false)</span></span>
+                <span class="text">OMS system_state.system_health = false · all brokers</span>
+                <span class="scope">—</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">14:23:08</span>
+                <span class="actor"><em style="color: var(--muted-2);">system</em></span>
+                <span><span class="event-pill armed">CANCEL</span></span>
+                <span class="text">ORD-7f3a (HDFCBANK SELL 25, Zerodha) · 14 filled, 11 to cancel</span>
+                <span class="scope">—</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">14:23:09</span>
+                <span class="actor"><em style="color: var(--muted-2);">system</em></span>
+                <span><span class="event-pill armed">CANCEL</span></span>
+                <span class="text">ORD-8c1b (TATAMOTORS BUY 50, Zerodha) · 0 filled · CANCELLED at broker</span>
+                <span class="scope">—</span>
+              </div>
+              <div class="audit-row">
+                <span class="ts">14:23:09</span>
+                <span class="actor"><em style="color: var(--muted-2);">system</em></span>
+                <span><span class="event-pill armed">SKIP</span></span>
+                <span class="text">Candidate INFY (manual, auto-queued) · marked CANCELLED · 0:18 remaining</span>
+                <span class="scope">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="annotations">
+  <div class="annot-num">⑧</div>
+  <div class="annot-body"><strong>Armed state changes the entire chrome.</strong> Red banner at top, pulsing top edge, "SYSTEM HALTED" replacing the latency indicator, killswitch sidebar item highlighted red. Same screen, dramatically different mood — there's no ambiguity about the state. Every other route in the cockpit also surfaces the red banner.</div>
+
+  <div class="annot-num">⑨</div>
+  <div class="annot-body"><strong>Reason capture is mandatory for both arm and disarm.</strong> Free-text but required. This appears in the audit log and shows up in every future post-mortem. Stops "why did we kill?" / "no one remembers" from ever being an honest answer.</div>
+
+  <div class="annot-num">⑩</div>
+  <div class="annot-body"><strong>Disarm is super-admin only.</strong> Admin can arm — anyone with floor authority can stop trading. Disarm requires senior approval because the social pressure to "just turn it back on" mid-incident is exactly what we want to slow down. The disarm button greys out for non-super-admin sessions; the note explains why.</div>
+
+  <div class="annot-num">⑪</div>
+  <div class="annot-body"><strong>Live timeline of this kill event</strong> reads like a system journal. Every cancellation, skip, and state change attributed to the kill is captured with a precise timestamp. After disarm this log becomes immutable and is referenced from <code>/admin/audit</code>.</div>
+</div>
+
+
+<div class="section-title"><span class="num">FRAME 03</span><h2 class="heading-italic">Mobile · armed + confirm modal</h2></div>
+
+<div class="canvas">
+  <div class="frame mobile">
+    <div class="frame-label"><span class="name">killswitch / mobile / disarmed</span><span class="size">360 × 720 @ 1x</span></div>
+    <div class="screen mobile">
+      <div class="topbar">
+        <span class="logo"><span class="o4">O4</span><span class="f">F</span></span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="conn-dot" style="font-size:11px;">live</span>
+        </div>
+      </div>
+      <div class="content">
+        <div class="hero">
+          <span class="hero-state">● DISARMED</span>
+          <h2 style="font-size: 24px;">Halt all orders.</h2>
+          <div class="kill-button-row">
+            <div class="big-kill" style="margin: 0 auto;">
+              <div class="icon">⏻</div>
+              <div class="label">KILL</div>
+              <div class="sublabel">hold to arm</div>
+            </div>
+          </div>
+        </div>
+        <div class="impact-panel">
+          <div class="impact-title">If armed now</div>
+          <div class="impact-grid" style="grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="impact-stat"><span class="v" style="font-size: 22px;">3</span><span class="k">orders cancelled</span></div>
+            <div class="impact-stat"><span class="v" style="font-size: 22px;">2</span><span class="k">candidates skipped</span></div>
+            <div class="impact-stat"><span class="v" style="font-size: 22px;">₹4.2L</span><span class="k">notional exposed</span></div>
+            <div class="impact-stat"><span class="v" style="font-size: 22px;">net</span><span class="k">+₹1.0L delta</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <a><span class="ico"></span><span>Today</span></a>
+        <a><span class="ico"></span><span>Orders</span></a>
+        <a class="active kill"><span class="ico"></span><span>Kill</span></a>
+        <a><span class="ico"></span><span>Backtest</span></a>
+        <a><span class="ico"></span><span>More</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame mobile">
+    <div class="frame-label"><span class="name">killswitch / mobile / confirm</span><span class="size">360 × 720 @ 1x</span></div>
+    <div class="screen mobile">
+      <div class="topbar">
+        <span class="logo"><span class="o4">O4</span><span class="f">F</span></span>
+      </div>
+      <div class="content"></div>
+      <div class="confirm-modal">
+        <div class="confirm-card">
+          <h3>Arm kill switch?</h3>
+          <p>This stops every order across all brokers. Cancellations begin immediately and cannot be undone (orders that are already filled stay filled).</p>
+          <div class="confirm-impact">
+            <div class="item"><span class="k">Orders</span><span class="v">3</span></div>
+            <div class="item"><span class="k">Candidates</span><span class="v">2</span></div>
+            <div class="item"><span class="k">Notional</span><span class="v">₹4.2L</span></div>
+            <div class="item"><span class="k">Brokers</span><span class="v">3</span></div>
+          </div>
+          <input class="confirm-input" placeholder="type KILL" value="KIL" />
+          <div style="font-size:11px;color:var(--muted-2);">Reason (required)</div>
+          <input class="confirm-input" style="text-transform:none;letter-spacing:0;font-family:'Barlow',sans-serif;" placeholder="why are you killing?" value="NIFTY -2% in 5min, unusual" />
+          <button class="hold-button">
+            <span class="fill"></span>
+            <span class="label">HOLD 2.0s MORE TO ARM</span>
+          </button>
+          <span class="cancel-link">cancel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="annotations">
+  <div class="annot-num">⑫</div>
+  <div class="annot-body"><strong>Mobile keeps everything that matters.</strong> Big circle button stays big — it's the only interactive element on the route. Impact panel below in a 2×2 grid. Bottom nav with the red Kill tab highlighted. Right rail content moves to a "More" submenu since this screen is meant to be reactive, not browsed.</div>
+
+  <div class="annot-num">⑬</div>
+  <div class="annot-body"><strong>Confirmation modal layers over everything.</strong> Two-factor commit: (a) type exactly "KILL" — typos block submission; (b) hold the button for 3 seconds — the progress fill makes the duration explicit. This is the same pattern as a delete-repository confirmation on GitHub or AWS — proven to balance friction with reachability.</div>
+
+  <div class="annot-num">⑭</div>
+  <div class="annot-body"><strong>Reason field on the confirm modal is below the typed token.</strong> Pre-fills only with detected anomalies if any (e.g. "NIFTY -2% in 5min" from market data). Empty reason blocks the hold-button. Reason is captured verbatim into the audit log.</div>
+</div>
+
+</body>
+</html>
