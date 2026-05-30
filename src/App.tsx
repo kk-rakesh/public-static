@@ -83,7 +83,7 @@ const ProcessingWave = ({ color = "bg-primary" }: { color?: string }) => (
           height: [8, 24, 8],
         }}
         transition={{
-          duration: 1.5,
+          duration: 1,
           repeat: Infinity,
           delay: i * 0.1,
           ease: "easeInOut",
@@ -344,28 +344,9 @@ const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
             We are <RotatingMarketIdentity />
           </h1>
 
-          <svg
-            viewBox="0 0 320 32"
-            className="h-6 w-full max-w-md"
-            aria-hidden="true"
-          >
-            <defs>
-              <linearGradient id="hero-wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
-                <stop offset="50%" stopColor="hsl(var(--secondary))" stopOpacity="0.95" />
-                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
-              </linearGradient>
-            </defs>
-            <motion.path
-              d="M0 16 C 30 2, 50 30, 80 16 S 130 2, 160 16 S 210 30, 240 16 S 290 2, 320 16"
-              fill="none"
-              stroke="url(#hero-wave-gradient)"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              animate={{ pathLength: [0.2, 1, 0.2], opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </svg>
+          <div className="mt-2 origin-center scale-x-125">
+            <ProcessingWave color="bg-secondary" />
+          </div>
           <p className="body-light text-2xl md:text-3xl text-white/90 font-semibold max-w-4xl">
             AI-native platforms powering real-time data, ultra-low latency compute, and autonomous decision systems.
           </p>
