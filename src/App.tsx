@@ -45,7 +45,7 @@ const ComingSoonDialog = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
               </div>
 
               <div className="space-y-3">
-                <h2 className="heading-italic text-3xl md:text-4xl">Coming Soon</h2>
+                <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem]">Coming Soon</h2>
                 <p className="body-light text-lg">
                   We're building something extraordinary. Stay with us as we launch the next generation of intelligent infrastructure.
                 </p>
@@ -93,6 +93,66 @@ const ProcessingWave = ({ color = "bg-primary" }: { color?: string }) => (
     ))}
   </div>
 );
+
+const ROTATING_MARKET_ROLES = [
+  'engineers',
+  'mathematicians',
+  'researchers',
+  'traders',
+  'systems thinkers',
+  'risk-managers',
+  'platform builders',
+  'fintech experts',
+] as const;
+
+const RotatingMarketIdentity = () => {
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentRole = ROTATING_MARKET_ROLES[roleIndex];
+
+    const timerId = window.setTimeout(() => {
+      if (!isDeleting && typedText.length < currentRole.length) {
+        setTypedText(currentRole.slice(0, typedText.length + 1));
+        return;
+      }
+
+      if (!isDeleting && typedText.length === currentRole.length) {
+        setIsDeleting(true);
+        return;
+      }
+
+      if (isDeleting && typedText.length > 1) {
+        setTypedText(currentRole.slice(0, typedText.length - 1));
+        return;
+      }
+
+      if (isDeleting && typedText.length === 1) {
+        const nextIndex = (roleIndex + 1) % ROTATING_MARKET_ROLES.length;
+        setIsDeleting(false);
+        setRoleIndex(nextIndex);
+        setTypedText(ROTATING_MARKET_ROLES[nextIndex].slice(0, 1));
+        return;
+      }
+
+      setIsDeleting(false);
+      setRoleIndex((previous) => (previous + 1) % ROTATING_MARKET_ROLES.length);
+    }, isDeleting ? 68 : typedText.length === currentRole.length ? 1500 : 128);
+
+    return () => {
+      window.clearTimeout(timerId);
+    };
+  }, [roleIndex, typedText, isDeleting]);
+
+  return (
+    <span className="inline-flex items-center text-primary w-[10ch] sm:w-[12ch] md:w-[18ch]">
+      <span>{typedText}</span>
+      <span className="ml-1 h-[0.9em] border-r-8 border-white animate-pulse" aria-hidden="true" />
+    </span>
+  );
+};
 
 const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
   const navigate = useNavigate();
@@ -254,49 +314,63 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
 
 const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
   return (
-    <section id="home" className="relative min-h-screen flex items-center horizontal-padding overflow-x-hidden">
+    <section id="home" className="relative min-h-screen flex items-center justify-center horizontal-padding overflow-x-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src={introVideoWebm} type="video/webm" />
+          <source src={introVideoMp4} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/70" />
+      </div>
+
       {/* Background Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-primary/10 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-secondary/10 rounded-full blur-[110px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto w-full z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center py-32">
-        {/* Video - Left */}
+      <div className="max-w-5xl mx-auto w-full z-10 py-32 flex justify-center">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="overflow-hidden"
-        >
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-auto"
-          >
-            <source src={introVideoWebm} type="video/webm" />
-            <source src={introVideoMp4} type="video/mp4" />
-          </video>
-        </motion.div>
-
-        {/* Text - Right */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex flex-col gap-6"
+          className="flex flex-col gap-8 items-center text-center"
         >
-          <h1 className="heading-italic text-5xl md:text-7xl">
-            Infrastructure for Intelligent Systems
+          <h1 className="heading-italic text-[clamp(2rem,7vw,6rem)] font-semibold whitespace-normal md:whitespace-nowrap text-left self-start pl-[15vw]">
+            We are <RotatingMarketIdentity />
           </h1>
-          <div className="opacity-40">
-            <ProcessingWave color="bg-primary" />
-          </div>
-          <p className="body-light text-lg md:text-xl text-white/80">
+
+          <svg
+            viewBox="0 0 320 32"
+            className="h-6 w-full max-w-md"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="hero-wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
+                <stop offset="50%" stopColor="hsl(var(--secondary))" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
+              </linearGradient>
+            </defs>
+            <motion.path
+              d="M0 16 C 30 2, 50 30, 80 16 S 130 2, 160 16 S 210 30, 240 16 S 290 2, 320 16"
+              fill="none"
+              stroke="url(#hero-wave-gradient)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              animate={{ pathLength: [0.2, 1, 0.2], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </svg>
+          <p className="body-light text-2xl md:text-3xl text-white/90 font-semibold max-w-4xl">
             AI-native platforms powering real-time data, ultra-low latency compute, and autonomous decision systems.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <button onClick={onExplorePlatform} className="liquid-glass-strong rounded-full px-8 py-4 text-sm font-body hover:bg-white/10 transition-all">
               Explore Platform
             </button>
@@ -316,7 +390,7 @@ const Vision = () => {
       <div className="grid md:grid-row-2 gap-16">
         <div>
           <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Vision</span>
-          <h2 className="heading-italic text-5xl md:text-7xl mb-12">The Next Era of Technology</h2>
+          <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-12">The Next Era of Technology</h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
@@ -387,7 +461,7 @@ const WhatWeBuild = () => {
   return (
     <section id="platform" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Capabilities</span>
-      <h2 className="heading-italic text-5xl md:text-7xl mb-16">What We Build</h2>
+      <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-16">What We Build</h2>
 
       <div className="grid md:grid-cols-2 gap-8">
         <FeatureCard
@@ -450,7 +524,7 @@ const Architecture = () => {
     <section id="architecture" className="py-16 md:py-32 horizontal-padding bg-white/[0.02]">
       <div className="max-w-7xl mx-auto">
         <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Architecture</span>
-        <h2 className="heading-italic text-5xl md:text-7xl mb-4">Platform Architecture</h2>
+        <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-4">Platform Architecture</h2>
         <p className="body-light text-xl mb-16">The O4F platform is built as a modular intelligent system.</p>
 
         <div className="space-y-4">
@@ -480,7 +554,7 @@ const Architecture = () => {
 const TechnologyPrinciples = () => {
   return (
     <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
-      <h2 className="heading-italic text-5xl md:text-7xl mb-16 text-center">Technology Principles</h2>
+      <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-16 text-center">Technology Principles</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {['Modular', 'Event Driven', 'AI Native', 'Real Time'].map((principle) => (
           <div key={principle} className="liquid-glass rounded-2xl p-12 flex flex-col items-center justify-center text-center border-white/5 hover:bg-white/5 transition-colors">
@@ -499,7 +573,7 @@ const WhyO4F = () => {
       <div className="grid md:grid-cols-2 gap-16 items-center">
         <div>
           <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Strategy</span>
-          <h2 className="heading-italic text-5xl md:text-7xl mb-8">Why O4F</h2>
+          <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-8">Why O4F</h2>
           <p className="body-light text-lg mb-12">
             We are building technology for a world where:
           </p>
@@ -534,7 +608,7 @@ const Research = () => {
     <section id="research" className="py-16 md:py-32 horizontal-padding bg-white/[0.02]">
       <div className="max-w-7xl mx-auto text-center">
         <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Innovation</span>
-        <h2 className="heading-italic text-5xl md:text-7xl mb-8">Research & Innovation</h2>
+        <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-8">Research & Innovation</h2>
         <p className="body-light text-xl max-w-2xl mx-auto mb-16">
           Our work spans multiple domains including:
         </p>
@@ -560,7 +634,7 @@ const Research = () => {
 const Mission = () => {
   return (
     <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto text-center">
-      <h2 className="heading-italic text-5xl md:text-7xl mb-12">Our Mission</h2>
+      <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-12">Our Mission</h2>
       <div className="max-w-3xl mx-auto space-y-8">
         <p className="text-3xl md:text-4xl font-body font-light leading-tight">
           To build systems that expand human capability.
@@ -581,7 +655,7 @@ const Join = () => {
       <div className="liquid-glass rounded-[48px] p-16 md:p-24 text-center border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
-        <h2 className="heading-italic text-5xl md:text-8xl mb-8 relative z-10">Join the Builders</h2>
+        <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-8 relative z-10">Join the Builders</h2>
         <p className="body-light text-xl max-w-2xl mx-auto mb-12 relative z-10">
           We are building a team of engineers, researchers, and thinkers who want to create lasting systems.
         </p>
@@ -767,7 +841,7 @@ const BlogPage = ({ slug, onBack }: { slug: string; onBack: () => void; key?: st
             <User className="w-3 h-3" /> {blog.author}
           </span>
         </div>
-        <h1 className="heading-italic text-5xl md:text-7xl">{blog.title}</h1>
+        <h1 className="heading-italic text-[3.24rem] md:text-[4.86rem]">{blog.title}</h1>
         <p className="body-light text-xl leading-relaxed italic">{blog.subtitle}</p>
       </div>
 
@@ -852,7 +926,7 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) => {
   return (
     <section id="research" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Insights</span>
-      <h2 className="heading-italic text-5xl md:text-7xl mb-16">Research & Insights</h2>
+      <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-16">Research & Insights</h2>
 
       {loading ? (
         <div className="text-white/60 text-center py-12">Loading blogs...</div>

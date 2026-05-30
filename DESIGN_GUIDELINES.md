@@ -4,7 +4,7 @@ This document defines the visual identity, design tokens, and theming principles
 
 ## 1. Brand Identity
 - **Logo**: Always uppercase **O4F**.
-- **Color Rule**: "O4" must be Blue (`var(--primary)`), "F" must be Green (`var(--secondary)`).
+- **Color Rule**: "O4" must use `#1f07fa` (`var(--primary)`), "F" must be Green (`var(--secondary)`).
 - **Tone**: Infrastructure-focused, deep technology, real-time systems. Avoid "marketing agency" or generic SaaS aesthetics. Think NVIDIA, Stripe, or OpenAI infrastructure.
 
 ## 2. Design Tokens (CSS Variables)
@@ -15,7 +15,7 @@ Defined in `src/index.css` under `:root` and `@theme`:
 |-------|-------|-------------|
 | `--background` | `0 0% 0%` (Black) | Primary background color |
 | `--foreground` | `0 0% 100%` (White) | Primary text color |
-| `--primary` | `210 100% 60%` (Blue) | Brand color for "O4" and primary accents |
+| `--primary` | `245.93 96.05% 50.39%` (`#1f07fa`) | Brand color for "O4" and primary accents |
 | `--secondary` | `145 100% 50%` (Green) | Brand color for "F" and secondary accents |
 | `--border` | `0 0% 100% / 0.15` | Subtle white border for glass effects |
 | `--radius` | `9999px` | Global pill-shape radius for buttons and nav |
@@ -23,9 +23,9 @@ Defined in `src/index.css` under `:root` and `@theme`:
 ## 3. Typography
 
 ### Headings
-- **Font**: `Instrument Serif` (italic)
+- **Font**: `serif`
 - **Class**: `.heading-italic`
-- **Styles**: `font-style: italic`, `line-height: 0.9`, `letter-spacing: -0.02em`, `text-white`.
+- **Styles**: `font-style: normal`, `line-height: 0.9`, `letter-spacing: 0.03em`, `text-white`.
 - **Usage**: Major section headlines and hero titles only.
 
 ### Body & UI

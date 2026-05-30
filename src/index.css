@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Instrument Serif", serif;
+  --font-heading: "Inter", sans-serif;
   --font-body: "Barlow", sans-serif;
   
   --color-background: hsl(0 0% 0%);
@@ -55,10 +55,10 @@ body {
 }
 
 .heading-italic {
-  font-family: var(--font-heading);
-  font-style: italic;
+  font-family: serif;
+  font-style: normal;
   line-height: 0.9;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.03em;
 }
 
 .body-light {
