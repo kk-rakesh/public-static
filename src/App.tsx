@@ -4,7 +4,6 @@
  */
 
 import { ArrowUpRight, Cpu, Database, Network, Zap, Activity, Shield, Layers, Globe, Code, Terminal, ArrowLeft, BookOpen, Clock, User, X, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
-import introVideoWebm from './assets/intro-o4f.webm';
 import introVideoMp4 from './assets/intro-o4f-optimized.mp4';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReactNode, useState, useEffect, useRef } from 'react';
@@ -99,6 +98,7 @@ const ROTATING_MARKET_ROLES = [
   'mathematicians',
   'researchers',
   'traders',
+  'developers',
   'systems thinkers',
   'risk-managers',
   'platform builders',
@@ -204,7 +204,7 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 horizontal-padding py-2 md:py-2 transition-all duration-300 liquid-glass border-b border-white/10 md:border-0 ${isScrolled ? 'md:liquid-glass md:border md:border-white/10' : 'md:bg-transparent/5 md:backdrop-blur-none'}`}
+      className="fixed top-0 left-0 w-full z-50 horizontal-padding py-2 md:py-2"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link
@@ -314,26 +314,26 @@ const Navbar = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
 
 const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center horizontal-padding overflow-x-hidden">
+    <section id="home" className="relative min-h-[100svh] md:min-h-screen flex items-center justify-center horizontal-padding overflow-x-hidden touch-pan-y">
       <div className="absolute inset-0 pointer-events-none">
         <video
           autoPlay
           loop
           muted
           playsInline
+          preload="none"
           className="w-full h-full object-cover"
         >
-          <source src={introVideoWebm} type="video/webm" />
           <source src={introVideoMp4} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/70" />
       </div>
 
       {/* Background Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-primary/10 rounded-full blur-[130px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-secondary/10 rounded-full blur-[110px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[560px] bg-primary/12 rounded-full blur-[72px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/4 w-[320px] h-[320px] bg-secondary/12 rounded-full blur-[64px] pointer-events-none" />
 
-      <div className="max-w-5xl mx-auto w-full z-10 py-32 flex justify-center">
+      <div className="max-w-5xl mx-auto w-full z-10 py-24 flex justify-center">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -386,7 +386,7 @@ const Hero = ({ onExplorePlatform }: { onExplorePlatform: () => void }) => {
 
 const Vision = () => {
   return (
-    <section id="mission" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
+    <section id="mission" className="py-12 md:py-20 horizontal-padding max-w-7xl mx-auto">
       <div className="grid md:grid-row-2 gap-16">
         <div>
           <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Vision</span>
@@ -459,7 +459,7 @@ const FeatureCard = ({ title, content, icon: Icon, children }: { title: string, 
 
 const WhatWeBuild = () => {
   return (
-    <section id="platform" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
+    <section id="platform" className="py-12 md:py-20 horizontal-padding max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Capabilities</span>
       <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-16">What We Build</h2>
 
@@ -521,7 +521,7 @@ const Architecture = () => {
   ];
 
   return (
-    <section id="architecture" className="py-16 md:py-32 horizontal-padding bg-white/[0.02]">
+    <section id="architecture" className="py-12 md:py-20 horizontal-padding bg-white/[0.02]">
       <div className="max-w-7xl mx-auto">
         <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Architecture</span>
         <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-4">Platform Architecture</h2>
@@ -553,7 +553,7 @@ const Architecture = () => {
 
 const TechnologyPrinciples = () => {
   return (
-    <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
+    <section className="py-12 md:py-20 horizontal-padding max-w-7xl mx-auto">
       <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-16 text-center">Technology Principles</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {['Modular', 'Event Driven', 'AI Native', 'Real Time'].map((principle) => (
@@ -569,7 +569,7 @@ const TechnologyPrinciples = () => {
 
 const WhyO4F = () => {
   return (
-    <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
+    <section className="py-12 md:py-20 horizontal-padding max-w-7xl mx-auto">
       <div className="grid md:grid-cols-2 gap-16 items-center">
         <div>
           <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Strategy</span>
@@ -605,7 +605,7 @@ const WhyO4F = () => {
 
 const Research = () => {
   return (
-    <section id="research" className="py-16 md:py-32 horizontal-padding bg-white/[0.02]">
+    <section id="research" className="py-12 md:py-20 horizontal-padding bg-white/[0.02]">
       <div className="max-w-7xl mx-auto text-center">
         <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Innovation</span>
         <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-8">Research & Innovation</h2>
@@ -633,7 +633,7 @@ const Research = () => {
 
 const Mission = () => {
   return (
-    <section className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto text-center">
+    <section className="py-12 md:py-20 horizontal-padding max-w-7xl mx-auto text-center">
       <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-12">Our Mission</h2>
       <div className="max-w-3xl mx-auto space-y-8">
         <p className="text-3xl md:text-4xl font-body font-light leading-tight">
@@ -651,7 +651,7 @@ const Join = () => {
   const investorUrl = "https://forms.gle/TmK4SU1A2G5isAui6";
 
   return (
-    <section id="contact" className="py-16 md:py-32 horizontal-padding max-w-7xl mx-auto">
+    <section id="contact" className="py-12 md:py-20 horizontal-padding max-w-7xl mx-auto">
       <div className="liquid-glass rounded-[48px] p-16 md:p-24 text-center border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
@@ -924,7 +924,7 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) => {
   };
 
   return (
-    <section id="research" className="py-16 md:py-32 px-4 md:px-8 max-w-7xl mx-auto">
+    <section id="research" className="py-12 md:py-20 px-4 md:px-8 max-w-7xl mx-auto">
       <span className="liquid-glass px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-8 inline-block">Insights</span>
       <h2 className="heading-italic text-[3.24rem] md:text-[4.86rem] mb-16">Research & Insights</h2>
 
@@ -933,7 +933,7 @@ const Blogs = ({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) => {
       ) : blogs.length === 0 ? (
         <div className="text-white/60 text-center py-12">No blogs available yet.</div>
       ) : (
-        <div className="relative group">
+        <div className="relative">
           {/* Left Scroll Button */}
           {canScrollLeft && (
             <motion.button
@@ -1024,15 +1024,14 @@ export function HomePage() {
       return;
     }
 
-    const scrollTimer = window.setTimeout(() => {
-      const target = document.getElementById(sectionId);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        window.history.replaceState(null, '', `/#${sectionId}`);
-      }
-    }, 120);
+    const target = document.getElementById(sectionId);
+    if (!target) {
+      return;
+    }
 
-    return () => window.clearTimeout(scrollTimer);
+    // Use immediate positioning on first paint to avoid mobile scroll lock/jank.
+    target.scrollIntoView({ behavior: 'auto', block: 'start' });
+    window.history.replaceState(null, '', `/#${sectionId}`);
   }, []);
 
   return (

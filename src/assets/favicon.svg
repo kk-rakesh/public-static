@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <text
+    y="22"
+    font-family="Arial Black, Segoe UI, sans-serif"
+    font-weight="900"
+    font-size="15"
+    text-rendering="geometricPrecision"
+  >
+    <tspan x="2" fill="#d41245">O</tspan>
+    <tspan x="14" fill="#2f8dff">4</tspan>
+    <tspan x="23.5" fill="#2ddf69">F</tspan>
+  </text>
+</svg>

@@ -6,16 +6,16 @@
   
   --color-background: hsl(0 0% 0%);
   --color-foreground: hsl(0 0% 100%);
-  --color-primary: hsl(210 100% 60%);
-  --color-secondary: hsl(145 100% 50%);
+  --color-primary: hsl(258 100% 68%);
+  --color-secondary: hsl(168 100% 52%);
   --color-border: hsla(0, 0%, 100%, 0.15);
 }
 
 :root {
   --background: 0 0% 0%;
   --foreground: 0 0% 100%;
-  --primary: 210 100% 60%;
-  --secondary: 145 100% 50%;
+  --primary: 258 100% 68%;
+  --secondary: 168 100% 52%;
   --border: 0 0% 100% / 0.15;
   --radius: 9999px;
   --horizontal-gap: clamp(1rem, 4vw, 2rem);
@@ -29,7 +29,10 @@ html {
 }
 
 body {
-  background-color: black;
+  background:
+    radial-gradient(circle at 18% 10%, hsl(var(--primary) / 0.24), transparent 34%),
+    radial-gradient(circle at 84% 14%, hsl(var(--secondary) / 0.2), transparent 34%),
+    #000;
   color: white;
   font-family: var(--font-body);
   overflow-x: hidden;
@@ -41,17 +44,17 @@ body {
 }
 
 .liquid-glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 36px -1px rgba(15, 10, 48, 0.38);
 }
 
 .liquid-glass-strong {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 32px -1px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px -1px rgba(18, 12, 55, 0.45);
 }
 
 .heading-italic {
@@ -64,7 +67,7 @@ body {
 .body-light {
   font-family: var(--font-body);
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.74);
 }
 
 /* Generic horizontal padding parameter - 1.5x increased from original */
