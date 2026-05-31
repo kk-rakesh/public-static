@@ -101,3 +101,11 @@ html, body {
     @apply border-border;
   }
 }
+
+@keyframes cursor-blink {
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: cursor-blink 0.8s step-end infinite;
+}

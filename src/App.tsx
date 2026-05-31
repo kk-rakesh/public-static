@@ -108,48 +108,84 @@ const ROTATING_MARKET_ROLES = [
 const RotatingMarketIdentity = () => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [typedText, setTypedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
+  const typedTextRef = useRef('');
 
   useEffect(() => {
+    let active = true;
+    let phase: 'typing' | 'paused_full' | 'deleting' | 'paused_empty' = 'typing';
     const currentRole = ROTATING_MARKET_ROLES[roleIndex];
+    let phaseStartTime = performance.now();
 
-    const timerId = window.setTimeout(() => {
-      if (!isDeleting && typedText.length < currentRole.length) {
-        setTypedText(currentRole.slice(0, typedText.length + 1));
-        return;
+    // Reset typewriter text at the start of a new word cycle
+    typedTextRef.current = '';
+    setTypedText('');
+
+    const tick = (now: number) => {
+      if (!active) return;
+
+      const elapsed = now - phaseStartTime;
+
+      if (phase === 'typing') {
+        // Uniform physical typing rate (100ms per letter)
+        const lettersToShow = Math.min(
+          currentRole.length,
+          Math.floor(elapsed / 100)
+        );
+        const nextText = currentRole.slice(0, lettersToShow);
+        if (nextText !== typedTextRef.current) {
+          typedTextRef.current = nextText;
+          setTypedText(nextText);
+        }
+
+        if (lettersToShow >= currentRole.length) {
+          phase = 'paused_full';
+          phaseStartTime = now;
+        }
+      } else if (phase === 'paused_full') {
+        // 1.5s natural pause at the full word
+        if (elapsed >= 1500) {
+          phase = 'deleting';
+          phaseStartTime = now;
+        }
+      } else if (phase === 'deleting') {
+        // Uniform physical deleting rate (50ms per letter)
+        const lettersToKeep = Math.max(
+          0,
+          currentRole.length - Math.floor(elapsed / 50)
+        );
+        const nextText = currentRole.slice(0, lettersToKeep);
+        if (nextText !== typedTextRef.current) {
+          typedTextRef.current = nextText;
+          setTypedText(nextText);
+        }
+
+        if (lettersToKeep === 0) {
+          phase = 'paused_empty';
+          phaseStartTime = now;
+        }
+      } else if (phase === 'paused_empty') {
+        // Smooth pause at empty text before introducing the next word
+        if (elapsed >= 400) {
+          const nextIndex = (roleIndex + 1) % ROTATING_MARKET_ROLES.length;
+          setRoleIndex(nextIndex);
+          return;
+        }
       }
 
-      if (!isDeleting && typedText.length === currentRole.length) {
-        setIsDeleting(true);
-        return;
-      }
+      requestAnimationFrame(tick);
+    };
 
-      if (isDeleting && typedText.length > 1) {
-        setTypedText(currentRole.slice(0, typedText.length - 1));
-        return;
-      }
-
-      if (isDeleting && typedText.length === 1) {
-        const nextIndex = (roleIndex + 1) % ROTATING_MARKET_ROLES.length;
-        setIsDeleting(false);
-        setRoleIndex(nextIndex);
-        setTypedText(ROTATING_MARKET_ROLES[nextIndex].slice(0, 1));
-        return;
-      }
-
-      setIsDeleting(false);
-      setRoleIndex((previous) => (previous + 1) % ROTATING_MARKET_ROLES.length);
-    }, isDeleting ? 68 : typedText.length === currentRole.length ? 1500 : 128);
+    requestAnimationFrame(tick);
 
     return () => {
-      window.clearTimeout(timerId);
+      active = false;
     };
-  }, [roleIndex, typedText, isDeleting]);
+  }, [roleIndex]);
 
   return (
     <span className="inline-flex items-center text-primary w-[10ch] sm:w-[12ch] md:w-[18ch]">
-      <span>{typedText}</span>
-      <span className="ml-1 h-[0.9em] border-r-8 border-white animate-pulse" aria-hidden="true" />
+      <span>{typedText || '\u200b'}</span>
+      <span className="ml-1 h-[0.9em] w-[4px] bg-primary cursor-blink" aria-hidden="true" />
     </span>
   );
 };
