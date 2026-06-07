@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Logo } from '../components/Logo';
 import introVideoWebm from '../assets/intro-o4f.webm';
 import introVideoMp4  from '../assets/intro-o4f-optimized.mp4';
@@ -358,7 +358,7 @@ function Hero() {
           <div className="lg:col-span-4 order-1 min-w-0 overflow-hidden">
             <div className="font-mono text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.32em] mb-6 sm:mb-10 flex items-center gap-3 sm:gap-4 flex-wrap" style={{ color: 'rgba(242,239,230,0.6)' }}>
               <span className="w-6 sm:w-9 h-px" style={{ background: COBALT }} />
-              <span style={{ color: COBALT_SOFT, fontWeight: 600 }}>01 / 05</span>
+              <span style={{ color: COBALT_SOFT, fontWeight: 600 }}>01 / 06</span>
               <span>·</span>
               <span>The desk</span>
             </div>
@@ -702,7 +702,7 @@ function Manifesto() {
       <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-8 md:gap-12">
         <div className="md:col-span-3">
           <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] md:sticky md:top-32" style={{ color: 'rgba(10,11,16,0.55)' }}>
-            <div className="mb-2" style={{ color: COBALT, fontWeight: 600 }}>02 / 05</div>
+            <div className="mb-2" style={{ color: COBALT, fontWeight: 600 }}>02 / 06</div>
             <div>The manifesto</div>
           </div>
         </div>
@@ -753,7 +753,7 @@ function Pillars() {
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-12 gap-8 md:gap-12 mb-12 sm:mb-16 md:mb-20">
           <div className="md:col-span-3">
-            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-2" style={{ color: COBALT, fontWeight: 600 }}>03 / 05</div>
+            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-2" style={{ color: COBALT, fontWeight: 600 }}>03 / 06</div>
             <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] text-white/55">How we think</div>
           </div>
           <div className="md:col-span-9">
@@ -892,7 +892,7 @@ function PlatformStickyScroll() {
         {/* Section header */}
         <div className="grid md:grid-cols-12 gap-8 md:gap-12 mb-12 sm:mb-16">
           <div className="md:col-span-3">
-            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-2" style={{ color: COBALT, fontWeight: 600 }}>04 / 05</div>
+            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-2" style={{ color: COBALT, fontWeight: 600 }}>04 / 06</div>
             <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em]" style={{ color: 'rgba(10,11,16,0.55)' }}>The platform</div>
           </div>
           <div className="md:col-span-9">
@@ -1114,7 +1114,7 @@ function ProductStrip() {
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-12 gap-8 md:gap-12 mb-12 sm:mb-16">
           <div className="md:col-span-3">
-            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-2" style={{ color: COBALT, fontWeight: 600 }}>04 / 05</div>
+            <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-2" style={{ color: COBALT, fontWeight: 600 }}>04 / 06</div>
             <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em]" style={{ color: 'rgba(10,11,16,0.55)' }}>The product</div>
           </div>
           <div className="md:col-span-9">
@@ -1251,6 +1251,202 @@ function RollCall() {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Insights — blogs carousel ported from master, re-skinned for /v2           */
+/* -------------------------------------------------------------------------- */
+/*
+ * Data source: /blogs/index.json (already shipped by master, now on our
+ * branch post-merge). Each card links to /blogs/${slug} which renders via
+ * master's BlogDetailsPage — we don't own the article page, only the
+ * homepage surface. Two posts today; layout assumes 2-up and degrades
+ * gracefully if more land.
+ */
+
+type BlogMeta = {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  readTime: number;
+  author: string;
+  description: string;
+  date: string;
+  featured?: boolean;
+};
+
+function BlogsSection() {
+  const navigate = useNavigate();
+  const [blogs, setBlogs] = useState<BlogMeta[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/blogs/index.json')
+      .then((r) => r.json())
+      .then((data: { blogs: BlogMeta[] }) => {
+        if (cancelled) return;
+        const sorted = [...data.blogs].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
+        setBlogs(sorted);
+      })
+      .catch(() => {
+        // Soft-fail — section just collapses if the manifest can't be read.
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Hide the whole section if there's nothing to show — avoids an empty rail
+  // that would only confuse a visitor.
+  if (!loading && blogs.length === 0) return null;
+
+  return (
+    <section
+      id="insights"
+      className="px-5 sm:px-6 md:px-14 py-20 sm:py-24 md:py-32"
+      style={{ background: INK, color: CREAM }}
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Section header — matches the eyebrow/headline pattern used elsewhere */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12 md:mb-16">
+          <div className="md:col-span-5">
+            <div
+              className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-3"
+              style={{ color: COBALT, fontWeight: 600 }}
+            >
+              05 / 06 · Insights
+            </div>
+            <h2
+              className="font-serif leading-[0.98] tracking-[-0.022em]"
+              style={{ fontWeight: 800, fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}
+            >
+              Notes from the lab.
+            </h2>
+          </div>
+          <div className="md:col-span-6 md:col-start-7 self-end">
+            <p
+              className="font-serif text-[clamp(1rem,1.25vw,1.25rem)] leading-[1.55]"
+              style={{ color: 'rgba(242, 239, 230, 0.72)' }}
+            >
+              Working papers, market autopsies, and operator notes from the desk.
+              Written for traders and investors who want to know how the machine
+              actually thinks.
+            </p>
+          </div>
+        </div>
+
+        {/* Cards */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {[0, 1].map((i) => (
+              <div
+                key={i}
+                className="h-[280px] rounded-[2px] border border-white/10 animate-pulse"
+                style={{ background: 'rgba(255,255,255,0.02)' }}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {blogs.map((b) => (
+              <button
+                key={b.id}
+                onClick={() => navigate({ to: `/blogs/${b.slug}` })}
+                className="group text-left p-7 sm:p-8 md:p-10 border border-white/10 transition-all duration-200 hover:bg-white/[0.02] focus:outline-none focus-visible:ring-1 focus-visible:ring-white/40"
+                style={{ borderRadius: 2 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = COBALT;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)';
+                }}
+              >
+                {/* Category eyebrow */}
+                <div
+                  className="font-mono text-[10px] uppercase tracking-[0.28em] mb-5"
+                  style={{ color: COBALT_SOFT, fontWeight: 600 }}
+                >
+                  {b.category}
+                </div>
+
+                {/* Title */}
+                <h3
+                  className="font-serif leading-[1.08] tracking-[-0.018em] mb-5"
+                  style={{ fontWeight: 700, fontSize: 'clamp(1.4rem, 2.2vw, 2rem)' }}
+                >
+                  {b.title}
+                </h3>
+
+                {/* Description */}
+                <p
+                  className="text-[15px] leading-[1.55] mb-8"
+                  style={{ color: 'rgba(242, 239, 230, 0.62)' }}
+                >
+                  {b.description}
+                </p>
+
+                {/* Meta row */}
+                <div
+                  className="font-mono text-[10px] uppercase tracking-[0.22em] flex flex-wrap items-center gap-x-3 gap-y-1"
+                  style={{ color: 'rgba(242, 239, 230, 0.45)' }}
+                >
+                  <span>{formatBlogDate(b.date)}</span>
+                  <span aria-hidden>·</span>
+                  <span>{b.readTime} min read</span>
+                  <span aria-hidden>·</span>
+                  <span>{b.author}</span>
+                </div>
+
+                {/* Read arrow — only visible on hover, mirrors the rest of /v2's micro-affordances */}
+                <div
+                  className="mt-7 font-mono text-[11px] uppercase tracking-[0.28em] opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ color: COBALT }}
+                >
+                  Read the note →
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* See-all link — separate from cards so it survives the empty/loading state */}
+        {!loading && blogs.length > 0 && (
+          <div className="mt-10 sm:mt-14 flex justify-end">
+            <Link
+              to="/blogs"
+              className="font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.28em] inline-flex items-center gap-2 group/all"
+              style={{ color: 'rgba(242, 239, 230, 0.72)' }}
+            >
+              See all notes
+              <span
+                className="transition-transform group-hover/all:translate-x-1"
+                style={{ color: COBALT }}
+              >
+                →
+              </span>
+            </Link>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function formatBlogDate(iso: string): string {
+  // "2026-04-01" → "01 Apr 2026" — keeps the ISO date semantically clean while
+  // displaying the friendlier "DD Mon YYYY" we use everywhere in /v2.
+  const d = new Date(iso + 'T00:00:00Z');
+  if (Number.isNaN(d.getTime())) return iso;
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  const mon = d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+  return `${day} ${mon} ${d.getUTCFullYear()}`;
+}
+
+/* -------------------------------------------------------------------------- */
 /* Pull quote                                                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -1259,8 +1455,8 @@ function PullQuote() {
     <section className="px-5 sm:px-6 md:px-14 py-20 sm:py-28 md:py-48" style={{ background: CREAM, color: INK }}>
       <div className="max-w-5xl mx-auto text-center">
         <div className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-8 sm:mb-12" style={{ color: COBALT, fontWeight: 600 }}>
-          <span className="hidden sm:inline">05 / 05 · A note we keep on the wall</span>
-          <span className="sm:hidden">05 / 05 · Wall note</span>
+          <span className="hidden sm:inline">06 / 06 · A note we keep on the wall</span>
+          <span className="sm:hidden">06 / 06 · Wall note</span>
         </div>
         <blockquote className="font-serif text-[clamp(1.6rem,4.5vw,4.5rem)] leading-[1.18] tracking-[-0.02em]" style={{ fontWeight: 800 }}>
           "The market is a teacher that does not believe in second chances.
@@ -1579,6 +1775,7 @@ export function HomePageV2() {
         <Manifesto />
         <Pillars />
         <PlatformStickyScroll />
+        <BlogsSection />
         <PullQuote />
       </main>
       <OfficesAndFooter />
