@@ -1251,14 +1251,18 @@ function RollCall() {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Insights — blogs carousel ported from master, re-skinned for /v2           */
+/* Insights — horizontal blog carousel                                        */
 /* -------------------------------------------------------------------------- */
 /*
  * Data source: /blogs/index.json (already shipped by master, now on our
  * branch post-merge). Each card links to /blogs/${slug} which renders via
  * master's BlogDetailsPage — we don't own the article page, only the
- * homepage surface. Two posts today; layout assumes 2-up and degrades
- * gracefully if more land.
+ * homepage surface.
+ *
+ * Layout: horizontal scroll rail with CSS scroll-snap. Prev/Next hairline
+ * arrow buttons sit in the section header (desktop only — touch viewports
+ * just swipe). Each card cycles through a small accent palette so a long
+ * list of posts reads as a varied row, not a uniform stack.
  */
 
 type BlogMeta = {
@@ -1273,10 +1277,22 @@ type BlogMeta = {
   featured?: boolean;
 };
 
+/* Accent cycle — kept inside the existing /v2 palette so colors feel native,
+   not introduced. Cards rotate through these by index. */
+const BLOG_ACCENTS = [
+  '#3B5BFD', // COBALT
+  '#A8FF60', // mint (the saffron-shifted green)
+  '#F2B547', // warm amber
+  '#9D7BFF', // soft lavender
+] as const;
+
 function BlogsSection() {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState<BlogMeta[]>([]);
   const [loading, setLoading] = useState(true);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -1300,19 +1316,61 @@ function BlogsSection() {
     };
   }, []);
 
-  // Hide the whole section if there's nothing to show — avoids an empty rail
-  // that would only confuse a visitor.
+  // Recompute scroll affordances on scroll, resize, and after the cards mount.
+  // Tolerance of 4px on each side because subpixel rounding can leave the
+  // computed scrollLeft a hair off the true edge.
+  const checkScroll = () => {
+    const el = railRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  };
+
+  useEffect(() => {
+    if (loading) return;
+    // Run checkScroll twice — once after layout (rAF) and once after a brief
+    // tick — to seed state regardless of when the browser settles the rail's
+    // initial scroll position. Without the second pass, the buttons stay
+    // disabled because the very first checkScroll reads scrollLeft=0 before
+    // any auto-positioning has occurred.
+    const rafId = requestAnimationFrame(checkScroll);
+    const tId = setTimeout(checkScroll, 80);
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(tId);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [loading, blogs.length]);
+
+  const scrollByOneCard = (dir: 'left' | 'right') => {
+    const el = railRef.current;
+    if (!el) return;
+    // Scroll by ~one card width so each tap advances by one post regardless
+    // of viewport. Card widths differ across breakpoints, so probe live.
+    const firstCard = el.querySelector<HTMLElement>('[data-blog-card]');
+    const step = firstCard ? firstCard.offsetWidth + 24 /* gap */ : 320;
+    el.scrollBy({ left: dir === 'left' ? -step : step, behavior: 'smooth' });
+    // checkScroll fires off the scroll listener too, but timeout covers the
+    // case where the rail is already at the boundary and the scroll is a no-op.
+    setTimeout(checkScroll, 350);
+  };
+
+  // Hide the whole section if there's nothing to show.
   if (!loading && blogs.length === 0) return null;
+
+  const hasMultiple = blogs.length > 1;
 
   return (
     <section
       id="insights"
-      className="px-5 sm:px-6 md:px-14 py-20 sm:py-24 md:py-32"
+      className="py-20 sm:py-24 md:py-32"
       style={{ background: INK, color: CREAM }}
     >
       <div className="max-w-7xl mx-auto">
-        {/* Section header — matches the eyebrow/headline pattern used elsewhere */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12 md:mb-16">
+        {/* Section header — same eyebrow/headline pattern as the rest of /v2,
+            with an arrow cluster docked top-right on desktop. */}
+        <div className="px-5 sm:px-6 md:px-14 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 mb-12 md:mb-16">
           <div className="md:col-span-5">
             <div
               className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.32em] mb-3"
@@ -1327,7 +1385,8 @@ function BlogsSection() {
               Notes from the lab.
             </h2>
           </div>
-          <div className="md:col-span-6 md:col-start-7 self-end">
+
+          <div className="md:col-span-6 md:col-start-7 self-end flex flex-col gap-6">
             <p
               className="font-serif text-[clamp(1rem,1.25vw,1.25rem)] leading-[1.55]"
               style={{ color: 'rgba(242, 239, 230, 0.72)' }}
@@ -1336,89 +1395,111 @@ function BlogsSection() {
               Written for traders and investors who want to know how the machine
               actually thinks.
             </p>
+
+            {/* Arrow cluster — desktop only; mobile swipes. Hidden entirely if
+                there's only one post (nothing to scroll past). */}
+            {hasMultiple && (
+              <div className="hidden md:flex items-center justify-end gap-3">
+                <ArrowButton
+                  direction="left"
+                  enabled={canScrollLeft}
+                  onClick={() => scrollByOneCard('left')}
+                />
+                <ArrowButton
+                  direction="right"
+                  enabled={canScrollRight}
+                  onClick={() => scrollByOneCard('right')}
+                />
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Cards */}
+        {/* Scroll rail — full-bleed-ish so cards can run past the gutter. The
+            ml/mr padding on the rail matches the section's outer padding so the
+            first card aligns with the headline. */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {[0, 1].map((i) => (
+          <div className="px-5 sm:px-6 md:px-14 flex gap-6 md:gap-8 overflow-hidden">
+            {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="h-[280px] rounded-[2px] border border-white/10 animate-pulse"
+                className="h-[320px] w-[280px] md:w-[400px] flex-shrink-0 rounded-[2px] border border-white/10 animate-pulse"
                 style={{ background: 'rgba(255,255,255,0.02)' }}
               />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {blogs.map((b) => (
-              <button
-                key={b.id}
-                onClick={() => navigate({ to: `/blogs/${b.slug}` })}
-                className="group text-left p-7 sm:p-8 md:p-10 border border-white/10 transition-all duration-200 hover:bg-white/[0.02] focus:outline-none focus-visible:ring-1 focus-visible:ring-white/40"
-                style={{ borderRadius: 2 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = COBALT;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)';
-                }}
+          <div
+            ref={railRef}
+            onScroll={checkScroll}
+            className="hide-scrollbar overflow-x-auto overflow-y-hidden flex gap-6 md:gap-8 pb-2"
+            style={{
+              // No scroll-snap. Snap was forcing the rail back to first-card
+              // every time the next snap point sat beyond maxScroll (which
+              // happens with only 2–3 cards). Free scroll + arrow controls
+              // works cleanly without it.
+              WebkitOverflowScrolling: 'touch',
+              paddingLeft: 'clamp(1.25rem, 4vw, 3.5rem)',
+              paddingRight: 'clamp(1.25rem, 4vw, 3.5rem)',
+            }}
+          >
+            {blogs.map((b, i) => {
+              const accent = BLOG_ACCENTS[i % BLOG_ACCENTS.length];
+              return (
+                <BlogCard
+                  key={b.id}
+                  blog={b}
+                  accent={accent}
+                  onClick={() => {
+                    // navigate returns a Promise; void it so the BlogCard's
+                    // strict () => void prop type stays clean.
+                    void navigate({ to: `/blogs/${b.slug}` });
+                  }}
+                />
+              );
+            })}
+
+            {/* Trailing terminator — a small "see all" tile at the end of the
+                rail mirrors how master's strategies grid ends. Lets a user who
+                has just scrolled through everything jump straight to the index
+                without scrolling back to the section header. */}
+            {blogs.length > 0 && (
+              <Link
+                to="/blogs"
+                data-blog-card
+                className="group/end flex-shrink-0 w-[220px] md:w-[260px] flex flex-col items-start justify-center gap-4 px-7 py-10 border border-dashed border-white/15 hover:border-white/40 transition-colors"
+                style={{ borderRadius: 2, scrollSnapAlign: 'start' }}
               >
-                {/* Category eyebrow */}
                 <div
-                  className="font-mono text-[10px] uppercase tracking-[0.28em] mb-5"
+                  className="font-mono text-[10px] uppercase tracking-[0.28em]"
                   style={{ color: COBALT_SOFT, fontWeight: 600 }}
                 >
-                  {b.category}
+                  Full archive
                 </div>
-
-                {/* Title */}
-                <h3
-                  className="font-serif leading-[1.08] tracking-[-0.018em] mb-5"
-                  style={{ fontWeight: 700, fontSize: 'clamp(1.4rem, 2.2vw, 2rem)' }}
-                >
-                  {b.title}
-                </h3>
-
-                {/* Description */}
-                <p
-                  className="text-[15px] leading-[1.55] mb-8"
-                  style={{ color: 'rgba(242, 239, 230, 0.62)' }}
-                >
-                  {b.description}
-                </p>
-
-                {/* Meta row */}
                 <div
-                  className="font-mono text-[10px] uppercase tracking-[0.22em] flex flex-wrap items-center gap-x-3 gap-y-1"
-                  style={{ color: 'rgba(242, 239, 230, 0.45)' }}
+                  className="font-serif leading-[1.1]"
+                  style={{ fontWeight: 700, fontSize: 'clamp(1.2rem, 1.6vw, 1.6rem)' }}
                 >
-                  <span>{formatBlogDate(b.date)}</span>
-                  <span aria-hidden>·</span>
-                  <span>{b.readTime} min read</span>
-                  <span aria-hidden>·</span>
-                  <span>{b.author}</span>
+                  See every note we've shipped
+                  <span
+                    className="inline-block ml-2 transition-transform group-hover/end:translate-x-1"
+                    style={{ color: COBALT }}
+                  >
+                    →
+                  </span>
                 </div>
-
-                {/* Read arrow — only visible on hover, mirrors the rest of /v2's micro-affordances */}
-                <div
-                  className="mt-7 font-mono text-[11px] uppercase tracking-[0.28em] opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ color: COBALT }}
-                >
-                  Read the note →
-                </div>
-              </button>
-            ))}
+              </Link>
+            )}
           </div>
         )}
 
-        {/* See-all link — separate from cards so it survives the empty/loading state */}
+        {/* Footer link — kept so mobile (which has no arrows) still has a
+            quick path to the full index. */}
         {!loading && blogs.length > 0 && (
-          <div className="mt-10 sm:mt-14 flex justify-end">
+          <div className="px-5 sm:px-6 md:px-14 mt-10 sm:mt-14 flex justify-end md:hidden">
             <Link
               to="/blogs"
-              className="font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.28em] inline-flex items-center gap-2 group/all"
+              className="font-mono text-[11px] uppercase tracking-[0.28em] inline-flex items-center gap-2 group/all"
               style={{ color: 'rgba(242, 239, 230, 0.72)' }}
             >
               See all notes
@@ -1433,6 +1514,140 @@ function BlogsSection() {
         )}
       </div>
     </section>
+  );
+}
+
+/* Single blog card — keyed by index for accent colour, hover lift, and the
+   per-card top stripe. Pulled out as a separate component so the rail render
+   stays scannable. */
+function BlogCard({
+  blog,
+  accent,
+  onClick,
+}: {
+  // `key` is allowed here so React 19's stricter JSX prop typing accepts the
+  // `<BlogCard key={...} />` callsite. React still consumes it for reconciliation
+  // and never passes it to the component, so we don't read it inside.
+  key?: string;
+  blog: BlogMeta;
+  accent: string;
+  onClick: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      data-blog-card
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="group text-left flex-shrink-0 w-[280px] sm:w-[380px] md:w-[520px] relative p-7 sm:p-8 md:p-10 border transition-colors duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-white/40"
+      style={{
+        borderColor: hover ? accent : 'rgba(255,255,255,0.10)',
+        background: hover ? 'rgba(255,255,255,0.025)' : 'transparent',
+        borderRadius: 2,
+        // (snap removed)
+        // Soft halo on hover, tinted to the card's accent
+        boxShadow: hover ? `0 18px 50px -28px ${accent}66` : 'none',
+      }}
+    >
+      {/* Top accent stripe — always visible, gives each card its colour identity */}
+      <div
+        aria-hidden
+        className="absolute top-0 left-0 h-[3px] transition-all duration-300"
+        style={{
+          width: hover ? '100%' : '48px',
+          background: accent,
+        }}
+      />
+
+      {/* Category eyebrow */}
+      <div
+        className="font-mono text-[10px] uppercase tracking-[0.28em] mb-5"
+        style={{ color: accent, fontWeight: 600 }}
+      >
+        {blog.category}
+      </div>
+
+      {/* Title */}
+      <h3
+        className="font-serif leading-[1.1] tracking-[-0.018em] mb-5"
+        style={{ fontWeight: 700, fontSize: 'clamp(1.3rem, 1.9vw, 1.8rem)' }}
+      >
+        {blog.title}
+      </h3>
+
+      {/* Description */}
+      <p
+        className="text-[14.5px] leading-[1.55] mb-8"
+        style={{ color: 'rgba(242, 239, 230, 0.62)' }}
+      >
+        {blog.description}
+      </p>
+
+      {/* Meta row */}
+      <div
+        className="font-mono text-[10px] uppercase tracking-[0.22em] flex flex-wrap items-center gap-x-3 gap-y-1"
+        style={{ color: 'rgba(242, 239, 230, 0.42)' }}
+      >
+        <span>{formatBlogDate(blog.date)}</span>
+        <span aria-hidden>·</span>
+        <span>{blog.readTime} min read</span>
+        <span aria-hidden>·</span>
+        <span>{blog.author}</span>
+      </div>
+
+      {/* Read arrow — fades in on hover, tinted to the card's accent */}
+      <div
+        className="mt-7 font-mono text-[11px] uppercase tracking-[0.28em] transition-opacity duration-200"
+        style={{ color: accent, opacity: hover ? 1 : 0 }}
+      >
+        Read the note →
+      </div>
+    </button>
+  );
+}
+
+/* Round hairline scroll buttons. Disabled state dims the icon and kills the
+   pointer cursor so users learn from the chrome which way they can still go. */
+function ArrowButton({
+  direction,
+  enabled,
+  onClick,
+}: {
+  direction: 'left' | 'right';
+  enabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!enabled}
+      aria-label={direction === 'left' ? 'Previous post' : 'Next post'}
+      className="w-11 h-11 rounded-full border border-white/15 flex items-center justify-center transition-all duration-200 hover:border-white/45 focus:outline-none focus-visible:ring-1 focus-visible:ring-white/40 disabled:cursor-not-allowed"
+      style={{
+        background: 'transparent',
+        opacity: enabled ? 1 : 0.32,
+      }}
+    >
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+        style={{ color: CREAM }}
+      >
+        {direction === 'left' ? (
+          <path d="M9 1.5 3.5 7 9 12.5" />
+        ) : (
+          <path d="M5 1.5 10.5 7 5 12.5" />
+        )}
+      </svg>
+    </button>
   );
 }
 
