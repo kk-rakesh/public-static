@@ -248,9 +248,12 @@ function TopBar() {
   const [open, setOpen] = useState(false);
   return (
     <>
+      {/* No more mix-blend-mode: difference — that was flipping the O4F logo
+          colours when scrolling over cream sections. Instead the header carries
+          its own translucent dark glass so nav + logo read uniformly on every
+          section (dark video bg, ink panels, cream Manifesto / PullQuote). */}
       <header
-        className="fixed top-0 left-0 right-0 z-40 px-5 sm:px-6 md:px-10 py-4 md:py-5 flex items-center justify-between"
-        style={{ mixBlendMode: 'difference' }}
+        className="fixed top-0 left-0 right-0 z-40 px-5 sm:px-6 md:px-10 py-4 md:py-5 flex items-center justify-between bg-black/30 backdrop-blur-md border-b border-white/[0.06]"
       >
         <Link to="/v2" className="flex items-center gap-3 min-w-0">
           <Logo className="text-xl font-bold tracking-tighter text-white shrink-0" />
@@ -1855,7 +1858,11 @@ function Waitlist() {
               </p>
 
               <form onSubmit={onSubmit} className="max-w-md mx-auto">
-                <div className="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-0 sm:bg-black/40 sm:border sm:border-white/12 sm:rounded-full sm:p-1.5">
+                {/* Container pill brightens on focus-within so the desktop
+                    layout doesn't need a separate ring around the input — the
+                    earlier ring was rendering as a hard blue square because the
+                    input itself is rounded-none inside the pill. */}
+                <div className="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-0 sm:bg-black/40 sm:border sm:border-white/12 sm:rounded-full sm:p-1.5 transition-colors duration-150 sm:focus-within:border-white/35">
                   <input
                     type="email"
                     value={email}
@@ -1866,7 +1873,10 @@ function Waitlist() {
                     placeholder="you@yourdesk.co"
                     disabled={state === 'submitting'}
                     aria-label="Email address"
-                    className="flex-1 min-w-0 px-5 py-4 bg-black/40 sm:bg-transparent border border-white/12 sm:border-0 rounded-full sm:rounded-none text-[15px] text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#5C77FF]/40 disabled:opacity-50"
+                    /* sm:focus:ring-0 + sm:focus:outline-none kills the hard
+                       blue square on desktop. Mobile keeps a soft ring since
+                       the input is its own standalone pill there. */
+                    className="flex-1 min-w-0 px-5 py-4 bg-black/40 sm:bg-transparent border border-white/12 sm:border-0 rounded-full sm:rounded-none text-[15px] text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#5C77FF]/40 sm:focus:ring-0 disabled:opacity-50"
                   />
                   <button
                     type="submit"
