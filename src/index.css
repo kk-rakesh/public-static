@@ -1,36 +1,52 @@
 @import "tailwindcss";
 
 @theme {
-  /* Type */
+  /* Type — Source Serif is /v2's display face; Inter + Barlow keep master happy */
   --font-heading: "Source Serif 4", "Tiempos Headline", "Iowan Old Style", Georgia, serif;
   --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Colors — Institutional Onyx + Saffron-Mint */
+  /* Colors — palette is the UNION of master + /v2 so both pages render.
+     Master's App.tsx leans on --color-primary (purple) + --color-secondary (teal)
+     via Tailwind bg-primary / text-primary classes. /v2 keeps the surface +
+     hairline tokens it was built against. */
   --color-background: #08090C;
   --color-foreground: #F5F5F2;
   --color-surface:    #12141A;
   --color-surface-2:  #181B23;
   --color-hairline:   rgba(255, 255, 245, 0.07);
   --color-hairline-strong: rgba(255, 255, 245, 0.14);
-  --color-primary:    #A8FF60;   /* saffron-shifted mint */
+  --color-primary:    hsl(258 100% 68%);  /* master purple — overridden to mint where /v2 needs it */
   --color-primary-2:  #7FFF8C;
+  --color-secondary:  hsl(168 100% 52%);  /* master teal */
   --color-loss:       #FF5470;
   --color-gain:       #A8FF60;
   --color-muted:      #A8AEB8;
   --color-mute-2:     #6E747F;
-  --color-border: var(--color-hairline);
+  --color-border:     hsla(0, 0%, 100%, 0.15);
 }
 
 :root {
   --radius: 14px;
   --horizontal-gap: clamp(1rem, 4vw, 2rem);
+
+  /* HSL legacy tokens — kept in case master components expect them */
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --primary: 258 100% 68%;
+  --secondary: 168 100% 52%;
+  --border: 0 0% 100% / 0.15;
 }
 
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
-  background: #08090C;
+  /* Master's radial gradients on near-black. /v2's sections all paint solid
+     ink / cream over the top so the glow only shows on master's pages. */
+  background:
+    radial-gradient(circle at 18% 10%, hsl(var(--primary) / 0.24), transparent 34%),
+    radial-gradient(circle at 84% 14%, hsl(var(--secondary) / 0.2), transparent 34%),
+    #08090C;
   color: #F5F5F2;
   font-family: var(--font-body);
   font-feature-settings: "ss01", "cv11", "tnum";
@@ -56,18 +72,18 @@ html, body { max-width: 100vw; width: 100%; }
   line-height: 0.98;
 }
 
+/* Master's .heading-italic — used by App.tsx and overridden by .master-hero-scope for /v2 */
 .heading-italic {
-  font-family: var(--font-heading);
-  font-style: italic;
-  font-weight: 400;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
+  font-family: serif;
+  font-style: normal;
+  line-height: 0.9;
+  letter-spacing: 0.03em;
 }
 
 .body-light {
   font-family: var(--font-body);
   font-weight: 300;
-  color: rgba(245, 245, 242, 0.62);
+  color: rgba(255, 255, 255, 0.74);
   letter-spacing: -0.005em;
 }
 
@@ -76,7 +92,23 @@ html, body { max-width: 100vw; width: 100%; }
   font-feature-settings: "ss01", "tnum";
 }
 
-/* ---------- Surfaces (hairline-bordered, no glass) ---------- */
+/* ---------- Surfaces ---------- */
+/* Liquid-glass — master + our cockpit pages depend on the blur. */
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 36px -1px rgba(15, 10, 48, 0.38);
+}
+
+.liquid-glass-strong {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px -1px rgba(18, 12, 55, 0.45);
+}
+
+/* Hairline surfaces — /v2's flat-card vocabulary */
 .surface {
   background: var(--color-surface);
   border: 1px solid var(--color-hairline);
@@ -101,16 +133,6 @@ html, body { max-width: 100vw; width: 100%; }
 .hairline { border: 1px solid var(--color-hairline); }
 .hairline-strong { border: 1px solid var(--color-hairline-strong); }
 .divider-h { height: 1px; background: var(--color-hairline); }
-
-/* Liquid-glass kept as legacy alias — points to flat surface */
-.liquid-glass {
-  background: var(--color-surface);
-  border: 1px solid var(--color-hairline);
-}
-.liquid-glass-strong {
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-hairline-strong);
-}
 
 /* ---------- Color helpers ---------- */
 .text-mint    { color: #A8FF60; }
