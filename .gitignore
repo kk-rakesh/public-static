@@ -6,3 +6,8 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Local capture-script artifacts (CDP profile + scratch HTMLs)
+.cache-screens/
+v2-prototype.html
+v2-sections-prototype.html
