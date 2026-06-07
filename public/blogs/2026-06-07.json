@@ -1,0 +1,164 @@
+{
+  "id": "2026-06-07",
+  "title": "O4F: Bringing the Quantitative Revolution to Indian Markets",
+  "slug": "quant-revolution-indian-markets",
+  "category": "About O4F",
+  "readTime": 9,
+  "author": "O4F LLP",
+  "description": "How O4F is building a math-first, technology-first, talent-first quantitative firm to capture systematic inefficiencies in Indian capital markets.",
+  "date": "2026-06-07",
+  "subtitle": "Engineering your next 10x",
+  "sections": [
+    {
+      "id": "who-we-are",
+      "title": "Who We Are",
+      "content": "O4F is an early-stage, multi-strategy hedge fund operating at the intersection of rigorous mathematics, proprietary technology, and exceptional talent. We trade equities, ETFs, and derivatives — markets that reward precision, speed, and structural insight over intuition and relationship capital.\n\nWe are not a traditional asset manager. We are a firm built on the conviction that financial markets are, at their core, a problem of computation and probability — and that whoever builds the best system to solve that problem, wins."
+    },
+    {
+      "id": "three-pillars",
+      "title": "The Three Pillars",
+      "content": "The firms that defined quantitative finance — Citadel, Jane Street, Hudson River Trading — each had a different surface story but shared the same structural DNA: they were math-first, technology-first, and talent-first. Not as slogans. As operating principles encoded into every decision from day one.\n\nO4F is built on the same three pillars."
+    },
+    {
+      "id": "math-first",
+      "title": "I. Math-First",
+      "content": "Ken Griffin set up his first fund using mathematical pricing models for convertible bonds at a time when the rest of the industry was pricing them by feel. Jane Street's founders treated every trade as a problem of probability and expected value, not market opinion. HRT's algorithm developers are inseparable from the strategies themselves — the math and the code are the same artifact.\n\nIn each case, the mathematical edge was not about complexity for its own sake. It was about having a correct model of a market that others were approximating with intuition. The alpha was in the gap between the model and the market's misunderstanding.",
+      "subsections": [
+        {
+          "type": "list",
+          "title": "What Math-First Means at O4F",
+          "items": [
+            { "label": "Every strategy originates from a quantifiable edge — an identifiable mispricing, structural inefficiency, or statistical pattern that a model can operationalize." },
+            { "label": "Risk is measured in probability distributions, not narratives. Position sizing, drawdown limits, and portfolio construction are outputs of the model, not the judgment of a single PM." },
+            { "label": "We do not trade opinions. We trade signals with measurable confidence intervals, calibrated against historical and live data." },
+            { "label": "Research and trading are the same function. The person who designs a strategy is the person who understands its failure modes." }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Our Core Question",
+          "content": "The question we ask of every idea is not \"does it make sense?\" but \"what is the expected value, and what assumptions does it depend on?\""
+        }
+      ]
+    },
+    {
+      "id": "technology-first",
+      "title": "II. Technology-First",
+      "content": "Citadel hired a rocket scientist in 1991 to build pricing models when competitors were using pencils and rules of thumb. Jane Street built its entire technology stack from scratch in OCaml because off-the-shelf systems could not give them the reliability, speed, or correctness guarantees they needed. HRT went further, designing custom networking hardware and FPGA systems to shave microseconds off execution latency. Every one of these decisions looked excessive or eccentric at the time. Every one became a structural moat.\n\nTechnology is not a support function at O4F. It is the business.",
+      "subsections": [
+        {
+          "type": "list",
+          "title": "What Technology-First Means at O4F",
+          "items": [
+            { "label": "Our core trading and risk systems are built in-house, not assembled from vendor platforms. We own the stack; the stack does not own us." },
+            { "label": "Infrastructure investment is not evaluated against short-term P&L. We build for the firm we intend to be, not the firm we are today." },
+            { "label": "Execution quality, latency, and system reliability are competitive variables — not IT concerns. A model that is correct but slow or unreliable is not an edge." },
+            { "label": "Every system is built with the assumption that it will be stress-tested by a market dislocation. Robustness is a first-order requirement, not a box to check." },
+            { "label": "We treat our codebase the way we treat our research: with rigor, version control, review, and a culture of honest postmortems when something breaks." }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Our Principle",
+          "content": "The firms that outsourced their technology stack eventually found that their strategies were constrained by someone else's architecture. We will not make that mistake."
+        }
+      ]
+    },
+    {
+      "id": "talent-first",
+      "title": "III. Talent-First",
+      "content": "Griffin hired scientists and engineers when banks hired salespeople. Jane Street pays all employees on collective firm profits — not individual desk performance — because they understood that information hoarding is a tax on intelligence. HRT calls its quants \"Algorithm Developers\" because the title captures the truth: there is no meaningful distinction between the person who designs the strategy and the person who implements it.\n\nIn all three cases, the talent philosophy was not conventional. They were hiring for capability — for the ability to think clearly under uncertainty, to build things that work, and to be wrong gracefully.",
+      "subsections": [
+        {
+          "type": "list",
+          "title": "What Talent-First Means at O4F",
+          "items": [
+            { "label": "We hire for first-principles thinking, not credentials or pedigree. A mathematician who can code, or an engineer who thinks probabilistically, is more valuable to us than a decade of traditional finance experience." },
+            { "label": "There are no siloed desks at O4F. Researchers, developers, and risk managers work on the same problems, share the same information, and are evaluated on the same outcomes. We do not create internal information asymmetries." },
+            { "label": "We pay on collective performance. When the firm wins, everyone wins proportionally. This is not altruism — it is mechanism design. It ensures that collaboration is the rational strategy for every individual." },
+            { "label": "We invest in people before they are fully formed. We would rather develop someone with exceptional raw capability than hire someone who has already optimized for a different firm's culture." },
+            { "label": "Intellectual honesty is a non-negotiable cultural requirement. We run postmortems on losses without blame. We update models when evidence contradicts them. We do not protect bad ideas because someone senior owns them." }
+          ]
+        },
+        {
+          "type": "note",
+          "title": "Our Principle",
+          "content": "The firms that built the best talent cultures discovered that talent attracts talent — that the density of smart, honest people in a room is self-reinforcing. We are building that room."
+        }
+      ]
+    },
+    {
+      "id": "what-we-trade",
+      "title": "What We Trade",
+      "content": "O4F operates across equities, ETFs, and derivatives — markets chosen not for their familiarity but for their structural characteristics.\n\nEquities and ETFs offer deep liquidity, continuous price discovery, and a rich universe of cross-asset relationships. The ETF ecosystem in particular is a market where authorized participant mechanics, basket arbitrage, and cross-listed pricing create systematic inefficiencies that reward firms with the mathematical and technological sophistication to see and act on them faster than the consensus.\n\nDerivatives and options are the purest expression of the mathematical advantage. Options pricing is a solved problem in theory; in practice, the market's implied volatility surface is constantly mispriced relative to realized dynamics, and the gap between the two is the opportunity.",
+      "subsections": [
+        {
+          "type": "data-table",
+          "items": [
+            {
+              "label": "Equities & ETFs",
+              "value": "Deep liquidity, cross-asset relationships, basket arbitrage"
+            },
+            {
+              "label": "Derivatives & Options",
+              "value": "Volatility surface mispricings, risk premium capture"
+            },
+            {
+              "label": "Approach",
+              "value": "Market-neutral where possible, aggressive hedging, conservative sizing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "founding-logic",
+      "title": "The Founding Logic",
+      "content": "The most important question to ask about any new quantitative firm is: what is the mispricing you see that others do not?\n\nCitadel's founding insight was that convertible bonds were systematically mispriced because nobody had built the mathematical infrastructure to price them correctly. Jane Street's founding insight was that ETFs were a structurally exploitable arbitrage that traditional market makers lacked the technology to operationalize. HRT's founding insight was that the transition from manual to electronic markets had created a computational vacuum.\n\nO4F was founded on a comparable observation: Indian capital markets — the NSE, BSE, and India's rapidly growing derivatives ecosystem — are at an earlier stage of quantitative sophistication than their US and European counterparts. The gap between what is theoretically exploitable and what is actually being exploited by systematic firms is wide. It will not stay wide forever. We intend to operate in that gap."
+    },
+    {
+      "id": "culture",
+      "title": "Culture",
+      "content": "The easiest way to describe O4F's culture is: we take ideas seriously and egos lightly.\n\nWe are a firm where the best argument wins, regardless of who makes it. Where a junior researcher who identifies a flaw in a strategy is celebrated, not managed. Where postmortems are run on successes as rigorously as on failures, because understanding why something worked is as important as understanding why something broke.",
+      "subsections": [
+        {
+          "type": "note",
+          "title": "Our Only Cultural Test",
+          "content": "We are building a firm that we would want to work at. That is the only cultural test that matters."
+        }
+      ]
+    },
+    {
+      "id": "where-we-are-going",
+      "title": "Where We Are Going",
+      "content": "O4F is early. We are honest about that. We are in the stage that every firm that later became significant had to pass through — the stage of building, proving, and compounding.\n\nThe firms we admire were not built quickly. Citadel took a decade to become a multi-strategy powerhouse. Jane Street spent years as a small, quiet ETF market maker before anyone outside the industry knew its name.",
+      "subsections": [
+        {
+          "type": "data-table",
+          "items": [
+            {
+              "label": "Foundation",
+              "value": "Build the mathematical and technological foundation before we need it at scale"
+            },
+            {
+              "label": "Track Record",
+              "value": "Establish a track record in equities and derivatives before expanding into adjacent markets"
+            },
+            {
+              "label": "Team",
+              "value": "Grow with people who fit the culture before the culture needs defending"
+            },
+            {
+              "label": "Expansion",
+              "value": "Global equity markets, fixed income, and multi-asset strategies — only when domestic edge is proven"
+            }
+          ]
+        },
+        {
+          "type": "quote",
+          "content": "Speed is not the goal. Correctness is. We are building the infrastructure for intelligent systems — one that compounds over years, not quarters."
+        }
+      ]
+    }
+  ]
+}

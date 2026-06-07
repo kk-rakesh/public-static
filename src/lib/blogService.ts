@@ -25,10 +25,10 @@ export interface BlogSection {
   title: string;
   content: string;
   subsections?: Array<{
-    type: 'highlight' | 'note' | 'data-table';
+    type: 'highlight' | 'note' | 'data-table' | 'list' | 'quote';
     title?: string;
     content?: string;
-    items?: Array<{ label: string; value: string }>;
+    items?: Array<{ label: string; value?: string }>;
   }>;
 }
 
