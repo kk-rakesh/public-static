@@ -1,6 +1,17 @@
 {
   "blogs": [
     {
+      "id": "2026-06-07",
+      "title": "O4F: Bringing the Quantitative Revolution to Indian Markets",
+      "slug": "quant-revolution-indian-markets",
+      "category": "About O4F",
+      "readTime": 9,
+      "author": "O4F LLP",
+      "description": "How O4F is building a math-first, technology-first, talent-first quantitative firm to capture systematic inefficiencies in Indian capital markets.",
+      "date": "2026-06-07",
+      "featured": true
+    },
+    {
       "id": "2025-03-31",
       "title": "Mastering Technical Indicators: Understanding Moving Averages and MACD",
       "slug": "ma-macd",

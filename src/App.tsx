@@ -814,9 +814,9 @@ const BlogPage = ({ slug, onBack }: { slug: string; onBack: () => void; key?: st
         return (
           <div key="data-table" className="liquid-glass p-8 rounded-3xl border-white/5 space-y-6">
             {subsection.items?.map((item: any, idx: number) => (
-              <div key={idx} className={`flex justify-between items-center gap-8 ${idx < subsection.items.length - 1 ? 'border-b border-white/5 pb-6' : ''}`}>
-                <span className="text-white/60">{item.label}</span>
-                <span className={idx === 0 ? 'text-primary' : idx === 1 ? 'text-secondary' : 'text-white'}>{item.value}</span>
+              <div key={idx} className={`flex justify-between items-start gap-8 ${idx < subsection.items.length - 1 ? 'border-b border-white/5 pb-6' : ''}`}>
+                <span className="text-white/60 shrink-0">{item.label}</span>
+                <span className={`text-right ${idx === 0 ? 'text-primary' : idx === 1 ? 'text-secondary' : 'text-white'}`}>{item.value}</span>
               </div>
             ))}
           </div>
@@ -826,6 +826,26 @@ const BlogPage = ({ slug, onBack }: { slug: string; onBack: () => void; key?: st
           <div key={subsection.title} className="p-6 rounded-2xl bg-primary/5 border border-primary/20 mt-8">
             <p className="text-primary font-medium mb-2 italic">{subsection.title}:</p>
             <p className="text-sm body-light">{subsection.content}</p>
+          </div>
+        );
+      case 'quote':
+        return (
+          <div key="quote" className="md:col-span-2 text-center py-8 px-4">
+            <p className="text-xl text-white leading-relaxed font-medium">{subsection.content}</p>
+          </div>
+        );
+      case 'list':
+        return (
+          <div key={subsection.title} className="liquid-glass p-6 rounded-2xl border-white/5">
+            <h4 className="text-primary mb-4 font-medium">{subsection.title}</h4>
+            <ul className="space-y-3">
+              {subsection.items?.map((item: any, idx: number) => (
+                <li key={idx} className="flex items-start gap-3 text-sm body-light">
+                  <span className="text-primary mt-0.5 shrink-0">—</span>
+                  <span>{item.label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         );
       default:
