@@ -1,48 +1,99 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Inter", sans-serif;
-  --font-body: "Barlow", sans-serif;
-  
-  --color-background: hsl(0 0% 0%);
-  --color-foreground: hsl(0 0% 100%);
-  --color-primary: hsl(258 100% 68%);
-  --color-secondary: hsl(168 100% 52%);
-  --color-border: hsla(0, 0%, 100%, 0.15);
+  /* Type — Source Serif is /v2's display face; Inter + Barlow keep master happy */
+  --font-heading: "Source Serif 4", "Tiempos Headline", "Iowan Old Style", Georgia, serif;
+  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Colors — palette is the UNION of master + /v2 so both pages render.
+     Master's App.tsx leans on --color-primary (purple) + --color-secondary (teal)
+     via Tailwind bg-primary / text-primary classes. /v2 keeps the surface +
+     hairline tokens it was built against. */
+  --color-background: #08090C;
+  --color-foreground: #F5F5F2;
+  --color-surface:    #12141A;
+  --color-surface-2:  #181B23;
+  --color-hairline:   rgba(255, 255, 245, 0.07);
+  --color-hairline-strong: rgba(255, 255, 245, 0.14);
+  --color-primary:    hsl(258 100% 68%);  /* master purple — overridden to mint where /v2 needs it */
+  --color-primary-2:  #7FFF8C;
+  --color-secondary:  hsl(168 100% 52%);  /* master teal */
+  --color-loss:       #FF5470;
+  --color-gain:       #A8FF60;
+  --color-muted:      #A8AEB8;
+  --color-mute-2:     #6E747F;
+  --color-border:     hsla(0, 0%, 100%, 0.15);
 }
 
 :root {
+  --radius: 14px;
+  --horizontal-gap: clamp(1rem, 4vw, 2rem);
+
+  /* HSL legacy tokens — kept in case master components expect them */
   --background: 0 0% 0%;
   --foreground: 0 0% 100%;
   --primary: 258 100% 68%;
   --secondary: 168 100% 52%;
   --border: 0 0% 100% / 0.15;
-  --radius: 9999px;
-  --horizontal-gap: clamp(1rem, 4vw, 2rem);
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
+  /* Master's radial gradients on near-black. /v2's sections all paint solid
+     ink / cream over the top so the glow only shows on master's pages. */
   background:
     radial-gradient(circle at 18% 10%, hsl(var(--primary) / 0.24), transparent 34%),
     radial-gradient(circle at 84% 14%, hsl(var(--secondary) / 0.2), transparent 34%),
-    #000;
-  color: white;
+    #08090C;
+  color: #F5F5F2;
   font-family: var(--font-body);
+  font-feature-settings: "ss01", "cv11", "tnum";
   overflow-x: hidden;
-  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+html, body { max-width: 100vw; width: 100%; }
+
+/* ---------- Typography utility classes ---------- */
+.font-serif {
+  font-family: var(--font-heading);
+  letter-spacing: -0.018em;
 }
 
+.heading-serif {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 0.98;
+}
+
+/* Master's .heading-italic — used by App.tsx and overridden by .master-hero-scope for /v2 */
+.heading-italic {
+  font-family: serif;
+  font-style: normal;
+  line-height: 0.9;
+  letter-spacing: 0.03em;
+}
+
+.body-light {
+  font-family: var(--font-body);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.74);
+  letter-spacing: -0.005em;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "ss01", "tnum";
+}
+
+/* ---------- Surfaces ---------- */
+/* Liquid-glass — master + our cockpit pages depend on the blur. */
 .liquid-glass {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
@@ -57,55 +108,213 @@ body {
   box-shadow: 0 10px 40px -1px rgba(18, 12, 55, 0.45);
 }
 
-.heading-italic {
-  font-family: serif;
-  font-style: normal;
-  line-height: 0.9;
-  letter-spacing: 0.03em;
+/* Hairline surfaces — /v2's flat-card vocabulary */
+.surface {
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+  border-radius: 14px;
 }
 
-.body-light {
-  font-family: var(--font-body);
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.74);
+.surface-2 {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-hairline);
+  border-radius: 14px;
 }
 
-/* Generic horizontal padding parameter - 1.5x increased from original */
+.surface-elevated {
+  background: linear-gradient(180deg, #14171F 0%, #0E1015 100%);
+  border: 1px solid var(--color-hairline-strong);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 245, 0.04),
+    0 24px 60px -30px rgba(0, 0, 0, 0.8);
+}
+
+.hairline { border: 1px solid var(--color-hairline); }
+.hairline-strong { border: 1px solid var(--color-hairline-strong); }
+.divider-h { height: 1px; background: var(--color-hairline); }
+
+/* ---------- Color helpers ---------- */
+.text-mint    { color: #A8FF60; }
+.text-loss    { color: #FF5470; }
+.bg-mint      { background: #A8FF60; color: #08090C; }
+.border-mint  { border-color: rgba(168, 255, 96, 0.4); }
+.bg-mint-soft { background: rgba(168, 255, 96, 0.08); }
+
+/* ---------- Horizontal padding utility ---------- */
 @layer components {
   .horizontal-padding {
     @apply px-5 sm:px-6 md:px-12;
   }
-
   .horizontal-padding-tight {
     @apply px-4 sm:px-5 md:px-8;
   }
-
   .horizontal-padding-loose {
     @apply px-6 sm:px-8 md:px-16;
   }
 }
 
-/* Ensures consistent horizontal padding on all breakpoints */
-section, footer, nav {
-  min-width: 0;
-}
-
-/* Prevent horizontal overflow on any device */
-html, body {
-  max-width: 100vw;
-  width: 100%;
-}
+section, footer, nav { min-width: 0; }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { border-color: var(--color-hairline); }
 }
 
+/* ---------- Animations ---------- */
+@keyframes ticker-slide {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker-slide 60s linear infinite;
+  will-change: transform;
+}
+
+@keyframes ticker-slide-fast {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-ticker-fast {
+  animation: ticker-slide-fast 40s linear infinite;
+  will-change: transform;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.85); }
+}
+.pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* Mint shimmer for numeric headlines */
+.text-shimmer-mint {
+  background: linear-gradient(
+    90deg,
+    rgba(168, 255, 96, 0.55) 0%,
+    rgba(245, 245, 242, 1)   50%,
+    rgba(168, 255, 96, 0.55) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 5s linear infinite;
+}
+
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); opacity: 0.0; }
+  50%  { opacity: 0.6; }
+  100% { transform: translateY(120%); opacity: 0.0; }
+}
+.scan-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgba(168, 255, 96, 0.16), transparent);
+  pointer-events: none;
+  animation: scan-line 4.5s ease-in-out infinite;
+}
+
+@keyframes mesh-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-mesh-rotate {
+  animation: mesh-rotate 60s linear infinite;
+}
+
+/* Hairline grid background */
+.bg-hairgrid {
+  background-image:
+    linear-gradient(rgba(255, 255, 245, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 245, 0.025) 1px, transparent 1px);
+  background-size: 88px 88px;
+}
+.bg-hairgrid-sm {
+  background-image:
+    linear-gradient(rgba(255, 255, 245, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 245, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Crosshair corner ticks */
+.corner-ticks::before,
+.corner-ticks::after,
+.corner-ticks > .tl::before,
+.corner-ticks > .tr::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(168, 255, 96, 0.65);
+}
+.corner-ticks::before { top: -1px; left:  -1px; border-right: none; border-bottom: none; }
+.corner-ticks::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+.corner-ticks > .tl::before { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.corner-ticks > .tr::after  { bottom: -1px; left:  -1px; border-right: none; border-top: none; }
+
+/* Hide scrollbar */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* Selection */
+::selection { background: rgba(168, 255, 96, 0.3); color: #F5F5F2; }
+
+/* Typewriter cursor (master parity) */
 @keyframes cursor-blink {
   50% { opacity: 0; }
 }
-
 .cursor-blink {
   animation: cursor-blink 0.8s step-end infinite;
 }
+
+/* -------- Master-style hero scope -------------------------------------- */
+/* The first screen of /v2 mirrors o4f.co.in (master). All v2 tokens get   */
+/* overridden inside .master-hero-scope so the look matches exactly.       */
+.master-hero-scope {
+  --color-primary:   hsl(258 100% 68%);
+  --color-secondary: hsl(168 100% 52%);
+}
+.master-hero-scope .heading-italic {
+  font-family: "Instrument Serif", "Tiempos Headline", Georgia, serif;
+  font-style: normal;
+  line-height: 0.9;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+.master-hero-scope .body-light {
+  font-family: "Barlow", Inter, sans-serif;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.74);
+}
+.master-hero-scope .liquid-glass-strong {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px -1px rgba(18, 12, 55, 0.45);
+}
+.master-hero-scope .text-primary {
+  color: hsl(258 100% 68%) !important;
+}
+.master-hero-scope .bg-primary  { background-color: hsl(258 100% 68%); }
+.master-hero-scope .bg-secondary{ background-color: hsl(168 100% 52%); }
+
+/* Video hero polish — slight contrast / saturation pop + tiny scale so the
+   blur from the upsample doesn't read as soft. Reduces banding on dark gradients. */
+.video-hero-bg {
+  filter: contrast(1.12) saturate(1.18) brightness(1.04);
+  transform: scale(1.04);
+  transform-origin: center;
+}
+
+/* Waitlist modal animations */
+@keyframes modal-in       { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-card-in  { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.animate-modal-in { animation: modal-in 0.25s ease forwards; }

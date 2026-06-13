@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O4F Cockpit — /orders wireframe</title>
+<style>
+  :root {
+    --bg: #000; --canvas: #0a0a0a; --fg: #fff;
+    --primary: hsl(210, 100%, 60%); --secondary: hsl(145, 100%, 50%);
+    --muted: rgba(255,255,255,0.55); --muted-2: rgba(255,255,255,0.35);
+    --border: rgba(255,255,255,0.10); --border-strong: rgba(255,255,255,0.18);
+    --glass: rgba(255,255,255,0.03); --glass-strong: rgba(255,255,255,0.07);
+    --danger: hsl(0, 90%, 60%); --warn: hsl(35, 100%, 60%); --annot: hsl(280, 70%, 70%);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; }
+  html, body { background: var(--canvas); color: var(--fg); margin: 0; font-family: 'Barlow', sans-serif; font-weight: 400; -webkit-font-smoothing: antialiased; }
+  body { padding: 40px 24px 120px; }
+  .doc-header { max-width: 1240px; margin: 0 auto 48px; }
+  .heading-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; }
+  .doc-header h1 { font-size: 56px; margin: 0 0 8px; }
+  .doc-header .meta { font-size: 13px; color: var(--muted); margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; }
+  .doc-header .meta code { background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; }
+  .doc-header .lede { font-size: 18px; color: rgba(255,255,255,0.75); max-width: 70ch; }
+  .tag-o4f { font-weight: 600; } .tag-o4f .o4 { color: var(--primary); } .tag-o4f .f { color: var(--secondary); }
+  .canvas {
+    display: flex; flex-wrap: wrap; gap: 64px 32px; align-items: flex-start;
+    padding: 32px; background: #0a0a0a; border: 1px solid var(--border); border-radius: 16px;
+    background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 24px 24px;
+  }
+  .frame { position: relative; background: #000; border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,0.6); overflow: hidden; flex-shrink: 0; }
+  .frame-label { position: absolute; top: -28px; left: 0; right: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; display: flex; gap: 8px; align-items: baseline; }
+  .frame-label .name { color: var(--fg); } .frame-label .size { color: var(--muted-2); }
+  .frame.desktop { width: 1280px; height: 820px; } .frame.mobile { width: 360px; height: 720px; }
+  .screen { width: 100%; height: 100%; display: flex; flex-direction: column; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+  .topbar .left { display: flex; align-items: center; gap: 24px; }
+  .logo { font-weight: 600; font-size: 18px; } .logo .o4 { color: var(--primary); } .logo .f { color: var(--secondary); }
+  .breadcrumb { font-weight: 300; color: var(--muted); font-size: 14px; }
+  .breadcrumb strong { color: var(--fg); font-weight: 500; }
+  .topbar .right { display: flex; align-items: center; gap: 12px; }
+  .conn-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .conn-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); box-shadow: 0 0 8px var(--secondary); }
+  .kill-btn { padding: 8px 16px; border-radius: 9999px; background: hsla(0, 90%, 60%, 0.12); border: 1px solid hsla(0, 90%, 60%, 0.4); color: var(--danger); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+  .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--glass-strong); border: 1px solid var(--border); }
+  .main { display: flex; flex: 1; min-height: 0; }
+  .sidebar { width: 220px; padding: 24px 16px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; }
+  .sidebar .nav-section { font-size: 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 12px 4px; }
+  .sidebar a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 300; }
+  .sidebar a.active { background: var(--glass-strong); color: var(--fg); }
+  .sidebar a .ico { width: 16px; height: 16px; border-radius: 4px; background: var(--glass-strong); flex-shrink: 0; }
+  .sidebar a.active .ico { background: var(--primary); } .sidebar .spacer { flex: 1; }
+
+  .content { flex: 1; padding: 24px 32px; overflow: hidden; display: flex; gap: 24px; }
+  .table-pane { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .filter-bar { display: flex; gap: 12px; align-items: center; }
+  .filter-chip { padding: 6px 12px; border-radius: 9999px; background: var(--glass); border: 1px solid var(--border); font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+  .filter-chip.active { color: var(--fg); border-color: var(--border-strong); background: var(--glass-strong); }
+  .filter-chip .count { background: var(--glass-strong); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .search { margin-left: auto; padding: 6px 12px; border-radius: 9999px; background: var(--glass); border: 1px solid var(--border); font-size: 12px; color: var(--muted-2); }
+
+  .order-table { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .order-row { display: grid; grid-template-columns: 132px 110px 80px 70px 90px 110px 130px 1fr; gap: 12px; padding: 12px 16px; align-items: center; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .order-row.header { background: var(--glass-strong); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-2); font-weight: 500; }
+  .order-row.selected { background: hsla(210, 100%, 60%, 0.08); border-left: 2px solid var(--primary); padding-left: 14px; }
+  .order-row:hover:not(.header) { background: var(--glass-strong); cursor: pointer; }
+  .ot-tag { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  .ot-sym { font-weight: 500; font-size: 14px; letter-spacing: 0.01em; }
+  .side { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 500; display: inline-block; }
+  .side.buy { background: hsla(145, 100%, 50%, 0.18); color: var(--secondary); }
+  .side.sell { background: hsla(0, 90%, 60%, 0.18); color: var(--danger); }
+  .qty-cell { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .qty-cell .partial { color: var(--warn); }
+  .price-cell { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  .status-pill { padding: 3px 10px; border-radius: 9999px; font-size: 10px; font-weight: 500; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 4px; }
+  .status-pill.working { background: hsla(145, 100%, 50%, 0.15); color: var(--secondary); border: 1px solid hsla(145, 100%, 50%, 0.3); }
+  .status-pill.pending { background: hsla(210, 100%, 60%, 0.15); color: var(--primary); border: 1px solid hsla(210, 100%, 60%, 0.3); }
+  .status-pill.partial { background: hsla(35, 100%, 60%, 0.15); color: var(--warn); border: 1px solid hsla(35, 100%, 60%, 0.3); }
+  .status-pill.filled { background: hsla(145, 100%, 50%, 0.25); color: var(--secondary); }
+  .status-pill.cancelled { background: var(--glass-strong); color: var(--muted); border: 1px solid var(--border); }
+  .status-pill.rejected { background: hsla(0, 90%, 60%, 0.15); color: var(--danger); border: 1px solid hsla(0, 90%, 60%, 0.3); }
+  .status-pill.unknown { background: hsla(0, 0%, 60%, 0.15); color: var(--muted); border: 1px solid var(--border); }
+  .broker-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--glass-strong); color: var(--muted); letter-spacing: 0.04em; }
+  .broker-badge.zerodha { color: hsl(20, 100%, 65%); border: 1px solid hsla(20, 100%, 65%, 0.3); }
+  .broker-badge.angelone { color: hsl(210, 100%, 70%); border: 1px solid hsla(210, 100%, 70%, 0.3); }
+  .age { font-size: 11px; color: var(--muted-2); font-family: 'JetBrains Mono', monospace; }
+
+  /* Detail drawer */
+  .detail { width: 380px; flex-shrink: 0; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+  .detail .head { display: flex; justify-content: space-between; align-items: baseline; }
+  .detail .head .sym { font-size: 22px; font-weight: 500; }
+  .detail .head .tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted-2); }
+  .detail .row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13px; }
+  .detail .row:first-of-type { border-top: none; }
+  .detail .row .k { color: var(--muted); font-weight: 300; }
+  .detail .row .v { color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+  .detail .actions { display: flex; gap: 8px; margin-top: 8px; }
+  .btn { padding: 7px 14px; border-radius: 9999px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: var(--glass-strong); color: var(--fg); cursor: pointer; }
+  .btn.primary { background: hsla(210, 100%, 60%, 0.18); border-color: hsla(210, 100%, 60%, 0.4); color: var(--primary); }
+  .btn.danger { background: hsla(0, 90%, 60%, 0.12); border-color: hsla(0, 90%, 60%, 0.3); color: var(--danger); }
+
+  /* Timeline */
+  .timeline { padding: 8px 0; }
+  .tl-item { display: flex; gap: 12px; padding: 8px 0; align-items: flex-start; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; background: var(--primary); }
+  .tl-dot.done { background: var(--secondary); }
+  .tl-dot.warn { background: var(--warn); }
+  .tl-line { width: 1px; background: var(--border); flex-shrink: 0; margin: 0 4px; }
+  .tl-content { flex: 1; }
+  .tl-time { font-size: 10px; color: var(--muted-2); font-family: 'JetBrains Mono', monospace; }
+  .tl-text { font-size: 13px; color: var(--fg); font-weight: 400; }
+  .tl-text .note { color: var(--muted); font-weight: 300; font-size: 12px; }
+
+  /* Mobile */
+  .mobile .topbar { padding: 12px 16px; }
+  .mobile .content { padding: 16px; flex-direction: column; gap: 12px; }
+  .mobile .filter-bar { overflow-x: auto; gap: 8px; }
+  .mobile .order-card { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .mobile .order-card .head { display: flex; justify-content: space-between; align-items: center; }
+  .mobile .order-card .row { display: flex; justify-content: space-between; font-size: 12px; }
+  .mobile .order-card .k { color: var(--muted); } .mobile .order-card .v { font-family: 'JetBrains Mono', monospace; color: var(--fg); }
+  .bottom-nav { display: flex; justify-content: space-around; padding: 8px 0 12px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.85); flex-shrink: 0; }
+  .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--muted-2); font-size: 10px; padding: 4px 8px; }
+  .bottom-nav a.active { color: var(--fg); }
+  .bottom-nav a .ico { width: 22px; height: 22px; border-radius: 5px; background: var(--glass-strong); }
+  .bottom-nav a.active .ico { background: var(--primary); }
+  .bottom-nav a.kill .ico { background: hsla(0, 90%, 60%, 0.3); }
+  .bottom-nav a.kill { color: var(--danger); }
+
+  /* Annotations */
+  .annotations { max-width: 1240px; margin: 64px auto 0; display: grid; grid-template-columns: 80px 1fr; gap: 24px 16px; }
+  .annot-num { display: flex; align-items: flex-start; justify-content: flex-end; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--annot); font-weight: 500; padding-top: 2px; }
+  .annot-body { color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 300; line-height: 1.65; }
+  .annot-body strong { color: var(--fg); font-weight: 500; } .annot-body code { background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .section-title { max-width: 1240px; margin: 64px auto 16px; display: flex; align-items: baseline; gap: 16px; }
+  .section-title h2 { font-size: 32px; margin: 0; } .section-title .num { font-family: 'JetBrains Mono', monospace; color: var(--annot); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <p class="meta"><span class="tag-o4f"><span class="o4">O4</span><span class="f">F</span></span> · Phase 1 Cockpit · Wireframe 03 · <code>/app/orders</code></p>
+  <h1 class="heading-italic">Orders<br/><span style="color: var(--muted);">— the live board</span></h1>
+  <p class="lede">Every order the OMS has placed today, with broker badge and live status. Selecting a row opens its timeline drawer — placement, fills, modifications, cancellations — sourced from the OMS audit trail. Modify and Cancel are inline; both are admin-gated.</p>
+</div>
+
+<div class="section-title"><span class="num">FRAME 01</span><h2 class="heading-italic">Desktop · 1280 × 820</h2></div>
+
+<div class="canvas">
+  <div class="frame desktop">
+    <div class="frame-label"><span class="name">orders / desktop</span><span class="size">1280 × 820 @ 1x</span></div>
+    <div class="screen">
+      <div class="topbar">
+        <div class="left">
+          <span class="logo"><span class="o4">O4</span><span class="f">F</span></span>
+          <span class="breadcrumb">Cockpit · <strong>Orders</strong></span>
+        </div>
+        <div class="right">
+          <span class="conn-dot">live · 38ms</span>
+          <button class="kill-btn">⏻ Kill switch</button>
+          <div class="user-avatar"></div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="sidebar">
+          <div class="nav-section">Trading</div>
+          <a><span class="ico"></span><span>Today</span></a>
+          <a class="active"><span class="ico"></span><span>Orders</span></a>
+          <a><span class="ico"></span><span>Killswitch</span></a>
+          <div class="nav-section" style="margin-top:16px;">Strategy</div>
+          <a><span class="ico"></span><span>RMS rules</span></a>
+          <a><span class="ico"></span><span>Backtest</span></a>
+          <a><span class="ico"></span><span>History</span></a>
+          <div class="spacer"></div>
+          <a><span class="ico"></span><span>Settings</span></a>
+        </div>
+
+        <div class="content">
+          <div class="table-pane">
+            <div class="filter-bar">
+              <span class="filter-chip active">Today <span class="count">12</span></span>
+              <span class="filter-chip">Working <span class="count">3</span></span>
+              <span class="filter-chip">Filled <span class="count">7</span></span>
+              <span class="filter-chip">Cancelled <span class="count">2</span></span>
+              <span class="filter-chip">Rejected <span class="count">0</span></span>
+              <span class="filter-chip">All brokers</span>
+              <span class="search">⌕ Search ordertag, symbol…</span>
+            </div>
+
+            <div class="order-table">
+              <div class="order-row header">
+                <span>Ordertag</span><span>Symbol</span><span>Side</span><span>Qty</span><span>Price</span><span>Status</span><span>Broker · Age</span><span>Actions</span>
+              </div>
+
+              <div class="order-row selected">
+                <span class="ot-tag">ORD-7f3a…</span>
+                <span class="ot-sym">HDFCBANK</span>
+                <span><span class="side sell">SELL</span></span>
+                <span class="qty-cell"><span class="partial">14</span>/25</span>
+                <span class="price-cell">₹1,624.10</span>
+                <span><span class="status-pill partial">◐ PARTIAL</span></span>
+                <span><span class="broker-badge zerodha">ZERODHA</span> <span class="age">42s</span></span>
+                <span><button class="btn">Modify</button> <button class="btn danger">Cancel</button></span>
+              </div>
+
+              <div class="order-row">
+                <span class="ot-tag">ORD-8c1b…</span>
+                <span class="ot-sym">TATAMOTORS</span>
+                <span><span class="side buy">BUY</span></span>
+                <span class="qty-cell">50/50</span>
+                <span class="price-cell">₹924.80</span>
+                <span><span class="status-pill working">● WORKING</span></span>
+                <span><span class="broker-badge zerodha">ZERODHA</span> <span class="age">12s</span></span>
+                <span><button class="btn">Modify</button> <button class="btn danger">Cancel</button></span>
+              </div>
+
+              <div class="order-row">
+                <span class="ot-tag">ORD-9d4e…</span>
+                <span class="ot-sym">ICICIBANK</span>
+                <span><span class="side buy">BUY</span></span>
+                <span class="qty-cell">30/30</span>
+                <span class="price-cell">₹1,088.20</span>
+                <span><span class="status-pill pending">○ PENDING</span></span>
+                <span><span class="broker-badge zerodha">ZERODHA</span> <span class="age">3s</span></span>
+                <span><button class="btn">Modify</button> <button class="btn danger">Cancel</button></span>
+              </div>
+
+              <div class="order-row">
+                <span class="ot-tag">ORD-6a2f…</span>
+                <span class="ot-sym">INFY</span>
+                <span><span class="side buy">BUY</span></span>
+                <span class="qty-cell">20/20</span>
+                <span class="price-cell">₹1,510.00</span>
+                <span><span class="status-pill filled">✓ FILLED</span></span>
+                <span><span class="broker-badge angelone">ANGEL_ONE</span> <span class="age">4m 12s</span></span>
+                <span style="color: var(--muted-2); font-size: 11px;">terminal</span>
+              </div>
+
+              <div class="order-row">
+                <span class="ot-tag">ORD-5b9c…</span>
+                <span class="ot-sym">SBIN</span>
+                <span><span class="side buy">BUY</span></span>
+                <span class="qty-cell">100/100</span>
+                <span class="price-cell">₹789.40</span>
+                <span><span class="status-pill filled">✓ FILLED</span></span>
+                <span><span class="broker-badge zerodha">ZERODHA</span> <span class="age">8m 03s</span></span>
+                <span style="color: var(--muted-2); font-size: 11px;">terminal</span>
+              </div>
+
+              <div class="order-row">
+                <span class="ot-tag">ORD-4e7d…</span>
+                <span class="ot-sym">LT</span>
+                <span><span class="side sell">SELL</span></span>
+                <span class="qty-cell">10/10</span>
+                <span class="price-cell">₹3,420.50</span>
+                <span><span class="status-pill cancelled">○ CANCELLED</span></span>
+                <span><span class="broker-badge zerodha">ZERODHA</span> <span class="age">12m</span></span>
+                <span style="color: var(--muted-2); font-size: 11px;">terminal</span>
+              </div>
+
+              <div class="order-row">
+                <span class="ot-tag">ORD-3a8b…</span>
+                <span class="ot-sym">MARUTI</span>
+                <span><span class="side buy">BUY</span></span>
+                <span class="qty-cell">5/5</span>
+                <span class="price-cell">₹11,240.00</span>
+                <span><span class="status-pill filled">✓ FILLED</span></span>
+                <span><span class="broker-badge zerodha">ZERODHA</span> <span class="age">23m</span></span>
+                <span style="color: var(--muted-2); font-size: 11px;">terminal</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAIL DRAWER -->
+          <div class="detail">
+            <div class="head">
+              <div>
+                <div class="sym">HDFCBANK</div>
+                <div class="tag">ORD-7f3a-2f8e-4b1a</div>
+              </div>
+              <span class="status-pill partial">◐ PARTIAL</span>
+            </div>
+
+            <div class="row"><span class="k">Broker</span><span class="v"><span class="broker-badge zerodha">ZERODHA</span></span></div>
+            <div class="row"><span class="k">Broker order id</span><span class="v">241115000123847</span></div>
+            <div class="row"><span class="k">Side · qty</span><span class="v">SELL · 25</span></div>
+            <div class="row"><span class="k">Order type</span><span class="v">LIMIT</span></div>
+            <div class="row"><span class="k">Limit price</span><span class="v">₹1,624.10</span></div>
+            <div class="row"><span class="k">Filled</span><span class="v">14 @ ₹1,624.05 avg</span></div>
+            <div class="row"><span class="k">RMS envelope</span><span class="v">SL ₹1,629 · Tgt ₹1,605</span></div>
+
+            <div class="actions">
+              <button class="btn primary">Modify</button>
+              <button class="btn danger">Cancel</button>
+              <button class="btn">Audit log</button>
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+              <div style="font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Timeline</div>
+              <div class="timeline">
+                <div class="tl-item">
+                  <span class="tl-dot done"></span>
+                  <div class="tl-content">
+                    <div class="tl-time">09:36:14 IST</div>
+                    <div class="tl-text">Order placed at Zerodha <span class="note">· PENDING → broker</span></div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <span class="tl-dot done"></span>
+                  <div class="tl-content">
+                    <div class="tl-time">09:36:15 IST</div>
+                    <div class="tl-text">Acknowledged <span class="note">· broker_order_id assigned</span></div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <span class="tl-dot done"></span>
+                  <div class="tl-content">
+                    <div class="tl-time">09:36:32 IST</div>
+                    <div class="tl-text">Partial fill <span class="note">· 8 @ ₹1,624.05</span></div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <span class="tl-dot done"></span>
+                  <div class="tl-content">
+                    <div class="tl-time">09:36:48 IST</div>
+                    <div class="tl-text">Partial fill <span class="note">· 6 @ ₹1,624.10</span></div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <span class="tl-dot warn"></span>
+                  <div class="tl-content">
+                    <div class="tl-time">live · WebSocket</div>
+                    <div class="tl-text">Awaiting remaining 11 <span class="note">· no fills in 14s</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="annotations">
+  <div class="annot-num">①</div>
+  <div class="annot-body"><strong>Table-first layout for desktop.</strong> Traders scan the order board the way they scan a brokerage terminal — left-to-right ordertag → symbol → side → qty → price → status → broker → actions. The fixed-width columns keep eye-tracking consistent across re-renders even as rows shuffle in and out via SSE.</div>
+
+  <div class="annot-num">②</div>
+  <div class="annot-body"><strong>Status pill ordering reflects severity.</strong> PARTIAL (amber) sits between WORKING (green) and the terminal states because it's the one that most needs attention. Color-coding is consistent across the cockpit — the same green-amber-red mapping that <code>/today</code> uses for candidates.</div>
+
+  <div class="annot-num">③</div>
+  <div class="annot-body"><strong>Broker badge is colored per broker.</strong> Zerodha gets a kite-orange tint, AngelOne a brand-blue tint, Dhan a contrast cyan. Multi-broker is the future state; even with a single-broker OMS instance, the column matters for historical reads where brokers may differ.</div>
+
+  <div class="annot-num">④</div>
+  <div class="annot-body"><strong>Selected row stays highlighted</strong> with a 2px primary-color left edge and a faint tinted background. The detail drawer on the right syncs to the selection. Clicking elsewhere doesn't deselect — only an explicit close (×) on the drawer or clicking another row does.</div>
+
+  <div class="annot-num">⑤</div>
+  <div class="annot-body"><strong>The timeline is the audit trail in visual form.</strong> Each event has a precise IST timestamp and a one-line description. Green dot = past event (confirmed), amber dot = current/in-progress, red dot = error or terminal failure. The live tail at the bottom auto-scrolls as new events arrive via SSE.</div>
+
+  <div class="annot-num">⑥</div>
+  <div class="annot-body"><strong>Inline Modify and Cancel</strong> on each row save a click vs opening the drawer first. Both are admin-gated; for regular users these buttons render disabled with a tooltip ("Read-only — contact an admin"). The drawer hosts the longer-form Modify dialog with full RMS context.</div>
+
+  <div class="annot-num">⑦</div>
+  <div class="annot-body"><strong>Terminal orders (FILLED / CANCELLED / REJECTED) lose their action column</strong> and show "terminal" in muted text. They're kept in the today view until midnight IST, then migrate to <code>/history</code>. This avoids "ghost" buttons that would error if clicked.</div>
+</div>
+
+
+<div class="section-title"><span class="num">FRAME 02</span><h2 class="heading-italic">Mobile · 360 × 720</h2></div>
+
+<div class="canvas">
+  <div class="frame mobile">
+    <div class="frame-label"><span class="name">orders / mobile</span><span class="size">360 × 720 @ 1x</span></div>
+    <div class="screen mobile">
+      <div class="topbar">
+        <span class="logo"><span class="o4">O4</span><span class="f">F</span></span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="conn-dot">live</span>
+          <button class="kill-btn" style="padding:5px 10px;font-size:11px;">⏻</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="filter-bar" style="overflow-x:auto;">
+          <span class="filter-chip active">Today <span class="count">12</span></span>
+          <span class="filter-chip">Working <span class="count">3</span></span>
+          <span class="filter-chip">Filled <span class="count">7</span></span>
+          <span class="filter-chip">Cancelled</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;">
+          <div class="order-card" style="border-left: 2px solid var(--warn);">
+            <div class="head">
+              <div>
+                <span style="font-size: 16px; font-weight: 500;">HDFCBANK</span>
+                <span class="side sell" style="margin-left: 6px;">SELL</span>
+              </div>
+              <span class="status-pill partial">◐ PARTIAL</span>
+            </div>
+            <div class="row"><span class="k">Ordertag</span><span class="v" style="font-size: 11px;">ORD-7f3a…</span></div>
+            <div class="row"><span class="k">Filled</span><span class="v"><span style="color:var(--warn);">14</span>/25 @ ₹1,624.05</span></div>
+            <div class="row"><span class="k">Broker · Age</span><span class="v"><span class="broker-badge zerodha">ZERODHA</span> 42s</span></div>
+            <div style="display:flex;gap:6px;margin-top:4px;">
+              <button class="btn primary" style="flex:1;">Modify</button>
+              <button class="btn danger" style="flex:1;">Cancel</button>
+            </div>
+          </div>
+
+          <div class="order-card">
+            <div class="head">
+              <div>
+                <span style="font-size: 16px; font-weight: 500;">TATAMOTORS</span>
+                <span class="side buy" style="margin-left: 6px;">BUY</span>
+              </div>
+              <span class="status-pill working">● WORKING</span>
+            </div>
+            <div class="row"><span class="k">Ordertag</span><span class="v" style="font-size: 11px;">ORD-8c1b…</span></div>
+            <div class="row"><span class="k">Qty · Price</span><span class="v">50 @ ₹924.80</span></div>
+            <div class="row"><span class="k">Broker · Age</span><span class="v"><span class="broker-badge zerodha">ZERODHA</span> 12s</span></div>
+            <div style="display:flex;gap:6px;margin-top:4px;">
+              <button class="btn primary" style="flex:1;">Modify</button>
+              <button class="btn danger" style="flex:1;">Cancel</button>
+            </div>
+          </div>
+
+          <div class="order-card">
+            <div class="head">
+              <div>
+                <span style="font-size: 16px; font-weight: 500;">INFY</span>
+                <span class="side buy" style="margin-left: 6px;">BUY</span>
+              </div>
+              <span class="status-pill filled">✓ FILLED</span>
+            </div>
+            <div class="row"><span class="k">Ordertag</span><span class="v" style="font-size: 11px;">ORD-6a2f…</span></div>
+            <div class="row"><span class="k">Filled</span><span class="v">20/20 @ ₹1,510.00</span></div>
+            <div class="row"><span class="k">Broker · Age</span><span class="v"><span class="broker-badge angelone">ANGEL_ONE</span> 4m</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <a><span class="ico"></span><span>Today</span></a>
+        <a class="active"><span class="ico"></span><span>Orders</span></a>
+        <a class="kill"><span class="ico"></span><span>Kill</span></a>
+        <a><span class="ico"></span><span>Backtest</span></a>
+        <a><span class="ico"></span><span>More</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="annotations">
+  <div class="annot-num">⑧</div>
+  <div class="annot-body"><strong>Mobile flips the table into stacked cards.</strong> Same data, vertical layout. The partial-fill order gets a left-edge amber stripe so it's visible at a glance while scrolling. Terminal orders skip the action buttons entirely — saves vertical space.</div>
+
+  <div class="annot-num">⑨</div>
+  <div class="annot-body"><strong>Tap a card to expand it in place</strong> (or push to <code>/orders/:tag</code>) to reveal the full timeline. The timeline view is identical to desktop's drawer — same content, full-width on mobile. Bottom nav remains the home base.</div>
+</div>
+
+</body>
+</html>

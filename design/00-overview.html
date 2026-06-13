@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O4F Cockpit — Design Package · Overview</title>
+<style>
+  :root {
+    --bg: #000; --fg: #fff;
+    --primary: hsl(210, 100%, 60%); --secondary: hsl(145, 100%, 50%);
+    --muted: rgba(255,255,255,0.55); --muted-2: rgba(255,255,255,0.35);
+    --border: rgba(255,255,255,0.10); --border-strong: rgba(255,255,255,0.18);
+    --glass: rgba(255,255,255,0.03); --glass-strong: rgba(255,255,255,0.07);
+    --danger: hsl(0, 90%, 60%); --warn: hsl(35, 100%, 60%); --annot: hsl(280, 70%, 70%);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--fg); margin: 0; font-family: 'Barlow', sans-serif; font-weight: 400; -webkit-font-smoothing: antialiased; }
+  body { padding: 64px 32px 120px; max-width: 1240px; margin: 0 auto; }
+  .heading-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; }
+  h1 { font-size: 72px; margin: 0 0 8px; }
+  h2 { font-size: 28px; margin: 64px 0 16px; }
+  p, li { color: rgba(255,255,255,0.7); font-weight: 300; line-height: 1.65; max-width: 70ch; }
+  .tag-o4f { font-weight: 600; }
+  .tag-o4f .o4 { color: var(--primary); } .tag-o4f .f { color: var(--secondary); }
+  .meta { font-size: 13px; color: var(--muted); margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; }
+  .meta code { background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; }
+  .lede { font-size: 20px; color: rgba(255,255,255,0.85); max-width: 70ch; margin-bottom: 0; line-height: 1.5; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--glass); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; transition: border-color 0.2s, background 0.2s;
+    text-decoration: none; color: inherit; display: block;
+  }
+  .card:hover { background: var(--glass-strong); border-color: var(--border-strong); }
+  .card .label { font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; }
+  .card h3 { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; margin: 6px 0 8px; line-height: 1; }
+  .card p { margin: 0; font-size: 14px; color: var(--muted); }
+  .card .arrow { display: inline-block; margin-top: 12px; color: var(--primary); font-size: 13px; font-weight: 500; }
+
+  .card.featured { background: linear-gradient(180deg, hsla(210, 100%, 60%, 0.06) 0%, var(--glass) 100%); border-color: hsla(210, 100%, 60%, 0.25); }
+  .card.featured h3 { color: var(--primary); }
+  .card.proto { background: linear-gradient(180deg, hsla(145, 100%, 50%, 0.05) 0%, var(--glass) 100%); border-color: hsla(145, 100%, 50%, 0.25); }
+  .card.proto h3 { color: var(--secondary); }
+
+  ul.checklist { list-style: none; padding: 0; }
+  ul.checklist li { padding: 8px 0; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.75); font-size: 14px; }
+  ul.checklist li:first-child { border-top: none; }
+  ul.checklist .pill { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; letter-spacing: 0.04em; }
+  ul.checklist .pill.done { background: hsla(145, 100%, 50%, 0.15); color: var(--secondary); border: 1px solid hsla(145, 100%, 50%, 0.3); }
+  ul.checklist .pill.next { background: hsla(35, 100%, 60%, 0.15); color: var(--warn); border: 1px solid hsla(35, 100%, 60%, 0.3); }
+  ul.checklist .pill.later { background: var(--glass-strong); color: var(--muted); border: 1px solid var(--border); }
+
+  .note { background: hsla(35, 100%, 60%, 0.06); border-left: 3px solid var(--warn); padding: 14px 18px; border-radius: 0 8px 8px 0; color: rgba(255,255,255,0.85); font-size: 14px; margin: 24px 0; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 64px 0; }
+
+  .role { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; margin-right: 4px; }
+  .role.aman { background: hsla(210, 100%, 60%, 0.2); color: var(--primary); }
+  .role.rakesh { background: hsla(145, 100%, 50%, 0.2); color: var(--secondary); }
+  .role.hariom { background: hsla(280, 70%, 70%, 0.2); color: hsl(280, 70%, 70%); }
+  .role.rohith, .role.siva, .role.subin { background: var(--glass-strong); color: var(--muted); }
+</style>
+</head>
+<body>
+
+<p class="meta"><span class="tag-o4f"><span class="o4">O4</span><span class="f">F</span></span> · Phase 1 Cockpit · <code>public-static/design/</code> · Round 1 · Branch <code>phase1-cockpit-wireframes</code></p>
+<h1 class="heading-italic">Cockpit<br/>Design Package</h1>
+<p class="lede">Internal staff cockpit for O4F Phase 1 — strategy review, order placement &amp; management, kill switch, RMS rules, backtesting, history. One Vite SPA, three deploy surfaces: web at <span style="font-family:'JetBrains Mono',monospace; color:var(--fg);">o4f.co.in/app</span>, Android TWA shell, iOS WKWebView shell.</p>
+
+<h2 class="heading-italic">Open this first</h2>
+<div class="grid">
+  <a class="card featured" href="01-information-architecture.html">
+    <span class="label">DOC 01</span>
+    <h3>Information architecture</h3>
+    <p>Sitemap, role-permission matrix (super admin / admin / user), critical flows as sequence diagrams (candidate → execution, kill switch, RMS daily toggle), data dependencies per screen, deploy-surface constraints.</p>
+    <span class="arrow">Open →</span>
+  </a>
+
+  <a class="card proto" href="prototype/index.html">
+    <span class="label">PROTOTYPE</span>
+    <h3>Clickable demo</h3>
+    <p>Single-file React app with mock data and simulated SSE. Approve a candidate → it moves to WORKING. Watch countdown timers tick. Open the kill switch, type "KILL", hold for 3 seconds — see the system halt. Resize the browser to see mobile.</p>
+    <span class="arrow">Launch →</span>
+  </a>
+</div>
+
+<h2 class="heading-italic">Wireframes · Round 1</h2>
+<div class="grid">
+  <a class="card" href="wireframes/02-today.html">
+    <span class="label">WIREFRAME 02 · <code>/app/today</code></span>
+    <h3>Today</h3>
+    <p>The central operational screen. Candidates queue, RMS envelope, auto/manual hybrid decision logic, approve buttons, signal feed, system health. Desktop · tablet · mobile · plus a state matrix for candidate cards.</p>
+    <span class="arrow">Open →</span>
+  </a>
+
+  <a class="card" href="wireframes/03-orders.html">
+    <span class="label">WIREFRAME 03 · <code>/app/orders</code></span>
+    <h3>Orders</h3>
+    <p>Live order board with status pills, broker badges, partial-fill counters. Selecting a row opens a timeline drawer with the full audit trail. Desktop + mobile.</p>
+    <span class="arrow">Open →</span>
+  </a>
+
+  <a class="card" href="wireframes/04-killswitch.html">
+    <span class="label">WIREFRAME 04 · <code>/app/killswitch</code></span>
+    <h3>Killswitch</h3>
+    <p>The emergency stop. Disarmed state (ready), armed state (halted), plus the mobile confirmation modal with hold-to-arm + typed token + reason capture. Three deliberate friction points; not a single mis-click can fire it.</p>
+    <span class="arrow">Open →</span>
+  </a>
+</div>
+
+<h2 class="heading-italic">Round 1 status</h2>
+<ul class="checklist">
+  <li><span class="pill done">DONE</span> Information architecture · sitemap · roles · flows · data deps</li>
+  <li><span class="pill done">DONE</span> Wireframe · <code>/today</code> · desktop / tablet / mobile · state matrix</li>
+  <li><span class="pill done">DONE</span> Wireframe · <code>/orders</code> · desktop / mobile + detail drawer</li>
+  <li><span class="pill done">DONE</span> Wireframe · <code>/killswitch</code> · disarmed / armed / confirm modal</li>
+  <li><span class="pill done">DONE</span> Clickable prototype · today / orders / killswitch · simulated SSE · approve / cancel / kill / disarm flows working</li>
+  <li><span class="pill done">DONE</span> Design package README + overview index (this page)</li>
+</ul>
+
+<h2 class="heading-italic">Round 2 — what's next</h2>
+<ul class="checklist">
+  <li><span class="pill next">NEXT</span> Wireframe · <code>/rms</code> · rules with daily toggles, super-admin edit dialog</li>
+  <li><span class="pill next">NEXT</span> Wireframe · <code>/backtest</code> · pick strategy + symbols + date range; results view (likely iframes <code>backtesting/ui-solid</code> initially)</li>
+  <li><span class="pill next">NEXT</span> Wireframe · <code>/history</code> · per-day PnL, per-strategy attribution, trade drilldowns</li>
+  <li><span class="pill next">NEXT</span> Wireframe · <code>/admin/users</code> + <code>/admin/audit</code> · invite, role assign, audit log viewer</li>
+  <li><span class="pill next">NEXT</span> Wireframe · <code>/login</code> · auth provider TBD</li>
+  <li><span class="pill later">LATER</span> Extend clickable prototype with Round 2 screens</li>
+  <li><span class="pill later">LATER</span> BFF service skeleton (Go or Node) — aggregates OMS, derivatives, RMS, auth</li>
+  <li><span class="pill later">LATER</span> SSE transport spec — topic naming, reconnect semantics, auth handoff</li>
+  <li><span class="pill later">LATER</span> Production wiring plan: Vite app under <code>public-static/src/app/</code>, build artifact deployment, route guards</li>
+</ul>
+
+<h2 class="heading-italic">Open questions to resolve before code lands</h2>
+<ul class="checklist">
+  <li><span class="pill next">Q1</span> <strong>Auth provider</strong> — Clerk vs Auth0 vs self-rolled JWT against a new <code>auth-service</code>. Internal-only means we can keep this simple, but role hierarchy needs to land somewhere.</li>
+  <li><span class="pill next">Q2</span> <strong>BFF or direct?</strong> The cockpit speaks to OMS + derivatives + a new RMS engine. A BFF is cleaner but +1 service to operate. Direct calls are faster to ship but coupling grows.</li>
+  <li><span class="pill next">Q3</span> <strong>SSE host</strong> — does the BFF own the stream, or does OMS push direct? Affects how auth + reconnect work.</li>
+  <li><span class="pill next">Q4</span> <strong>"AUTO_THRESHOLD" — who edits it?</strong> Super admin via <code>/rms</code> is the design. But the value is consequential (₹50k default) — confirm before Round 2.</li>
+  <li><span class="pill next">Q5</span> <strong>Manual signal entry</strong> — Rakesh currently posts 5 stocks to Telegram. Does <code>/today</code> get a "+ Add manual candidate" button, or does the Telegram bot pipe into the same queue server-side?</li>
+</ul>
+
+<h2 class="heading-italic">Team mapping (per your plan)</h2>
+<div class="card">
+  <p style="font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.75); margin: 0;">
+    <span class="role rohith">Rohith</span><span class="role rakesh">Rakesh</span> — Trendlyne ingest (option chain · PCR · short buildup · big-player flows · block deals). Feeds <code>/today</code>.<br/>
+    <span class="role rakesh">Rakesh</span> — Manual strategy execution (5 stocks/day · Telegram today, this UI tomorrow).<br/>
+    <span class="role aman">Aman</span> — RMS rules + position sizing + SL/target/duration. Feeds <code>/rms</code>; consumed by every other screen for envelope computation.<br/>
+    <span class="role aman">Aman</span><span class="role hariom">Hariom</span> — OMS broker integrations (AngelOne · Zerodha · Dhan). Zerodha just landed in <code>oms/</code> branch <code>zerodha-integration</code>; pending PR review.<br/>
+    <span class="role aman">Aman</span> — Kill switch (part of RMS).<br/>
+    <span class="role siva">Siva</span><span class="role subin">Subin</span> — This cockpit (dashboard). These wireframes hand off to them for implementation.
+  </p>
+</div>
+
+<div class="note">
+  <strong>Style note for app team:</strong> all wireframes and the prototype use the existing O4F design tokens — <code>--primary: hsl(210, 100%, 60%)</code> blue, <code>--secondary: hsl(145, 100%, 50%)</code> green, pure black background, Instrument Serif italic headings, Barlow body. See <code>DESIGN_GUIDELINES.md</code> at the repo root.
+</div>
+
+<hr/>
+<p style="font-size: 12px; color: var(--muted-2); font-family: 'JetBrains Mono', monospace;">
+  Round 1 · <span class="tag-o4f"><span class="o4">O4</span><span class="f">F</span></span> Cockpit Design Package · branch <code>phase1-cockpit-wireframes</code><br/>
+  open this overview in a browser; everything else is reachable from here.
+</p>
+
+</body>
+</html>
