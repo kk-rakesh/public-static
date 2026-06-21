@@ -1,67 +1,56 @@
 # O4F Design Guidelines & System Tokens
 
-This document defines the visual identity, design tokens, and theming principles for the O4F platform. Use these guidelines to maintain consistency across all new components and pages.
+Visual identity for O4F — a systematic, multi-strategy investment firm.
+The aesthetic is institutional, restrained, and motion-driven: it should read as
+serious and trustworthy first, expressive second.
 
 ## 1. Brand Identity
-- **Logo**: Always uppercase **O4F**.
-- **Color Rule**: "O4" must use `#1f07fa` (`var(--primary)`), "F" must be Green (`var(--secondary)`).
-- **Tone**: Infrastructure-focused, deep technology, real-time systems. Avoid "marketing agency" or generic SaaS aesthetics. Think NVIDIA, Stripe, or OpenAI infrastructure.
+- **Logo**: Always the tri-color **O4F** wordmark (`src/components/Logo.tsx`).
+  "O" red, "4" blue, "F" `--color-secondary` (teal). Do not alter.
+- **Voice**: Math-first, technology-first, talent-first. Markets are a problem of
+  computation and probability. Avoid hype, fabricated returns, or AUM claims.
+- **Compliance**: Never state performance figures. Keep the footer disclaimer
+  (no-offer / past-performance language) on every page.
 
-## 2. Design Tokens (CSS Variables)
+## 2. Design Tokens (`src/index.css`, `@theme`)
 
-Defined in `src/index.css` under `:root` and `@theme`:
-
-| Token | Value | Description |
-|-------|-------|-------------|
-| `--background` | `0 0% 0%` (Black) | Primary background color |
-| `--foreground` | `0 0% 100%` (White) | Primary text color |
-| `--primary` | `245.93 96.05% 50.39%` (`#1f07fa`) | Brand color for "O4" and primary accents |
-| `--secondary` | `145 100% 50%` (Green) | Brand color for "F" and secondary accents |
-| `--border` | `0 0% 100% / 0.15` | Subtle white border for glass effects |
-| `--radius` | `9999px` | Global pill-shape radius for buttons and nav |
+| Token | Value | Use |
+|-------|-------|-----|
+| `--color-background` | `#06080c` | Page background (near-black) |
+| `--color-surface` / `-2` | `#0a0e15` / `#0f141d` | Raised bands |
+| `--color-foreground` | `#eceef3` | Primary text |
+| `--color-muted` | `#969cab` | Secondary text |
+| `--color-faint` | `#5b616e` | Tertiary / disclaimers |
+| `--color-primary` | `#4c86f0` | Accent blue (from the "4") |
+| `--color-secondary` | `#2fd6b6` | Accent teal (from the "F") |
+| `--color-ember` | `#d8434f` | Restrained red (sparingly) |
+| `--color-paper` | `#f2eee5` | Ivory editorial inversion |
+| `--color-border` | `rgba(255,255,255,.09)` | Hairline borders |
 
 ## 3. Typography
+- **Display**: `Fraunces` (serif, optical sizing) via `.display` / `.display-italic`.
+  Tight leading, negative tracking. Headlines and hero only.
+- **Body / UI**: `Inter`. `.lead` for intros, `.muted` for secondary copy.
+- **Data / labels**: `JetBrains Mono` via `.mono` and `.eyebrow` (uppercase, tracked).
+- Use **sentence case** for body; eyebrows are the only uppercase element.
 
-### Headings
-- **Font**: `serif`
-- **Class**: `.heading-italic`
-- **Styles**: `font-style: normal`, `line-height: 0.9`, `letter-spacing: 0.03em`, `text-white`.
-- **Usage**: Major section headlines and hero titles only.
+## 4. Motion (Framer Motion)
+- `Reveal` — fade/slide-up on scroll into view (default section entrance).
+- `Headline` — word-by-word mask reveal for display text.
+- `Counter` — count-up metrics on view.
+- `Magnetic` — subtle pointer-follow on primary buttons.
+- Scroll physics via `useScroll` + `useSpring` (progress bar, pipeline line, hero parallax).
+- Always respect `useReducedMotion`; keep animations on transform/opacity only.
 
-### Body & UI
-- **Font**: `Barlow` (Weights: 300, 400, 500, 600)
-- **Class**: `.body-light` (for 300 weight)
-- **Styles**: `font-weight: 300`, `color: rgba(255, 255, 255, 0.6)`, `text-sm`.
-- **Usage**: All descriptions, UI labels, and long-form content.
+## 5. Surfaces & Components
+- **Panels/cards**: `.panel` (hairline + faint gradient) + `.panel-hover`,
+  `rounded-2xl`/`rounded-3xl`. No heavy backdrop blur on cards (perf).
+- **Nav**: `.glass` (blur) only on the fixed header.
+- **Buttons**: `.btn-primary` (solid ivory) and `.btn-ghost`, pill radius.
+- **Texture**: `.grid-bg` (masked grid) and faint `.glow-primary/secondary` only.
 
-## 4. Visual Effects
-
-### Liquid Glass
-Used for navigation, badges, and cards to create a futuristic, high-tech feel.
-
-- **`.liquid-glass`**:
-  - `background: rgba(255, 255, 255, 0.03)`
-  - `backdrop-filter: blur(12px)`
-  - `border: 1px solid rgba(255, 255, 255, 0.08)`
-- **`.liquid-glass-strong`**:
-  - `background: rgba(255, 255, 255, 0.08)`
-  - `backdrop-filter: blur(16px)`
-  - `border: 1px solid rgba(255, 255, 255, 0.15)`
-
-### AI Processing Wave
-A signature motion element used to represent "Intelligence" or "Processing".
-- **Component**: `ProcessingWave` (React)
-- **Visual**: 12 vertical bars with staggered sine-wave height animation.
-- **Usage**: Near "Intelligent Systems" text, in the Intelligence Layer of architecture, or as a status indicator.
-
-## 5. Component Guidelines
-
-- **Buttons**: Always `rounded-full`. Use `.liquid-glass-strong` for primary actions and simple borders for secondary.
-- **Cards**: Large radius (`rounded-3xl`), `.liquid-glass` background, subtle hover effects (e.g., `hover:border-primary/30`).
-- **Layout**: High contrast (White on Black). Use large vertical spacing (`py-32` on desktop, `py-16` on mobile).
-- **Icons**: Use `lucide-react`. Prefer thin-stroke icons that match the `Barlow` light weight.
-
-## 6. Theming Principles
-- **Pure Black**: Never use dark grays for backgrounds. Stick to `#000000`.
-- **Subtlety**: Glows and gradients should be extremely faint (`opacity: 0.05` or `0.1`).
-- **Precision**: Use monospace fonts (`font-mono`) for technical data snippets or code-like architecture visuals.
+## 6. Principles
+- Near-black backgrounds, generous vertical rhythm (`py-24 md:py-32`).
+- Glows and gradients stay faint; hairlines do the structural work.
+- Mobile-first: fluid `clamp()` display sizes, single-column stacks, ≤150kB JS gzip.
+- One ivory editorial section (the thesis) for contrast and an investor-letter feel.

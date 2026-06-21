@@ -5,15 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#06080C" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('o4f-theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.dataset.theme = t;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+    <meta name="description" content="O4F is a systematic, multi-strategy investment firm. We treat markets as a problem of computation and probability — engineering math-first, technology-first strategies across equities, ETFs, and derivatives." />
+    <meta property="og:title" content="O4F — Systematic, Multi-Strategy Investing" />
+    <meta property="og:description" content="A math-first, technology-first investment firm. Markets are computation and probability — we build the system that solves them." />
+    <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
-    <title>O4F - Building the Infrastructure for Intelligent Systems</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <title>O4F — Systematic, Multi-Strategy Investing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
