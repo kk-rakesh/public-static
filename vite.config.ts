@@ -46,6 +46,22 @@ export default defineConfig(({mode}) => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      target: 'es2020',
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          // Split big vendors into long-cacheable chunks so app updates
+          // don't force re-downloading React / Motion on every deploy.
+          manualChunks(id: string) {
+            if (!id.includes('node_modules')) return;
+            if (id.includes('framer-motion') || id.includes('/motion/')) return 'motion';
+            if (id.includes('react-dom') || id.includes('/react/') || id.includes('scheduler')) return 'react';
+            if (id.includes('@tanstack')) return 'router';
+          },
+        },
+      },
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.

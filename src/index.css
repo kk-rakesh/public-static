@@ -218,6 +218,13 @@ body {
 .paper .muted { color: #5c5648; }
 .paper .eyebrow { color: #8a8270; }
 
+/* Mobile performance — lighter frost, no perpetual glow compositing */
+@media (max-width: 768px) {
+  .nav-frost { backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%); }
+  .glass { backdrop-filter: blur(12px) saturate(130%); -webkit-backdrop-filter: blur(12px) saturate(130%); }
+  .drift { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }

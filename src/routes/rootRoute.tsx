@@ -1,3 +1,12 @@
-import { createRootRoute } from '@tanstack/react-router';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { LazyMotion, domAnimation } from 'framer-motion';
 
-export const rootRoute = createRootRoute();
+function RootLayout() {
+  return (
+    <LazyMotion features={domAnimation}>
+      <Outlet />
+    </LazyMotion>
+  );
+}
+
+export const rootRoute = createRootRoute({ component: RootLayout });

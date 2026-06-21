@@ -1,10 +1,16 @@
 import { createRoute } from '@tanstack/react-router';
-import { BlogDetailsPage } from '../App';
+import { lazy, Suspense } from 'react';
 import { rootRoute } from './rootRoute';
+
+const BlogDetailsPage = lazy(() => import('../BlogPages').then((m) => ({ default: m.BlogDetailsPage })));
 
 function BlogDetailsRouteComponent() {
   const { slug } = blogDetailsRoute.useParams();
-  return <BlogDetailsPage slug={slug} />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <BlogDetailsPage slug={slug} />
+    </Suspense>
+  );
 }
 
 export const blogDetailsRoute = createRoute({

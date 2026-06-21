@@ -13,7 +13,7 @@ import {
   ArrowDownRight, Mail, Lock, Sun, Moon,
 } from 'lucide-react';
 import {
-  motion, AnimatePresence, useScroll, useTransform, useSpring,
+  m, AnimatePresence, useScroll, useTransform, useSpring,
   useInView, animate, useReducedMotion, type Variants,
 } from 'framer-motion';
 import React, { ReactNode, useState, useEffect, useRef } from 'react';
@@ -43,7 +43,7 @@ const Reveal: React.FC<{ children: ReactNode; className?: string; delay?: number
   children, className, delay = 0, y = 24, once = true,
 }) => {
   return (
-    <motion.div
+    <m.div
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -51,12 +51,12 @@ const Reveal: React.FC<{ children: ReactNode; className?: string; delay?: number
       transition={{ duration: 0.8, ease: EASE, delay }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
 /** Word-by-word mask reveal for display headlines. */
-function Headline({
+export function Headline({
   text, className, delay = 0, as = 'h2',
 }: { text: string; className?: string; delay?: number; as?: 'h1' | 'h2' | 'h3' | 'span' }) {
   const reduce = useReducedMotion();
@@ -69,7 +69,7 @@ function Headline({
     hidden: { y: '115%' },
     show: { y: '0%', transition: { duration: 0.85, ease: EASE } },
   };
-  const Tag = motion[as] as any;
+  const Tag = m[as] as any;
   return (
     <Tag
       className={className}
@@ -80,9 +80,9 @@ function Headline({
     >
       {words.map((w, i) => (
         <span key={i} style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'top', paddingBottom: '0.16em', marginBottom: '-0.16em' }}>
-          <motion.span variants={word} style={{ display: 'inline-block' }}>
+          <m.span variants={word} style={{ display: 'inline-block' }}>
             {w}{i < words.length - 1 ? ' ' : ''}
-          </motion.span>
+          </m.span>
         </span>
       ))}
     </Tag>
@@ -124,7 +124,7 @@ function Magnetic({ children, className, strength = 0.4 }: { children: ReactNode
     setPos({ x: (e.clientX - (r.left + r.width / 2)) * strength, y: (e.clientY - (r.top + r.height / 2)) * strength });
   };
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={className}
       onMouseMove={handle}
@@ -133,7 +133,7 @@ function Magnetic({ children, className, strength = 0.4 }: { children: ReactNode
       transition={{ type: 'spring', stiffness: 200, damping: 15, mass: 0.3 }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -219,7 +219,7 @@ function CurveMarker({ pt, color = 'var(--color-secondary)' }: { pt: { x: number
   return (
     <AnimatePresence>
       {pt && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
           className="absolute inset-0 pointer-events-none"
         >
@@ -228,7 +228,7 @@ function CurveMarker({ pt, color = 'var(--color-secondary)' }: { pt: { x: number
             className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2"
             style={{ left: pt.x, top: pt.y, background: color, boxShadow: `0 0 0 4px color-mix(in srgb, ${color} 22%, transparent), 0 0 18px ${color}` }}
           />
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -262,12 +262,12 @@ function SignalCurve() {
         {[60, 120, 180].map((y) => (
           <line key={y} x1="0" y1={y} x2="800" y2={y} stroke="var(--grid-line)" strokeWidth="1" />
         ))}
-        <motion.path
+        <m.path
           d={area} fill="url(#sig-fill)"
           initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
           transition={{ duration: 1.4, delay: 1 }}
         />
-        <motion.path
+        <m.path
           ref={pathRef}
           d={path} fill="none" stroke="url(#sig-line)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
@@ -325,7 +325,7 @@ function useActiveSection(ids: string[]) {
   return active;
 }
 
-function Navbar() {
+export function Navbar() {
   const goTo = useGoToSection();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
@@ -349,7 +349,7 @@ function Navbar() {
 
   return (
     <>
-      <motion.header
+      <m.header
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: EASE }}
@@ -392,11 +392,11 @@ function Navbar() {
             </button>
           </div>
         </nav>
-      </motion.header>
+      </m.header>
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] md:hidden glass flex flex-col"
           >
@@ -406,7 +406,7 @@ function Navbar() {
             </div>
             <div className="container-x flex-1 flex flex-col justify-center gap-2">
               {SECTIONS.map((s, i) => (
-                <motion.button
+                <m.button
                   key={s.id}
                   initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.06 * i + 0.1, ease: EASE }}
@@ -414,13 +414,13 @@ function Navbar() {
                   className="display text-5xl py-2 text-left hover:text-primary transition-colors"
                 >
                   {s.label}
-                </motion.button>
+                </m.button>
               ))}
               <a href={FORM_URL} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="btn btn-primary rounded-full px-6 py-3 mt-8 inline-flex items-center justify-center gap-2 w-full">
                 <Lock className="w-4 h-4" /> Investor access
               </a>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>
@@ -452,10 +452,10 @@ function Hero() {
     <section ref={ref} className="relative min-h-[100svh] flex flex-col justify-center overflow-hidden pt-24 pb-16">
       {/* texture */}
       <div className="absolute inset-0 grid-bg opacity-70" />
-      <div className="absolute -top-40 -left-32 w-[36rem] h-[36rem] glow-primary rounded-full blur-3xl opacity-50 drift" />
-      <div className="absolute top-10 -right-32 w-[30rem] h-[30rem] glow-secondary rounded-full blur-3xl opacity-40 drift" style={{ animationDelay: '-6s' }} />
+      <div className="absolute -top-40 -left-32 w-[36rem] h-[36rem] glow-primary rounded-full blur-2xl md:blur-3xl opacity-50 drift" />
+      <div className="absolute top-10 -right-32 w-[30rem] h-[30rem] glow-secondary rounded-full blur-2xl md:blur-3xl opacity-40 drift" style={{ animationDelay: '-6s' }} />
 
-      <motion.div style={{ y, opacity: fade }} className="container-x relative z-10 w-full">
+      <m.div style={{ y, opacity: fade }} className="container-x relative z-10 w-full">
         <Reveal>
           <div className="flex items-center gap-3 mb-8">
             <span className="relative flex h-2 w-2">
@@ -510,12 +510,12 @@ function Hero() {
             </a>
           </Magnetic>
         </Reveal>
-      </motion.div>
+      </m.div>
 
       {/* signal curve anchored to the bottom */}
-      <motion.div style={{ opacity: fade }} className="absolute bottom-0 inset-x-0 h-[34vh] md:h-[40vh]">
+      <m.div style={{ opacity: fade }} className="absolute bottom-0 inset-x-0 h-[34vh] md:h-[40vh]">
         <SignalCurve />
-      </motion.div>
+      </m.div>
     </section>
   );
 }
@@ -733,7 +733,7 @@ function SystemPipeline() {
         <div ref={ref} className="relative">
           {/* connecting track — centered on the icon row, between the first and last node */}
           <div className="hidden md:block absolute top-7 left-[12.5%] right-[12.5%] h-px bg-border -translate-y-1/2">
-            <motion.div className="h-full bg-gradient-to-r from-secondary to-primary origin-left" style={{ scaleX: line }} />
+            <m.div className="h-full bg-gradient-to-r from-secondary to-primary origin-left" style={{ scaleX: line }} />
           </div>
           <div className="grid md:grid-cols-4 gap-10 md:gap-5">
             {PIPELINE.map((s, i) => {
@@ -873,12 +873,12 @@ function Philosophy() {
                   </linearGradient>
                 </defs>
                 {[50, 100, 150].map((yy) => <line key={yy} x1="0" y1={yy} x2="400" y2={yy} stroke="var(--grid-line)" />)}
-                <motion.path
+                <m.path
                   d="M0,185 C60,180 90,160 130,150 C180,138 200,120 240,95 C280,72 300,60 340,38 L400,18 L400,200 L0,200 Z"
                   fill="url(#phil-fill)"
                   initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.2, delay: 0.6 }}
                 />
-                <motion.path
+                <m.path
                   ref={pathRef}
                   d="M0,185 C60,180 90,160 130,150 C180,138 200,120 240,95 C280,72 300,60 340,38 L400,18"
                   fill="none" stroke="var(--color-secondary)" strokeWidth="2.5" strokeLinecap="round"
@@ -909,7 +909,7 @@ function Philosophy() {
    Insights (blog carousel)
    ============================================================ */
 
-function Insights({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) {
+export function Insights({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) {
   const [blogs, setBlogs] = useState<BlogMetadata[]>([]);
   const [loading, setLoading] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -960,7 +960,7 @@ function Insights({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) {
         ) : (
           <div ref={carouselRef} onScroll={checkScroll} className="flex gap-5 overflow-x-auto pb-4 hide-scrollbar snap-x">
             {blogs.map((b, i) => (
-              <motion.button
+              <m.button
                 key={b.slug}
                 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ duration: 0.6, ease: EASE, delay: (i % 3) * 0.08 }}
@@ -984,7 +984,7 @@ function Insights({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) {
                     <span className="text-primary flex items-center gap-1 font-medium">Read <ArrowUpRight className="w-3.5 h-3.5" /></span>
                   </div>
                 </div>
-              </motion.button>
+              </m.button>
             ))}
           </div>
         )}
@@ -1000,7 +1000,7 @@ function Insights({ onOpenBlog }: { onOpenBlog: (slug: string) => void }) {
 function Contact() {
   return (
     <section id="contact" className="hairline-t border-t border-border relative overflow-hidden">
-      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] glow-primary rounded-full blur-3xl opacity-30" />
+      <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] glow-primary rounded-full blur-2xl md:blur-3xl opacity-30" />
       <div className="container-x py-24 md:py-36 relative">
         <div className="max-w-3xl mx-auto text-center">
           <Reveal><span className="eyebrow">Investor relations</span></Reveal>
@@ -1041,7 +1041,7 @@ function Contact() {
    Footer
    ============================================================ */
 
-function Footer() {
+export function Footer() {
   const goTo = useGoToSection();
   return (
     <footer className="hairline-t border-t border-border bg-surface/40">
@@ -1090,133 +1090,6 @@ function Footer() {
 }
 
 /* ============================================================
-   Blog detail
-   ============================================================ */
-
-function BlogPage({ slug, onBack }: { slug: string; onBack: () => void }) {
-  const [blog, setBlog] = useState<BlogContent | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.3 });
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    (async () => {
-      try { setBlog(await fetchBlogBySlug(slug)); }
-      finally { setLoading(false); }
-    })();
-  }, [slug]);
-
-  if (loading) {
-    return <div className="pt-40 pb-32 container-x min-h-screen"><div className="muted">Loading…</div></div>;
-  }
-  if (!blog) {
-    return (
-      <div className="pt-40 pb-32 container-x min-h-screen">
-        <button onClick={onBack} className="inline-flex items-center gap-2 muted hover:text-foreground transition-colors group">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to home
-        </button>
-        <p className="display text-4xl mt-8">Article not found.</p>
-      </div>
-    );
-  }
-
-  const renderSub = (sub: any, idx: number) => {
-    switch (sub.type) {
-      case 'highlight':
-        return (
-          <div key={idx} className="panel rounded-2xl p-6">
-            <h4 className="text-primary font-medium mb-2">{sub.title}</h4>
-            <p className="muted text-sm leading-relaxed">{sub.content}</p>
-          </div>
-        );
-      case 'data-table':
-        return (
-          <div key={idx} className="panel rounded-2xl p-7 space-y-5 md:col-span-2">
-            {sub.items?.map((it: any, i: number) => (
-              <div key={i} className={`flex justify-between items-start gap-8 ${i < sub.items.length - 1 ? 'border-b border-border pb-5' : ''}`}>
-                <span className="muted shrink-0">{it.label}</span>
-                <span className={`text-right mono ${i === 0 ? 'text-primary' : i === 1 ? 'text-secondary' : 'text-foreground'}`}>{it.value}</span>
-              </div>
-            ))}
-          </div>
-        );
-      case 'note':
-        return (
-          <div key={idx} className="rounded-2xl p-6 border border-primary/25 bg-primary/5 md:col-span-2">
-            <p className="text-primary font-medium mb-2 display-italic font-display">{sub.title}</p>
-            <p className="muted text-sm leading-relaxed">{sub.content}</p>
-          </div>
-        );
-      case 'quote':
-        return (
-          <div key={idx} className="md:col-span-2 text-center py-8 px-4">
-            <p className="display text-2xl md:text-3xl text-foreground leading-snug balance">“{sub.content}”</p>
-          </div>
-        );
-      case 'list':
-        return (
-          <div key={idx} className="panel rounded-2xl p-6">
-            <h4 className="text-primary font-medium mb-4">{sub.title}</h4>
-            <ul className="space-y-3">
-              {sub.items?.map((it: any, i: number) => (
-                <li key={i} className="flex gap-3 text-sm muted leading-relaxed">
-                  <span className="text-secondary mt-1.5 w-1 h-1 rounded-full bg-secondary shrink-0" />
-                  <span>{it.label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      default: return null;
-    }
-  };
-
-  return (
-    <>
-      <motion.div className="fixed top-16 md:top-20 inset-x-0 h-px bg-primary origin-left z-40" style={{ scaleX: progress }} />
-      <motion.article
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-        className="pt-32 md:pt-40 pb-24 container-x max-w-3xl"
-      >
-        <button onClick={onBack} className="inline-flex items-center gap-2 muted hover:text-foreground transition-colors mb-12 group text-sm">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to home
-        </button>
-
-        <div className="flex flex-wrap items-center gap-4 eyebrow mb-7">
-          <span className="panel px-3 py-1 rounded-full">{blog.category}</span>
-          <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {blog.readTime} min</span>
-          <span className="flex items-center gap-1.5"><User className="w-3 h-3" /> {blog.author}</span>
-        </div>
-
-        <Headline as="h1" text={blog.title} className="display text-[clamp(2.2rem,6vw,4rem)]" />
-        {blog.subtitle && <p className="lead text-xl mt-6 display-italic font-display">{blog.subtitle}</p>}
-
-        <div className="mt-14 space-y-14">
-          {blog.sections.map((section) => (
-            <section key={section.id} className="space-y-5">
-              <h2 className="display text-3xl">{section.title}</h2>
-              <p className="lead text-lg leading-relaxed whitespace-pre-line">{section.content}</p>
-              {section.subsections && (
-                <div className="grid md:grid-cols-2 gap-5 mt-7">
-                  {section.subsections.map((sub, i) => renderSub(sub, i))}
-                </div>
-              )}
-            </section>
-          ))}
-        </div>
-
-        <div className="mt-20 pt-10 border-t border-border">
-          <button onClick={onBack} className="btn btn-ghost rounded-full px-6 py-3 inline-flex items-center gap-2 text-sm">
-            <ArrowLeft className="w-4 h-4" /> Back to home
-          </button>
-        </div>
-      </motion.article>
-    </>
-  );
-}
-
-/* ============================================================
    Pages
    ============================================================ */
 
@@ -1252,29 +1125,3 @@ export function HomePage() {
   );
 }
 
-export function BlogsPage() {
-  const navigate = useNavigate();
-  useEffect(() => { (async () => { (await fetchBlogsIndex()).forEach((b) => prefetchBlogBySlug(b.slug)); })(); }, []);
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Navbar />
-      <main className="pt-10">
-        <Insights onOpenBlog={(slug) => navigate({ to: `/blogs/${slug}` })} />
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-export function BlogDetailsPage({ slug }: { slug: string }) {
-  const navigate = useNavigate();
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Navbar />
-      <main>
-        <BlogPage slug={slug} onBack={() => navigate({ to: '/' })} />
-      </main>
-      <Footer />
-    </div>
-  );
-}
